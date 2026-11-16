@@ -21,6 +21,7 @@ dev = ["httpx==0.28.1", "pytest==8.3.4", "reportlab==5.1.0", "ruff==0.8.4"]
 [tool.pytest.ini_options]
 testpaths = ["ingest/tests", "llm/tests", "solver/tests"]
 addopts = "--import-mode=importlib"
+pythonpath = ["ingest/tests"]
 
 [tool.ruff]
 line-length = 100

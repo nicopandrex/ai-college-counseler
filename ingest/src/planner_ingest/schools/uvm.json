@@ -1,0 +1,24 @@
+{
+  "school_id": "uvm",
+  "name": "University of Vermont",
+  "icon_margin_x": 60,
+  "color_tolerance": 0.003,
+  "icon_colors": [
+    {"rgb": [0.0, 0.502, 0.302], "paint": "fill", "status": "complete"},
+    {"rgb": [0.8314, 0.1569, 0.1569], "paint": "stroke", "status": "incomplete"},
+    {"rgb": [0.1569, 0.4549, 0.7333], "paint": "fill", "status": "in_progress"},
+    {"rgb": [0.5412, 0.4157, 0.0], "paint": "fill", "status": "nearly_complete"},
+    {"rgb": [0.0078, 0.4196, 0.7843], "paint": "fill", "status": "prereq_needed"}
+  ],
+  "neutral_colors": [[1.0], [0.0]],
+  "indent_base_x": 28.3,
+  "indent_step": 6.0,
+  "block_title_min_size": 13.0,
+  "column_header_size": 6.0,
+  "default_content_x": 222.7,
+  "status_words": {"COMPLETE": "complete", "INCOMPLETE": "incomplete", "IN-PROGRESS": "in_progress"},
+  "in_progress_grades": ["IP"],
+  "preregistered_grades": [],
+  "summary_fields": ["Program", "Audit date", "Level", "Class", "College", "Degree", "Majors", "Minors", "Concentrations"],
+  "legend_label": "Legend"
+}
