@@ -24,8 +24,11 @@ def curve(x0, top, size, fill=None, stroke=None):
 
 def complete_icon(x0, top):
     # three concentric green discs, as UVM renders them
-    return [curve(x0, top, 8.4, fill=GREEN), curve(x0 + 0.8, top + 0.8, 6.8, fill=GREEN),
-            curve(x0 + 1.8, top + 2.6, 4.8, fill=GREEN)]  # fmt: skip
+    return [
+        curve(x0, top, 8.4, fill=GREEN),
+        curve(x0 + 0.8, top + 0.8, 6.8, fill=GREEN),
+        curve(x0 + 1.8, top + 2.6, 4.8, fill=GREEN),
+    ]
 
 
 def incomplete_icon(x0, top):
