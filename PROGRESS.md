@@ -3,18 +3,18 @@
 Running log. Resume from **Current status**. Newest log entries at the top.
 
 ## Current status
-- **Milestone:** M1, **STOPPED** for owner input (draft golden ready; LLM access blocked).
+- **Milestone:** M1, waiting on the owner's golden confirmation and a stable Gemini tier.
 - **Next task once unblocked:** M1.7b: record the real extraction (`LLM_CACHE_MODE=record`,
   cache dir `fixtures/private/llm-cache`), fix the prompt/validator until
   `test_private_golden.py` passes against the reviewed golden, then M2.
 
 ## Blockers (need owner)
-1. **Hand-correct `fixtures/private/golden/audit.golden.json`** (107 requirements, 32 courses),
-   then set `"reviewed": true`. It is gitignored and exists only in this container.
-2. **LLM API access.** `request_credential` refuses `api.anthropic.com` ("authenticated by the
-   session itself"), but a call through the proxy returns 401. Options: (a) set `LLM_API_KEY`
-   as an environment variable on the cloud environment and restart the session; or (b) use a
-   different provider whose key can go through the secure form (adds one provider module).
+1. **Confirm the golden** (`fixtures/private/golden/audit.golden.json`): the 32 courses and the
+   statuses, then `"reviewed": true`. count_unit needs no owner input: the 57 blanks are
+   rows where the audit states no unit (correct as null).
+2. **Gemini free tier is unreliable and keeps prompts for training.** 3.5-flash returns 503s
+   for long stretches; Pro models have zero free quota. Enabling billing on the key fixes both.
+   Required before any other student's audit is processed (privacy policy: no training use).
 
 ## Milestones
 
@@ -33,7 +33,8 @@ Running log. Resume from **Current status**. Newest log entries at the top.
       satisfied_by vs course rows, code format, wildcard flag, row coverage, credit/class
       sums, catalog year; flagged items capped at 0.5 confidence → `needs_review`
 - [x] M1.7a draft golden generated deterministically → `fixtures/private/golden/` (**STOP**)
-- [ ] M1.7b record the real LLM extraction (blocked: LLM access)
+- [~] M1.7b record the real LLM extraction. First Gemini run: 109 requirements, 16 issues, all
+      real; fixed above. Re-recording blocked by free-tier 503s.
 - [ ] M1.8 `test_private_golden.py` green against the reviewed golden
 
 ### M2 derive_state … M10 Beta-ready
@@ -62,6 +63,22 @@ Not started. Done-bars in CLAUDE.md and the build plan.
   In-progress 15; Chinese major 28; CS 35. These are now deterministic checks.
 
 ## Decisions
+- **Owner choices (2026-11-17):** LLM provider = Gemini. Target term = Spring 2027, but the product
+  stays term-agnostic. In-progress courses count as passed (`assume_pass`, already the
+  `derive_state` default). CS 3050 Software Engineering is in progress, so it counts as taken;
+  the demo query's "software engineering" must be caught as already taken, not scheduled.
+- **Gemini via its OpenAI-compatible endpoint** (`planner_llm.providers.gemini`): the key goes as a
+  Bearer token, the form the environment's secure credential store supports.
+  Extraction model `gemini-3.5-flash` (the only free-tier model that answered). Retries
+  429/500/503 with backoff.
+- **Rule nesting depth 2** in the LLM schema: depth 4 exceeds Gemini's schema-state limit, and
+  depth 2 covers the deepest real nesting (any_of → all_of → course_list).
+- **Attribute-designation rules** ("1 course with a WIL1 designation") are `course_list` with
+  `from: ["@ @ with attribute = WIL1"]`, DegreeWorks' own selector notation. This keeps the
+  courses-vs-credits unit structured; the M4 solver resolves it against catalog attributes.
+- **Quotes are matched after stripping renderer tags** (BLOCK/ROW/COURSE, `[icon: …]`): the first
+  real run quoted "BLOCK Catamount Core", which matched an unrelated row ("…this block Catamount
+  Core…") and mis-anchored the block.
 - **req_ids are structure-derived slugs**, e.g. `computer_science_major.senior_seminar` or
   `chinese_major.choose_one_track.track_1.1st_year_college_chinese_i`. The LLM is not asked to
   produce stable ids. The plan suggested hashing block title + catalog year; readable slugs
@@ -107,6 +124,10 @@ _(none yet)_
 _(none yet)_
 
 ## Log
+- **2026-11-17 · M1.** Added the Gemini provider; the key is saved via the secure form. A live
+  synthetic run passed end to end, and the validator caught a garbled grade ("B configuration"
+  vs B+). Real run: 109 requirements; fixed tag-quote mis-anchoring and attribute-code misuse.
+  Re-record pending (Gemini 503s).
 - **2026-11-16 · M1.** Built the deterministic layout pass, icon classifier, UVM config,
   vision hook, LLM gateway, structuring prompt + strict schema, validator, deterministic
   req_ids, golden draft/compare, CLI, and a synthetic DegreeWorks PDF generator for committed
