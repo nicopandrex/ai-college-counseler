@@ -102,4 +102,11 @@ def provider_from_env() -> Provider:
         from planner_llm.providers.anthropic import AnthropicProvider
 
         return AnthropicProvider(api_key=os.environ.get("LLM_API_KEY") or None)
+    if name == "gemini":
+        from planner_llm.providers.gemini import GeminiProvider
+
+        api_key = os.environ.get("LLM_API_KEY")
+        if not api_key:
+            raise LLMError("LLM_API_KEY is not set")
+        return GeminiProvider(api_key=api_key)
     raise LLMError(f"unsupported LLM_PROVIDER: {name}")
