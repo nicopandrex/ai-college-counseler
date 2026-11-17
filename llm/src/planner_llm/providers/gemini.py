@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from typing import Any
 
 import httpx
@@ -10,6 +11,8 @@ from planner_llm.gateway import JsonRequest, LLMError
 
 BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai"
 TIMEOUT_SECONDS = 600.0  # long audits at high reasoning effort can take minutes
+RETRY_STATUSES = {429, 500, 503}
+ATTEMPTS = 4
 
 
 def build_request_body(request: JsonRequest, model: str) -> dict[str, Any]:
@@ -43,7 +46,10 @@ def _error_message(response: httpx.Response) -> str:
 class GeminiProvider:
     name = "gemini"
 
-    def __init__(self, api_key: str, transport: httpx.BaseTransport | None = None) -> None:
+    def __init__(
+        self, api_key: str, transport: httpx.BaseTransport | None = None, backoff: float = 5.0
+    ) -> None:
+        self._backoff = backoff
         self._client = httpx.Client(
             base_url=BASE_URL,
             headers={"Authorization": f"Bearer {api_key}"},
@@ -52,7 +58,12 @@ class GeminiProvider:
         )
 
     def complete_json(self, request: JsonRequest, model: str) -> str:
-        response = self._client.post("/chat/completions", json=build_request_body(request, model))
+        body = build_request_body(request, model)
+        for attempt in range(ATTEMPTS):
+            response = self._client.post("/chat/completions", json=body)
+            if response.status_code not in RETRY_STATUSES or attempt == ATTEMPTS - 1:
+                break
+            time.sleep(self._backoff * 2**attempt)
         if response.status_code != 200:
             raise LLMError(f"Gemini API {response.status_code}: {_error_message(response)}")
         choice = response.json()["choices"][0]

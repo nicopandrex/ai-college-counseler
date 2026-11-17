@@ -36,7 +36,12 @@ ICON_TO_STATUS: dict[IconStatus, RequirementStatus] = {
     "nearly_complete": "incomplete",
     "in_progress": "in_progress",
 }
-RULE_CODE = re.compile(r"^(@|[A-Z]{2,5}) (@|\d@|\d{2}@|\d{3}@|[0-9X]{4}[A-Z]?|\d{4}:\d{4})$|^@ @$")
+RULE_CODE = re.compile(
+    r"^(@|[A-Z]{2,5}) (@|\d@|\d{2}@|\d{3}@|[0-9X]{4}[A-Z]?|\d{4}:\d{4})$"
+    r"|^@ @$"
+    r"|^@ @ with attribute = [A-Z0-9]+$"  # DegreeWorks' own attribute-selector notation
+)
+STRUCTURAL_TAG = re.compile(r"^(BLOCK|ROW|COURSE)\s+|\[(icon|block status|no icon)[^\]]*\]\s*")
 COURSES_UNIT = re.compile(r"\b\d+(\.\d+)? (class|classes|course|courses)\b", re.IGNORECASE)
 CREDITS_UNIT = re.compile(r"\b\d+(\.\d+)? (credit|credits)\b", re.IGNORECASE)
 CREDITS_APPLIED = re.compile(r"Credits applied: (\d+(?:\.\d+)?)")
@@ -65,6 +70,11 @@ def normalize(text: str) -> str:
     return " ".join(text.replace("|", " ").split()).casefold()
 
 
+def quote_text(quote: str) -> str:
+    """A source_quote minus the renderer's own tags (BLOCK/ROW/COURSE, [icon: ...])."""
+    return normalize(STRUCTURAL_TAG.sub("", quote.strip()))
+
+
 def _candidates(layout: AuditLayout) -> list[tuple[Anchor, str, str]]:
     """(anchor, searchable text, label) for every block and row, in document order."""
     out: list[tuple[Anchor, str, str]] = []
@@ -85,7 +95,7 @@ def anchor_requirements(audit: ExtractedAudit, layout: AuditLayout) -> list[Anch
     last = -1
     anchors: list[Anchor | None] = []
     for req in audit.requirements:
-        quote, title = normalize(req.source_quote), normalize(req.title)
+        quote, title = quote_text(req.source_quote), normalize(req.title)
         hits = [i for i, (_, text, _) in enumerate(candidates) if quote and quote in text]
         if not hits:
             hits = [i for i, (_, _, label) in enumerate(candidates) if title and label == title]
@@ -160,7 +170,7 @@ class _Checker:
         self.flagged.add(index)
 
     def check_requirement(self, index: int, req: Requirement, anchor: Anchor | None) -> None:
-        if normalize(req.source_quote) not in normalize(self.layout.full_text):
+        if quote_text(req.source_quote) not in normalize(self.layout.full_text):
             self.flag(index, req, "quote_not_found", f"quote not in document: {req.source_quote!r}")
         if anchor is None:
             self.flag(index, req, "no_anchor", f"could not locate {req.title!r} in the document")
