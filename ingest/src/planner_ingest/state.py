@@ -27,6 +27,7 @@ from planner_ingest.extraction import (
 )
 
 RequirementState = Literal["satisfied", "provisionally_satisfied", "open", "not_applicable"]
+CHOOSE_ONE = re.compile(r"\bChoose from 1 of the following\b", re.I)  # DegreeWorks wording
 MIN_GRADE = re.compile(r"\b[A-D][+-]? or (better|higher)\b|\bminimum (course )?grade\b", re.I)
 
 
@@ -91,6 +92,12 @@ def _rule_texts(rule: Rule) -> list[str]:
 def _has_min_grade(req: Requirement) -> bool:
     texts = [req.title, req.still_needed_text or "", *_rule_texts(req.rule)]
     return any(MIN_GRADE.search(t) for t in texts)
+
+
+def _is_choice_group(req: Requirement) -> bool:
+    """Alternatives where only one must be completed (e.g. a major's tracks)."""
+    texts = [req.still_needed_text or "", *_rule_texts(req.rule)]
+    return isinstance(req.rule, AnyOfRule) or any(CHOOSE_ONE.search(t) for t in texts)
 
 
 def _parents(ids: set[str]) -> dict[str, str | None]:
@@ -161,7 +168,7 @@ def derive_state(audit: ExtractedAudit, assumptions: Assumptions | None = None) 
         if not kids or state[rid] == "open":
             continue
         kid_states = [state[k] for k in kids]
-        if isinstance(by_id[rid].rule, AnyOfRule):
+        if _is_choice_group(by_id[rid]):
             if all(s == "open" for s in kid_states):
                 state[rid] = "open"
         elif "open" in kid_states:
@@ -170,7 +177,7 @@ def derive_state(audit: ExtractedAudit, assumptions: Assumptions | None = None) 
     warnings: list[str] = []
     for rid, req in by_id.items():
         kids = children.get(rid, [])
-        if not isinstance(req.rule, AnyOfRule) or len(kids) < 2:
+        if not _is_choice_group(req) or len(kids) < 2:
             continue
         progress = {k: _applied_in_subtree(k, by_id, children) for k in kids}
         best = max(progress.values())
