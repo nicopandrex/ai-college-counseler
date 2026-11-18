@@ -60,8 +60,15 @@ class GeminiProvider:
     def complete_json(self, request: JsonRequest, model: str) -> str:
         body = build_request_body(request, model)
         for attempt in range(ATTEMPTS):
-            response = self._client.post("/chat/completions", json=body)
-            if response.status_code not in RETRY_STATUSES or attempt == ATTEMPTS - 1:
+            last = attempt == ATTEMPTS - 1
+            try:
+                response = self._client.post("/chat/completions", json=body)
+            except httpx.TransportError:  # dropped connection, timeout: transient
+                if last:
+                    raise
+                time.sleep(self._backoff * 2**attempt)
+                continue
+            if response.status_code not in RETRY_STATUSES or last:
                 break
             time.sleep(self._backoff * 2**attempt)
         if response.status_code != 200:

@@ -77,3 +77,17 @@ def test_persistent_overload_gives_up() -> None:
     provider = GeminiProvider(api_key="k", transport=httpx.MockTransport(handler), backoff=0)
     with pytest.raises(LLMError, match="high demand"):
         provider.complete_json(JsonRequest("p", "s", "u", SCHEMA), "m")
+
+
+def test_dropped_connection_is_retried() -> None:
+    calls = []
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        calls.append(1)
+        if len(calls) == 1:
+            raise httpx.ReadError("Connection reset by peer")
+        body = {"choices": [{"message": {"content": "{}"}, "finish_reason": "stop"}]}
+        return httpx.Response(200, json=body)
+
+    assert _provider(handler).complete_json(JsonRequest("p", "s", "u", SCHEMA), "m") == "{}"
+    assert len(calls) == 2
