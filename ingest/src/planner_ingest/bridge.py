@@ -46,6 +46,16 @@ def parse_still_needed(text: str | None) -> tuple[list[str], list[str]]:
     return selectors, excluded
 
 
+STANDINGS = ("freshman", "sophomore", "junior", "senior", "graduate")
+
+
+def standing_from(class_standing: str | None) -> str | None:
+    """'03 - Junior' -> 'junior'. Only the audit's stated words; never inferred from credits."""
+    words = (class_standing or "").casefold()
+    found = [s for s in STANDINGS if s in words]
+    return found[0] if len(found) == 1 else None
+
+
 def _rule_selectors(rule: Rule) -> list[str]:
     if isinstance(rule, CourseListRule):
         return list(rule.from_)
@@ -75,4 +85,5 @@ def student_term(audit: ExtractedAudit, state: StudentState) -> StudentTerm:
         counted_courses=state.counted_courses,
         unplannable_courses=state.unplannable_courses,
         open_requirements=targets,
+        standing=standing_from(audit.student.class_standing),  # type: ignore[arg-type]
     )

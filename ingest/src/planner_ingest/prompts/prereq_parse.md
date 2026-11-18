@@ -3,11 +3,15 @@ extractor: record only what the notes state, and never add a course that isn't w
 
 Each input line is `COURSE | notes`. Return one entry per course, with:
 
-- `prereq`: a tree, or `null` if the notes state no prerequisite. Node kinds:
+- `nodes` and `root`: the prerequisite tree as a flat list of nodes. Each node has an `id`
+  ("n1", "n2", …) and `and`/`or` nodes list their child node ids in `children`. `root` is the
+  top node's id, or `null` (with no nodes) if the notes state no prerequisite. Fields a node
+  kind doesn't use are `null` (`concurrent_ok` false), and `children` is empty for anything
+  but `and`/`or`. Node kinds:
   - `course`: `code` exactly as "SUBJ 1234", `min_grade` (e.g. "C-") or null, and
     `concurrent_ok` true only if the notes allow taking it at the same time ("may be taken
     concurrently", "co-requisite"/"corequisite").
-  - `and` / `or`: `items`, a list of nodes. Read "A and B or C and D" the way the notes'
+  - `and` / `or`: `children`, the ids of two or more nodes. Read "A and B or C and D" the way the notes'
     punctuation groups it. If the grouping is unclear, set `ambiguous` true.
   - `standing`: `minimum` is one of "sophomore", "junior", "senior", "graduate". "Junior/Senior
     standing" means junior.

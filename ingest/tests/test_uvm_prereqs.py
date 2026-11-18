@@ -3,7 +3,7 @@ from pathlib import Path
 
 from planner_ingest.uvm.prereqs import has_prereq_text, parse_prereqs, prereq_notes
 from planner_llm import CacheMode, JsonRequest, LLMGateway
-from planner_solver.domain import AllPrereq, AnyPrereq, CoursePrereq, StandingPrereq
+from planner_solver.domain import AllPrereq, AnyPrereq, CoursePrereq, StandingPrereq, UnparsedPrereq
 
 
 class Stub:
@@ -19,8 +19,28 @@ class Stub:
         return json.dumps({"courses": [self.answers[c] for c in codes]})
 
 
+def flatten(node, nodes):
+    """Nested test tree -> the model's flat node list; returns the node id."""
+    nid = f"n{len(nodes) + 1}"
+    entry = {
+        "id": nid,
+        "kind": node["kind"],
+        "children": [],
+        "code": node.get("code"),
+        "min_grade": node.get("min_grade"),
+        "concurrent_ok": node.get("concurrent_ok", False),
+        "minimum": node.get("minimum"),
+        "text": node.get("text"),
+    }
+    nodes.append(entry)
+    entry["children"] = [flatten(child, nodes) for child in node.get("items", [])]
+    return nid
+
+
 def course(code, node, ambiguous=False, note=None):
-    return {"code": code, "prereq": node, "ambiguous": ambiguous, "note": note}
+    nodes: list[dict] = []
+    root = flatten(node, nodes) if node else None
+    return {"code": code, "nodes": nodes, "root": root, "ambiguous": ambiguous, "note": note}
 
 
 def test_prereq_text_is_detected_and_cleaned() -> None:
@@ -107,16 +127,74 @@ def test_trees_are_mapped_and_doubtful_ones_queued(tmp_path: Path) -> None:
     assert trees["ALE 1360"] == StandingPrereq(kind="standing", minimum="junior")
     assert {r["code"] for r in review} == {"ART 2000", "BAD 3000"}  # unparsed; malformed code
     assert all(r["notes"] for r in review)
+    # an unparsed part evaluates as "unknown", so the tree is safe to use (and still reviewed)
+    assert trees["ART 2000"] == UnparsedPrereq(kind="unparsed", text="portfolio review")
+    assert "BAD 3000" not in trees  # a malformed code could match the wrong course: kept out
 
 
-def test_a_course_the_model_skips_is_queued_not_dropped(tmp_path: Path) -> None:
+def test_a_skipped_course_is_asked_again_then_queued(tmp_path: Path) -> None:
     class Skipper(Stub):
         def complete_json(self, request: JsonRequest, model: str) -> str:
+            self.requests.append(request)
             return json.dumps({"courses": []})
 
-    gateway = LLMGateway(Skipper({}), "m", tmp_path / "c", CacheMode.LIVE)
+    skipper = Skipper({})
+    gateway = LLMGateway(skipper, "m", tmp_path / "c", CacheMode.LIVE)
     trees, review = parse_prereqs({"CS 3200": "Prerequisite: CS 2240"}, gateway)
+    assert len(skipper.requests) == 2  # one re-ask for the skipped course
     assert "CS 3200" not in trees
     assert review == [
         {"code": "CS 3200", "notes": "Prerequisite: CS 2240", "reason": "not returned by the model"}
     ]
+
+
+def test_a_skipped_course_answered_on_the_re_ask_is_kept(tmp_path: Path) -> None:
+    class SkipOnce(Stub):
+        def complete_json(self, request: JsonRequest, model: str) -> str:
+            self.requests.append(request)
+            if len(self.requests) == 1:
+                return json.dumps({"courses": []})
+            node = {"kind": "course", "code": "CS 2240", "min_grade": None, "concurrent_ok": False}
+            return json.dumps({"courses": [course("CS 3200", node)]})
+
+    gateway = LLMGateway(SkipOnce({}), "m", tmp_path / "c", CacheMode.LIVE)
+    trees, review = parse_prereqs({"CS 3200": "Prerequisite: CS 2240"}, gateway)
+    assert trees["CS 3200"] == CoursePrereq(kind="course", code="CS 2240") and review == []
+
+
+def test_deep_nesting_and_broken_references(tmp_path: Path) -> None:
+    deep = {
+        "kind": "and",
+        "items": [
+            {
+                "kind": "or",
+                "items": [
+                    {"kind": "course", "code": "ASCI 2110"},
+                    {
+                        "kind": "and",
+                        "items": [
+                            {"kind": "course", "code": "ANPS 1190"},
+                            {"kind": "course", "code": "ANPS 1200"},
+                        ],
+                    },
+                ],
+            },
+            {
+                "kind": "or",
+                "items": [
+                    {"kind": "course", "code": "BCOR 1400"},
+                    {"kind": "course", "code": "BIOL 1400"},
+                ],
+            },
+        ],
+    }
+    broken = course("BAD 1000", {"kind": "and", "items": [{"kind": "course", "code": "CS 1210"}]})
+    broken["nodes"][0]["children"] = ["n9"]  # dangling reference
+    answers = {"ASCI 2120": course("ASCI 2120", deep), "BAD 1000": broken}
+    gateway = LLMGateway(Stub(answers), "m", tmp_path / "c", CacheMode.LIVE)
+    trees, review = parse_prereqs({"ASCI 2120": "deep", "BAD 1000": "broken"}, gateway)
+    inner = trees["ASCI 2120"].items[0].items[1]
+    assert isinstance(inner, AllPrereq) and inner.items[1] == CoursePrereq(
+        kind="course", code="ANPS 1200"
+    )
+    assert "BAD 1000" not in trees and review[0]["code"] == "BAD 1000"

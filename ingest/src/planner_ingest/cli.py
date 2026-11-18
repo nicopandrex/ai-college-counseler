@@ -20,7 +20,7 @@ from planner_ingest.uvm.parse import load_capabilities, parse_term
 from planner_ingest.uvm.prereqs import PURPOSE as PREREQ_PURPOSE
 from planner_ingest.uvm.prereqs import has_prereq_text, parse_prereqs, prereq_notes
 from planner_llm import LLMGateway
-from planner_solver.domain import Prereq, TermData
+from planner_solver.domain import Prereq, TermData, UnparsedPrereq
 from planner_solver.present import render_result
 from planner_solver.term import solve_term
 from planner_solver.validation import SchoolCapabilities, ValidationContext, validate_spec
@@ -35,6 +35,10 @@ def load_term(srcdb: str, raw: Path = RAW) -> TermData:
     if not trees_path.exists():
         return term
     trees = _TREES.validate_json(trees_path.read_text())
+    review_path = raw / srcdb / "prereq_review.json"
+    review = json.loads(review_path.read_text()) if review_path.exists() else []
+    for item in review:  # doubtful and not usable: unknown, never "no prerequisite"
+        trees.setdefault(item["code"], UnparsedPrereq(kind="unparsed", text=item["notes"]))
     courses = {
         code: course.model_copy(update={"prereq": trees.get(code)})
         for code, course in term.courses.items()
