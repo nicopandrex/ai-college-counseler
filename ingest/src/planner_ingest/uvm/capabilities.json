@@ -1,0 +1,8 @@
+{
+  "_source": "docs/uvm-data-report.md",
+  "unavailable": {
+    "section_size": "UVM's schedule data doesn't list a class size for every section yet",
+    "campus": "UVM's schedule data doesn't say which campus a section meets on",
+    "travel_time": "UVM's schedule data doesn't say which campus a section meets on"
+  }
+}

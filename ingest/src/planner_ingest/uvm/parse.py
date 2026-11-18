@@ -33,13 +33,15 @@ METHOD_RULES: list[tuple[re.Pattern[str], str, str | None]] = [
     (re.compile(r"hybrid", re.I), "LEC", "hybrid"),  # before "online": "Hybrid (Online and ...)"
     (re.compile(r"online", re.I), "LEC", "online"),
     (re.compile(r"^lab", re.I), "LAB", "in_person"),
-    (re.compile(r"discussion|recitation", re.I), "DIS", "in_person"),
+    (re.compile(r"^(discussion|recitation)", re.I), "DIS", "in_person"),
     (
         re.compile(r"lecture|seminar|studio|lab|ensemble|activity|private|lesson", re.I),
         "LEC",
         "in_person",
     ),
 ]
+DOMINANT_SHARE = 0.95  # a schd letter takes its dominant meaning if this share of sections agree
+MIN_EVIDENCE = 3
 ATTRIBUTE_CODE = re.compile(r"\(([A-Z0-9]{1,6})\)\s*$")
 TAG = re.compile(r"<[^>]+>")
 
@@ -119,9 +121,10 @@ def parse_term(cache_dir: Path, srcdb: str) -> tuple[TermData, ParseReport]:
         elif d.get("instructional_method"):
             report.unknown_methods[d["instructional_method"]] += 1
     schd_kind: dict[str, tuple[str, str | None]] = {}
-    for code, kinds in seen.items():
-        if len(kinds) == 1:
-            schd_kind[code] = next(iter(kinds))
+    for code, kinds in sorted(seen.items()):
+        (kind, top), total = kinds.most_common(1)[0], sum(kinds.values())
+        if len(kinds) == 1 or (total >= MIN_EVIDENCE and top / total >= DOMINANT_SHARE):
+            schd_kind[code] = kind
         else:
             report.ambiguous_schd.append(code)
 
@@ -165,3 +168,11 @@ def parse_term(cache_dir: Path, srcdb: str) -> tuple[TermData, ParseReport]:
     report.sections, report.courses = len(sections), len(courses)
     term = TermData(term=srcdb, courses=courses, sections=tuple(sections), prereqs_loaded=False)
     return term, report
+
+
+def load_capabilities() -> dict[str, str]:
+    """Constraint types UVM's data can't support -> reason shown to the user (rule 8)."""
+    from importlib import resources
+
+    text = resources.files("planner_ingest.uvm").joinpath("capabilities.json").read_text()
+    return json.loads(text)["unavailable"]

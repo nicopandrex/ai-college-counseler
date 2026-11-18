@@ -58,7 +58,7 @@ class AnyPrereq(_Model):
 
 class StandingPrereq(_Model):
     kind: Literal["standing"]
-    minimum: Literal["sophomore", "junior", "senior"]
+    minimum: Literal["sophomore", "junior", "senior", "graduate"]
 
 
 class PermissionPrereq(_Model):
@@ -120,7 +120,7 @@ class StudentTerm(_Model):
     counted_courses: frozenset[str]  # satisfy prerequisites
     unplannable_courses: frozenset[str]  # never proposed
     open_requirements: dict[str, RequirementTarget]
-    standing: Literal["freshman", "sophomore", "junior", "senior"] | None = None
+    standing: Literal["freshman", "sophomore", "junior", "senior", "graduate"] | None = None
 
 
 _ATTRIBUTE = re.compile(r"^@ @ with attribute = ([A-Z0-9]+)$")
@@ -154,7 +154,7 @@ def resolve_selector(selector: str, courses: dict[str, Course]) -> set[str] | No
     return None
 
 
-_STANDING_ORDER = {"freshman": 0, "sophomore": 1, "junior": 2, "senior": 3}
+_STANDING_ORDER = {"freshman": 0, "sophomore": 1, "junior": 2, "senior": 3, "graduate": 4}
 
 
 def prereq_met(prereq: Prereq | None, student: StudentTerm) -> Tri:

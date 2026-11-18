@@ -1,17 +1,19 @@
 """Polite one-time fetch from UVM's Schedule of Courses API (CourseLeaf FOSE).
 
-Owner decision (2026-11-18): a one-time pull for Spring 2027 is acceptable. The fetcher
-honours robots.txt, sends an identifying User-Agent, waits between requests, caches every
-raw response, and never re-fetches a cached one. serval.uvm.edu (robots: Disallow /) is
-never contacted.
+Owner decision (2026-11-18): a one-time pull for Spring 2027 is acceptable, done in well under
+50 minutes. The fetcher honours robots.txt, sends an identifying User-Agent, runs a small
+fixed pool of workers that each pause between requests, caches every raw response, and never
+re-fetches a cached one. serval.uvm.edu (robots: Disallow /) is never contacted.
 """
 
 from __future__ import annotations
 
 import json
+import threading
 import time
 import urllib.robotparser
 from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
@@ -20,7 +22,8 @@ import httpx
 BASE = "https://soc.uvm.edu"
 API = f"{BASE}/api/?page=fose&route="
 USER_AGENT = "degree-planner-student-project/0.1 (one-time pull for personal planning)"
-DELAY_SECONDS = 1.0
+DELAY_SECONDS = 1.0  # per worker
+WORKERS = 6
 
 
 class Fetcher:
@@ -36,6 +39,7 @@ class Fetcher:
         self.delay = delay
         self.sleep = sleep
         self.requests = 0
+        self._lock = threading.Lock()
 
     def check_robots(self) -> None:
         response = self.client.get(f"{BASE}/robots.txt")
@@ -50,9 +54,11 @@ class Fetcher:
         path = self.cache_dir / cache_name
         if path.exists():
             return json.loads(path.read_text())
-        if self.requests:
+        with self._lock:
+            pause = self.requests > 0
+            self.requests += 1
+        if pause:
             self.sleep(self.delay)
-        self.requests += 1
         response = self.client.post(API + route, json=body)
         response.raise_for_status()
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -73,7 +79,11 @@ class Fetcher:
 
 
 def pull_term(
-    srcdb: str, cache_root: Path, fetcher: Fetcher | None = None, log: Callable[[str], None] = print
+    srcdb: str,
+    cache_root: Path,
+    fetcher: Fetcher | None = None,
+    log: Callable[[str], None] = print,
+    workers: int = WORKERS,
 ) -> Path:
     """Search once, then one details call per course (cached). Returns the cache directory."""
     cache_dir = cache_root / srcdb
@@ -83,9 +93,17 @@ def pull_term(
     first_section: dict[str, str] = {}
     for row in results:
         first_section.setdefault(row["code"], row["crn"])
-    for index, (code, crn) in enumerate(sorted(first_section.items()), start=1):
-        fetcher.details(srcdb, code, crn)
-        if index % 100 == 0:
-            log(f"{index}/{len(first_section)} courses ({fetcher.requests} requests made)")
+    done = 0
+
+    def one(item: tuple[str, str]) -> None:
+        nonlocal done
+        fetcher.details(srcdb, *item)
+        with fetcher._lock:
+            done += 1
+            if done % 100 == 0:
+                log(f"{done}/{len(first_section)} courses ({fetcher.requests} requests made)")
+
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        list(pool.map(one, sorted(first_section.items())))
     log(f"done: {len(results)} sections, {len(first_section)} courses, {fetcher.requests} requests")
     return cache_dir
