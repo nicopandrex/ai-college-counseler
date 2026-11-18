@@ -1,0 +1,5 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\n  \"spec_version\": \"0.1\",\n  \"mode\": \"term\",\n  \"target_term\": \"2027SP\",\n  \"restatement\": \"No classes before 10:30 AM and limit workload to 12-15 credits.\",\n  \"constraints\": [\n    {\n      \"id\": \"c1\",\n      \"type\": \"no_earlier_than\",\n      \"params_json\": \"{\\\"time\\\":\\\"10:30\\\"}\",\n      \"enforcement\": \"hard\",\n      \"weight\": 5,\n      \"weight_source\": \"stated\",\n      \"confidence\": 0.9,\n      \"source_text\": \"nothing before 10:30\",\n      \"data_dependency\": \"reliable\"\n    },\n    {\n      \"id\": \"c2\",\n      \"type\": \"credit_range\",\n      \"params_json\": \"{\\\"max\\\":15,\\\"min\\\":12}\",\n      \"enforcement\": \"hard\",\n      \"weight\": 3,\n      \"weight_source\": \"stated\",\n      \"confidence\": 0.95,\n      \"source_text\": \"cap it at 15 credits\",\n      \"data_dependency\": \"reliable\"\n    }\n  ],\n  \"clarifications\": [],\n  \"out_of_scope\": []\n}"
+}

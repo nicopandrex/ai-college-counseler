@@ -1,0 +1,5 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Prefer to take History of China and Japan (HST 1440).\",\"constraints\":[{\"id\":\"c1\",\"type\":\"include_course\",\"params_json\":\"{\\\"course\\\":\\\"HST 1440\\\"}\",\"enforcement\":\"soft\",\"weight\":3,\"weight_source\":\"inferred\",\"confidence\":0.95,\"source_text\":\"Ideally I'd take History of China and Japan.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}"
+}

@@ -1,0 +1,5 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Request to match schedule with a roommate.\",\"constraints\":[],\"clarifications\":[],\"out_of_scope\":[{\"request\":\"Match schedule with another student\",\"user_text\":\"Give me the same schedule as my roommate.\"}]}"
+}

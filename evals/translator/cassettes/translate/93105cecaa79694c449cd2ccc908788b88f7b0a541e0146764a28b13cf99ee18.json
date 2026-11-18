@@ -1,0 +1,5 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\n  \"spec_version\": \"0.1\",\n  \"mode\": \"term\",\n  \"target_term\": \"2027SP\",\n  \"restatement\": \"Take at least one course toward your CS electives requirement.\",\n  \"constraints\": [\n    {\n      \"id\": \"c1\",\n      \"type\": \"satisfy_requirement\",\n      \"params_json\": \"{\\\"req_ids\\\": [\\\"CS_ELECTIVES\\\"], \\\"count\\\": 1}\",\n      \"enforcement\": \"hard\",\n      \"weight\": 4,\n      \"weight_source\": \"inferred\",\n      \"confidence\": 0.95,\n      \"source_text\": \"I want to make progress on my CS electives.\",\n      \"data_dependency\": \"reliable\"\n    }\n  ],\n  \"clarifications\": [],\n  \"out_of_scope\": []\n}"
+}

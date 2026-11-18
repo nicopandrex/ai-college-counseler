@@ -1,0 +1,154 @@
+{
+ "_about": "Synthetic student for the translator eval. Course codes and titles are real UVM Spring 2027 catalog entries (public).",
+ "target_term": "2027SP",
+ "open_requirements": [
+  [
+   "GENED_S1",
+   "Social Sciences (S1): 6 credits"
+  ],
+  [
+   "GENED_AH3",
+   "Humanities (AH3): 2 courses"
+  ],
+  [
+   "GENED_D1",
+   "Diversity (D1): 1 course"
+  ],
+  [
+   "GENED_WIL2",
+   "Writing & Information Literacy 2 (WIL2)"
+  ],
+  [
+   "GENED_N2",
+   "Natural science with lab (N2)"
+  ],
+  [
+   "CS_SENIOR_SEM",
+   "CS Senior Seminar (CS 3920)"
+  ],
+  [
+   "CS_ELECTIVES",
+   "CS electives: 6 credits at 3000-level or above"
+  ],
+  [
+   "CHIN_TRACK",
+   "4th Year College Chinese II (CHIN 4200)"
+  ],
+  [
+   "STATS",
+   "Statistics requirement (STAT 3010 or STAT 2430)"
+  ]
+ ],
+ "programs": [
+  [
+   "MINOR_CS",
+   "Computer Science minor"
+  ],
+  [
+   "MINOR_MATH",
+   "Mathematics minor"
+  ],
+  [
+   "MINOR_ECON",
+   "Economics minor"
+  ]
+ ],
+ "catalog": [
+  [
+   "CS 3920",
+   "Senior Seminar"
+  ],
+  [
+   "CS 3050",
+   "Software Engineering"
+  ],
+  [
+   "CS 3870",
+   "Advanced Data Science"
+  ],
+  [
+   "CS 3990",
+   "Threat Hunting & AI Security"
+  ],
+  [
+   "CS 2500",
+   "Intro to Database Systems"
+  ],
+  [
+   "CS 3240",
+   "Algorithm Design & Analysis"
+  ],
+  [
+   "CS 3060",
+   "Evolutionary Robotics"
+  ],
+  [
+   "ECON 1400",
+   "Principles of Macroeconomics"
+  ],
+  [
+   "ECON 2400",
+   "Macroeconomic Theory"
+  ],
+  [
+   "CDAE 3530",
+   "Macroeconomics for Appl Econ"
+  ],
+  [
+   "HST 1440",
+   "History of China and Japan"
+  ],
+  [
+   "SOC 1500",
+   "Introduction to Sociology"
+  ],
+  [
+   "CLAS 1300",
+   "AncHst Game: Peloponnesian War"
+  ],
+  [
+   "REL 1605",
+   "Comparing Religions"
+  ],
+  [
+   "GEOG 1780",
+   "Society, Place, and Power"
+  ],
+  [
+   "CHIN 4200",
+   "SL:4th Year College Chinese II"
+  ],
+  [
+   "STAT 2430",
+   "Statistics for Engineering"
+  ],
+  [
+   "STAT 3010",
+   "Stat Computing&Data Anlysis"
+  ],
+  [
+   "PSYS 1400",
+   "Intro to Psychological Science"
+  ],
+  [
+   "BIOL 1450",
+   "Principles of Biology 2"
+  ],
+  [
+   "CHEM 1400",
+   "General Chemistry 1"
+  ],
+  [
+   "ENGL 2100",
+   "Murder & Mayhem"
+  ],
+  [
+   "MATH 2522",
+   "Applied Linear Algebra"
+  ],
+  [
+   "MATH 2248",
+   "Calculus III"
+  ]
+ ]
+}
