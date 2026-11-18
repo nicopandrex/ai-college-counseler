@@ -23,8 +23,10 @@ from planner_solver.domain import (
     Section,
     StudentTerm,
     TermData,
+    blocking_reasons,
     prereq_met,
     resolve_selector,
+    unknown_reasons,
 )
 from planner_solver.spec import (
     PLAN_ONLY,
@@ -78,6 +80,7 @@ class Schedule:
     soft_met: list[str]
     soft_missed: list[str]
     requirements_covered: list[str]
+    contributions: dict[str, list[str]] = field(default_factory=dict)  # req_id -> chosen courses
 
 
 @dataclass
@@ -95,7 +98,8 @@ class TermResult:
     relaxations: list[Relaxation] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     estimates: list[str] = field(default_factory=list)  # constraint ids answered with a proxy
-    prereq_unchecked: list[str] = field(default_factory=list)  # courses whose prereq is "unknown"
+    # courses allowed though part of their prerequisite couldn't be verified -> why
+    prereq_unchecked: dict[str, list[str]] = field(default_factory=dict)
 
 
 def _normalize_name(name: str) -> tuple[str, str]:
@@ -130,10 +134,12 @@ class _Ctx:
         student: StudentTerm,
         sections: list[Section],
         requirement_courses: dict[str, set[str]],
+        blocked: dict[str, list[str]],
     ) -> None:
         self.data = data
         self.student = student
         self.requirement_courses = requirement_courses
+        self.blocked = blocked  # course -> why its prerequisite isn't met
         self.model = cp_model.CpModel()
         self.sections = sections
         self.x = {s.section_id: self.model.NewBoolVar(f"x[{s.section_id}]") for s in sections}
@@ -188,12 +194,12 @@ def _overlap(a: Slot, b: Slot) -> bool:
 def _include(ctx: _Ctx, h: Lit, p: CourseParams) -> None:
     if p.course not in ctx.y:
         ctx.model.AddImplication(h, ctx.model.NewConstant(0))
-        reason = (
-            "is already taken or registered"
-            if p.course in ctx.student.unplannable_courses
-            else "has no eligible section this term"
-        )
-        ctx.warnings.append(f"{p.course} {reason}")
+        if p.course in ctx.student.unplannable_courses:
+            ctx.warnings.append(f"{p.course} is already taken or registered")
+        elif p.course in ctx.blocked:
+            ctx.warnings.append(f"{p.course} is blocked: {'; '.join(ctx.blocked[p.course])}")
+        else:
+            ctx.warnings.append(f"{p.course} has no section this term")
         return
     ctx.model.AddImplication(h, ctx.y[p.course])
 
@@ -481,9 +487,12 @@ ESTIMATED = {"difficulty_load"}
 
 def _eligible_sections(
     data: TermData, student: StudentTerm, spec: ConstraintSpec
-) -> tuple[list[Section], dict[str, set[str]], list[str], list[str]]:
+) -> tuple[
+    list[Section], dict[str, set[str]], list[str], dict[str, list[str]], dict[str, list[str]]
+]:
     warnings: list[str] = []
-    unchecked: list[str] = []  # courses allowed, but their prerequisite couldn't be verified
+    unchecked: dict[str, list[str]] = {}  # allowed, but part of the prerequisite is unverified
+    blocked: dict[str, list[str]] = {}  # prerequisite definitely not met -> why
     requirement_courses: dict[str, set[str]] = {}
     for req_id, target in student.open_requirements.items():
         courses: set[str] = set()
@@ -507,11 +516,12 @@ def _eligible_sections(
             continue
         met = prereq_met(course.prereq, student)
         if met == "no":
+            blocked[code] = blocking_reasons(course.prereq, student)
             continue
         if met == "unknown":
-            unchecked.append(code)
+            unchecked[code] = unknown_reasons(course.prereq, student)
         sections.extend(s for s in data.sections if s.course == code)
-    return sections, requirement_courses, warnings, unchecked
+    return sections, requirement_courses, warnings, unchecked, blocked
 
 
 def _build(
@@ -520,8 +530,9 @@ def _build(
     student: StudentTerm,
     sections: list[Section],
     requirement_courses: dict[str, set[str]],
+    blocked: dict[str, list[str]],
 ) -> tuple[_Ctx, dict[str, Lit]]:
-    ctx = _Ctx(data, student, sections, requirement_courses)
+    ctx = _Ctx(data, student, sections, requirement_courses, blocked)
     model = ctx.model
     # physical rules
     for code, course_sections in ctx.by_course.items():
@@ -556,13 +567,22 @@ def _build(
         if constraint.enforcement == "soft":
             ctx.objective_terms.append((scale, h))
     _distinct_assignments(ctx)
-    # tie-break: cover more open requirements
+    # tie-break: progress toward each open requirement, capped at what it still needs
     for req_id, courses in requirement_courses.items():
-        available = [ctx.y[c] for c in courses if c in ctx.y]
-        if available:
-            covered = model.NewBoolVar(f"covered[{req_id}]")
-            model.AddMaxEquality(covered, available)
-            ctx.objective_terms.append((1, covered))
+        available = [c for c in courses if c in ctx.y]
+        if not available:
+            continue
+        target = student.open_requirements[req_id]
+        if target.unit == "credits" and target.needed:
+            amount = sum(int(round(ctx.course(c).credits * 2)) * ctx.y[c] for c in available)
+            cap, per_unit = int(round(target.needed * 2)), 1  # half-credits
+        elif target.unit == "courses" and target.needed:
+            amount, cap, per_unit = sum(ctx.y[c] for c in available), int(target.needed), 6
+        else:
+            amount, cap, per_unit = sum(ctx.y[c] for c in available), 1, 6
+        progress = model.NewIntVar(0, cap, f"progress[{req_id}]")
+        model.Add(progress <= amount)
+        ctx.objective_terms.append((per_unit, progress))
     model.Maximize(sum(weight * lit for weight, lit in ctx.objective_terms))
     return ctx, holds
 
@@ -624,6 +644,11 @@ def _schedules(
                     requirements_covered=sorted(
                         r for r, cs in requirement_courses.items() if cs & set(courses)
                     ),
+                    contributions={
+                        r: sorted(cs & set(courses))
+                        for r, cs in sorted(requirement_courses.items())
+                        if cs & set(courses)
+                    },
                 )
             )
             if distinct_by == "courses":
@@ -642,10 +667,12 @@ def _schedules(
 def solve_term(
     spec: ConstraintSpec, data: TermData, student: StudentTerm, limit: int = MAX_SCHEDULES
 ) -> TermResult:
-    sections, requirement_courses, warnings, unchecked = _eligible_sections(data, student, spec)
+    sections, requirement_courses, warnings, unchecked, blocked = _eligible_sections(
+        data, student, spec
+    )
     if not data.prereqs_loaded:
         warnings.insert(0, "prerequisites were not checked: catalog prerequisite data isn't loaded")
-    ctx, holds = _build(spec, data, student, sections, requirement_courses)
+    ctx, holds = _build(spec, data, student, sections, requirement_courses, blocked)
     warnings += ctx.warnings
     hard = _hard(spec, holds)
 
@@ -659,7 +686,7 @@ def solve_term(
         weights = {c.id: c.weight for c in spec.constraints}
         relaxations = []
         for cid in sorted(core, key=lambda c: (weights[c], c)):
-            ctx_r, holds_r = _build(spec, data, student, sections, requirement_courses)
+            ctx_r, holds_r = _build(spec, data, student, sections, requirement_courses, blocked)
             hard_r = [lit for c, lit in _hard(spec, holds_r).items() if c != cid]
             unlocked = len(_schedules(ctx_r, spec, holds_r, hard_r, requirement_courses, limit))
             relaxations.append(Relaxation(cid, weights[cid], unlocked))

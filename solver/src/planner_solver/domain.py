@@ -112,6 +112,8 @@ class RequirementTarget(_Model):
     # rule codes/selectors: "CS 2100", "CS 3@", "@ @ with attribute = AH1"
     selectors: tuple[str, ...]
     excluded: tuple[str, ...] = ()  # courses that don't count ("Except ...")
+    needed: float | None = None  # how much is still needed, in `unit` (None: not stated)
+    unit: Literal["credits", "courses"] | None = None
 
 
 class StudentTerm(_Model):
@@ -166,6 +168,7 @@ def prereq_met(prereq: Prereq | None, student: StudentTerm) -> Tri:
     if isinstance(prereq, StandingPrereq):
         if student.standing is None:
             return "unknown"
+        # strict (owner decision): below the required standing blocks the course
         ok = _STANDING_ORDER[student.standing] >= _STANDING_ORDER[prereq.minimum]
         return "yes" if ok else "no"
     if isinstance(prereq, PermissionPrereq | UnparsedPrereq):
@@ -178,3 +181,34 @@ def prereq_met(prereq: Prereq | None, student: StudentTerm) -> Tri:
     if "yes" in results:
         return "yes"
     return "unknown" if "unknown" in results else "no"
+
+
+def unknown_reasons(prereq: Prereq | None, student: StudentTerm) -> list[str]:
+    """Why prereq_met is 'unknown': the specific parts that couldn't be verified."""
+    if prereq is None or prereq_met(prereq, student) != "unknown":
+        return []
+    if isinstance(prereq, StandingPrereq):
+        return [f"requires {prereq.minimum} standing (your standing isn't on the audit)"]
+    if isinstance(prereq, PermissionPrereq):
+        return [f"needs permission: {prereq.text}"]
+    if isinstance(prereq, UnparsedPrereq):
+        return [f"check: {prereq.text}"]
+    if isinstance(prereq, AllPrereq | AnyPrereq):
+        return [r for item in prereq.items for r in unknown_reasons(item, student)]
+    return []
+
+
+def blocking_reasons(prereq: Prereq | None, student: StudentTerm) -> list[str]:
+    """Why prereq_met is 'no', in the student's terms."""
+    if prereq is None or prereq_met(prereq, student) != "no":
+        return []
+    if isinstance(prereq, CoursePrereq):
+        return [f"requires {prereq.code}"]
+    if isinstance(prereq, StandingPrereq):
+        return [f"requires {prereq.minimum} standing (your audit says {student.standing})"]
+    if isinstance(prereq, AllPrereq):
+        return [r for item in prereq.items for r in blocking_reasons(item, student)]
+    if isinstance(prereq, AnyPrereq):
+        options = " or ".join(r for item in prereq.items for r in blocking_reasons(item, student))
+        return [f"needs one of: {options}"] if options else []
+    return []

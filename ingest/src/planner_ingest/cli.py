@@ -16,6 +16,7 @@ from pydantic import TypeAdapter
 from planner_ingest.bridge import student_term
 from planner_ingest.pipeline import PURPOSE, extract_audit
 from planner_ingest.state import Assumptions, derive_state
+from planner_ingest.uvm.owner_rules import apply_owner_rules
 from planner_ingest.uvm.parse import load_capabilities, parse_term
 from planner_ingest.uvm.prereqs import PURPOSE as PREREQ_PURPOSE
 from planner_ingest.uvm.prereqs import has_prereq_text, parse_prereqs, prereq_notes
@@ -31,6 +32,7 @@ _TREES = TypeAdapter(dict[str, Prereq | None])
 
 def load_term(srcdb: str, raw: Path = RAW) -> TermData:
     term, _ = parse_term(raw / srcdb, srcdb)
+    term = term.model_copy(update={"courses": apply_owner_rules(term.courses)})
     trees_path = raw / srcdb / "prereqs.json"
     if not trees_path.exists():
         return term
@@ -39,10 +41,12 @@ def load_term(srcdb: str, raw: Path = RAW) -> TermData:
     review = json.loads(review_path.read_text()) if review_path.exists() else []
     for item in review:  # doubtful and not usable: unknown, never "no prerequisite"
         trees.setdefault(item["code"], UnparsedPrereq(kind="unparsed", text=item["notes"]))
-    courses = {
-        code: course.model_copy(update={"prereq": trees.get(code)})
-        for code, course in term.courses.items()
-    }
+    courses = apply_owner_rules(
+        {
+            code: course.model_copy(update={"prereq": trees.get(code)})
+            for code, course in term.courses.items()
+        }
+    )
     return term.model_copy(update={"courses": courses, "prereqs_loaded": True})
 
 
@@ -69,6 +73,8 @@ def cmd_solve(args: argparse.Namespace) -> int:
         extraction.audit, Assumptions(in_progress_policy=policy, failed_courses=tuple(args.fail))
     )
     student = student_term(extraction.audit, state)
+    if args.standing:  # the student's own statement for the target term overrides the audit
+        student = student.model_copy(update={"standing": args.standing})
     term = load_term(args.term)
     context = ValidationContext(
         course_codes=frozenset(term.courses),
@@ -102,6 +108,11 @@ def main(argv: list[str] | None = None) -> int:
     solve.add_argument("--spec", type=Path, required=True)
     solve.add_argument("--term", default="202701")
     solve.add_argument("--fail", nargs="*", default=[], help="in-progress courses to assume failed")
+    solve.add_argument(
+        "--standing",
+        choices=["freshman", "sophomore", "junior", "senior", "graduate"],
+        help="your class standing for the target term (default: the audit's)",
+    )
     args = parser.parse_args(argv)
     return cmd_prereqs(args) if args.command == "prereqs" else cmd_solve(args)
 

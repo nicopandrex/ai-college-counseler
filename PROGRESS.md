@@ -12,10 +12,10 @@ Running log. Resume from **Current status**. Newest log entries at the top.
   LLM_CACHE_DIR=fixtures/private/llm-cache`). Solves Spring 2027 in ~2 s.
 
 ## Blockers / owner input pending
-1. **Sanity-check** the real Spring 2027 schedules (M4 bar).
-2. **Past terms** for M8 offering patterns: the SOC lists only Fall 2026 + Spring 2027. Ask
-   whether pulling Fall 2026 (one more one-time pull) is wanted. Older terms live only on
-   serval.uvm.edu (robots-disallowed).
+1. **Owner's standing for Spring 2027**: the audit says junior, so CS 3920 is blocked unless
+   `--standing senior` is given.
+2. **Past terms for M8**: not available (the owner declined Fall 2026). M8 will treat offering
+   patterns as unknown/low confidence.
 3. **Prerequisite review queue:** `data/raw/uvm/202701/prereq_review.json` (431 entries; 357
    are usable trees with an unparsed part, 74 are held out and treated as unknown).
 
@@ -73,6 +73,16 @@ Running log. Resume from **Current status**. Newest log entries at the top.
    Proposal: document that default.
 
 ## Decisions
+- **Owner (2026-11-18, later):** senior seminar counts 1 credit toward the 6-credit CS elective
+  bucket (a partial contribution). Any course titled "Senior Seminar" requires senior standing,
+  and it **blocks** (`uvm/owner_rules.py`). Defaults approved: instructor polarity
+  include/exclude; modality without a count means every course. Fall 2026 is not needed.
+- **Standing is strict**: below the required standing blocks the course. The audit's words
+  are used ("03 - Junior"); `planner solve --standing senior` lets the student state their
+  standing for the target term. Blocked courses name the real reason.
+- **Progress, not coverage**: targets carry the still-needed amount and unit. The solver's
+  tie-break rewards progress capped at the need. Each course line says what it counts toward
+  ("… (1 of 6 credits)"), or that it was requested but counts toward nothing open.
 - **Owner (2026-11-18):** a one-time scrape of Spring 2027 is OK, as fast as reasonable.
   Prerequisites are in the SOC comments.
 - **Prerequisite trees are flat node lists from the LLM**: unrolled depth-3 schemas exceeded
