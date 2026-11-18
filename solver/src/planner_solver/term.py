@@ -149,6 +149,8 @@ class _Ctx:
         self.warnings: list[str] = []
         self.estimates: list[str] = []
         self.objective_terms: list[tuple[int, Lit]] = []
+        self.current = ""  # id of the constraint being encoded
+        self.assignments: dict[str, tuple[dict[str, Lit], bool]] = {}
 
     def course(self, code: str) -> Course:
         return self.data.courses[code]
@@ -201,16 +203,34 @@ def _exclude(ctx: _Ctx, h: Lit, p: CourseParams) -> None:
 
 
 def _satisfy(ctx: _Ctx, h: Lit, p: SatisfyRequirementParams) -> None:
+    # u[c]: course c is counted toward this constraint (only if it is taken)
+    candidates = (
+        set().union(*(ctx.requirement_courses.get(r, set()) for r in p.req_ids)) & ctx.y.keys()
+    )
+    use = {c: ctx.model.NewBoolVar(f"use[{ctx.current}][{c}]") for c in candidates}
+    for code, u in use.items():
+        ctx.model.AddImplication(u, ctx.y[code])
     covered = []
     for req_id in p.req_ids:
-        courses = ctx.requirement_courses.get(req_id, set()) & ctx.y.keys()
-        z = ctx.model.NewBoolVar(f"cover[{req_id}]")
+        courses = ctx.requirement_courses.get(req_id, set()) & use.keys()
+        z = ctx.model.NewBoolVar(f"cover[{ctx.current}][{req_id}]")
         if courses:
-            ctx.model.AddBoolOr([ctx.y[c] for c in courses]).OnlyEnforceIf(z)
+            ctx.model.AddBoolOr([use[c] for c in courses]).OnlyEnforceIf(z)
         else:
             ctx.model.Add(z == 0)
         covered.append(z)
     ctx.model.Add(sum(covered) >= p.count).OnlyEnforceIf(h)
+    ctx.assignments[ctx.current] = (use, p.distinct)
+
+
+def _distinct_assignments(ctx: _Ctx) -> None:
+    """A course counted for a `distinct` constraint isn't also counted for another one."""
+    for (a, (use_a, distinct_a)), (b, (use_b, distinct_b)) in combinations(
+        ctx.assignments.items(), 2
+    ):
+        if distinct_a or distinct_b:
+            for code in use_a.keys() & use_b.keys():
+                ctx.model.Add(use_a[code] + use_b[code] <= 1)
 
 
 def _credit_range(ctx: _Ctx, h: Lit, p: RangeParams) -> None:
@@ -524,6 +544,7 @@ def _build(
             )
             continue
         h = model.NewBoolVar(f"h[{constraint.id}]")
+        ctx.current = constraint.id
         params = parse_params(constraint)
         scale = WEIGHT_SCALE[constraint.weight] * SOFT_SCALE
         if constraint.type == "compactness":
@@ -536,6 +557,7 @@ def _build(
         holds[constraint.id] = h
         if constraint.enforcement == "soft":
             ctx.objective_terms.append((scale, h))
+    _distinct_assignments(ctx)
     # tie-break: cover more open requirements
     for req_id, courses in requirement_courses.items():
         available = [ctx.y[c] for c in courses if c in ctx.y]

@@ -343,3 +343,43 @@ def test_worked_example_one_shape() -> None:
         assert {"CS 3200", "ECON 2020", "ENGL 2010"} <= set(schedule.courses)
         assert "ECON 2020 A" not in schedule.sections and "CS 3200 A" not in schedule.sections
         assert {"GENED_HUM", "GENED_SOC"} & set(schedule.requirements_covered)
+
+
+def test_distinct_requires_a_different_course() -> None:
+    from term_fixtures import sec
+
+    from planner_solver.domain import Course, RequirementTarget, StudentTerm, TermData
+
+    both = Course(code="ENGL 2600", title="Lit", credits=3, attributes=frozenset({"A2", "HUM"}))
+    hist = Course(code="HIST 1010", title="History", credits=3, attributes=frozenset({"HUM"}))
+    term = TermData(
+        term="2027SP",
+        courses={both.code: both, hist.code: hist},
+        sections=(
+            sec("ENGL 2600 A", "ENGL 2600", "MW", "09:00", "10:15"),
+            sec("HIST 1010 A", "HIST 1010", "TR", "09:00", "10:15"),
+        ),
+    )
+    student = StudentTerm(
+        counted_courses=frozenset(),
+        unplannable_courses=frozenset(),
+        open_requirements={
+            "A2": RequirementTarget(title="A2", selectors=("@ @ with attribute = A2",)),
+            "HUM": RequirementTarget(title="HUM", selectors=("@ @ with attribute = HUM",)),
+        },
+    )
+
+    def run(distinct: bool, max_credits: int):
+        return solve_term(
+            spec(
+                c("s1", "satisfy_requirement", req_ids=["A2"]),
+                c("s2", "satisfy_requirement", req_ids=["HUM"], distinct=distinct),
+                c("cap", "credit_range", min=0, max=max_credits),
+            ),
+            term,
+            student,
+        )
+
+    assert run(distinct=False, max_credits=3).schedules[0].courses == ["ENGL 2600"]  # double-counts
+    assert run(distinct=True, max_credits=3).status == "infeasible"
+    assert run(distinct=True, max_credits=6).schedules[0].courses == ["ENGL 2600", "HIST 1010"]
