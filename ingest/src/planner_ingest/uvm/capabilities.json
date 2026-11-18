@@ -7,7 +7,7 @@
   },
   "default_credit_range": {
     "min": 12,
-    "max": 18,
-    "_note": "owner: default to at least 12 (full time); max 18 pending confirmation"
+    "max": 19,
+    "_note": "owner 2026-11-18: at least 12 (full time), up to 19"
   }
 }
