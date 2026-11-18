@@ -4,5 +4,10 @@
     "section_size": "UVM's schedule data doesn't list a class size for every section yet",
     "campus": "UVM's schedule data doesn't say which campus a section meets on",
     "travel_time": "UVM's schedule data doesn't say which campus a section meets on"
+  },
+  "default_credit_range": {
+    "min": 12,
+    "max": 18,
+    "_note": "owner: default to at least 12 (full time); max 18 pending confirmation"
   }
 }

@@ -73,6 +73,15 @@ Running log. Resume from **Current status**. Newest log entries at the top.
    Proposal: document that default.
 
 ## Decisions
+- **Owner (2026-11-18, latest):** degree requirements come before extra classes unless a class
+  is explicitly requested. A course may count toward several requirements but is never taken
+  twice. Default credit load: at least 12 (full time). The upper default of 18 is pending
+  owner confirmation (`uvm/capabilities.json`).
+- **Bottlenecks first:** a requirement that only one or two courses can serve this term gets 3×
+  progress weight (e.g. CHIN 4200, Track 3's last course, one section). This is a term-level
+  stand-in until plan mode reasons across terms.
+- **Bug fixed:** single SOC attributes come as plain text, not `<li>`; 332 courses had lost
+  their attributes (175 → 507 with attributes). ECON 1400 is S1.
 - **Owner (2026-11-18, later):** senior seminar counts 1 credit toward the 6-credit CS elective
   bucket (a partial contribution). Any course titled "Senior Seminar" requires senior standing,
   and it **blocks** (`uvm/owner_rules.py`). Defaults approved: instructor polarity

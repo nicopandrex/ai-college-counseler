@@ -453,3 +453,25 @@ def test_blocked_course_names_the_real_reason() -> None:
     assert (
         "CS 3200 is blocked: requires senior standing (your audit says junior)" in result.warnings
     )
+
+
+def test_scarce_requirement_beats_one_with_many_options() -> None:
+    from planner_solver.domain import RequirementTarget
+
+    student = STUDENT.model_copy(
+        update={
+            "open_requirements": {
+                "TRACK": RequirementTarget(
+                    title="Track course", selectors=("CS 3410",), needed=3, unit="credits"
+                ),
+                "GENED": RequirementTarget(
+                    title="Any CS or gen ed",
+                    needed=1,
+                    unit="courses",
+                    selectors=("CS 3200", "HIST 1010", "SOC 1000", "ENGL 2010"),
+                ),
+            }
+        }
+    )
+    schedule = solve_term(spec(c("c1", "credit_range", min=3, max=3)), TERM, student).schedules[0]
+    assert schedule.courses == ["CS 3410"]  # the only course for its requirement this term

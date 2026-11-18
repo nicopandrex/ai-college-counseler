@@ -224,3 +224,21 @@ def test_packaged_contract_matches_docs() -> None:
 
     docs = Path(__file__).resolve().parents[2] / "docs" / "constraint-spec.schema.json"
     assert contract_schema() == json.loads(docs.read_text())
+
+
+def test_full_time_credit_default_added_when_unstated() -> None:
+    ctx = ValidationContext(**{**CTX.__dict__, "default_credit_range": (12, 18)})
+    result = validate_spec(raw(c("c1", "free_day", params={"day": "F"})), ctx)
+    added = [x for x in result.spec.constraints if x.type == "credit_range"]
+    assert len(added) == 1
+    assert added[0].params == {"min": 12, "max": 18}
+    assert (added[0].enforcement, added[0].weight_source) == ("hard", "default")
+
+
+def test_stated_credit_range_is_kept() -> None:
+    ctx = ValidationContext(**{**CTX.__dict__, "default_credit_range": (12, 18)})
+    stated = c(
+        "c1", "credit_range", params={"min": 9, "max": 10}, source_text="just 9 or 10 credits"
+    )
+    result = validate_spec(raw(stated), ctx)
+    assert [x.params for x in result.spec.constraints] == [{"min": 9, "max": 10}]

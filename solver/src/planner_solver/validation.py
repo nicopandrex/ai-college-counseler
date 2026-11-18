@@ -80,6 +80,7 @@ class ValidationContext:
     requirement_ids: frozenset[str]  # this student's requirements
     unplannable_courses: frozenset[str]  # already completed, in progress or registered
     capabilities: SchoolCapabilities = SchoolCapabilities()
+    default_credit_range: tuple[float, float] | None = None  # full-time band if none stated
 
 
 @dataclass(frozen=True)
@@ -225,6 +226,23 @@ def validate_spec(raw: dict[str, Any], ctx: ValidationContext) -> ValidationResu
                 )
         kept.append(con)
     spec.constraints = kept
+    stated = any(con.type == "credit_range" for con in kept)
+    if spec.mode == "term" and not stated and ctx.default_credit_range:
+        low, high = ctx.default_credit_range
+        default = {
+            "id": "default_credits",
+            "type": "credit_range",
+            "params": {"min": low, "max": high},
+            "enforcement": "hard",
+            "weight": 3,
+            "weight_source": "default",
+            "confidence": 1.0,
+            "source_text": "",
+        }
+        kept.append(Constraint.model_validate(default))
+        result.notes.append(
+            f"default_credits: no credit load stated; using full-time {low:g}–{high:g}"
+        )
 
     if not result.errors:
         result.errors.extend(_contradictions(kept))
