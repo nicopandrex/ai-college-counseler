@@ -98,6 +98,17 @@ Running log. Resume from **Current status**. Newest log entries at the top.
    Proposal: document that default.
 
 ## Decisions
+- **Model per task (measured 2026-11-18 on the owner's $5):**
+  - *Audit extraction: Flash.* 2 calls, 19,415 in + 31,405 out tokens. Golden test green. Its
+    own course list garbled "A+" as "A process" (4×), but courses come from the PDF parse, so
+    the output is right and the validator flagged them.
+  - *Translator: Flash.* 50/50 recorded (M6).
+  - *Prerequisite parsing: Pro.* On a 25-course sample Flash cost 1,788 in + 8,369 out tokens
+    but **dropped majors-only restrictions** (BUS 3310, BUS 3611) and grouped "A, B, or
+    permission" as (A and B) or permission. Too permissive. The committed answer store means
+    Pro only ever sees new/changed notes.
+- **Derived UVM data is committed in `data/uvm/`** (term.json, note text, trees, review,
+  answer store). Rebuilding Spring 2027 prerequisites takes 0 LLM calls.
 - **Cost controls (2026-11-18, after $10 of credits went fast).** Root cause: the bulk
   prerequisite parse (1,183 courses) ran on Gemini **Pro**, **twice** (format change), with
   no sample run and no cap, plus hidden thinking tokens billed as output. Fixes:
