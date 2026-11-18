@@ -42,9 +42,8 @@ def cmd_prereqs(args: argparse.Namespace) -> int:
     print(gateway.usage_summary(), file=sys.stderr)
     if not args.sample:
         save_prereqs(args.term, trees, review, answers)
-    print(
-        f"{len(notes)} courses with prerequisite notes: {len(trees)} parsed, {len(review)} to review"
-    )
+    outcome = f"{len(trees)} parsed, {len(review)} to review"
+    print(f"{len(notes)} courses with prerequisite notes: {outcome}")
     return 0
 
 
