@@ -122,12 +122,22 @@ def _problems(tree: Prereq) -> list[str]:
 
 
 def parse_prereqs(
-    notes: dict[str, str], gateway: LLMGateway, batch_size: int = BATCH_SIZE, workers: int = WORKERS
-) -> tuple[dict[str, Prereq | None], list[dict[str, str]]]:
-    """(trees for the courses that passed every check, review queue)."""
+    notes: dict[str, str],
+    gateway: LLMGateway,
+    batch_size: int = BATCH_SIZE,
+    workers: int = WORKERS,
+    known: dict[str, dict[str, Any]] | None = None,
+) -> tuple[dict[str, Prereq | None], list[dict[str, str]], dict[str, dict[str, Any]]]:
+    """(usable trees, review queue, answer store).
+
+    `known` maps a note's exact text to the model's earlier answer for it, so an unchanged
+    note (most of them, term to term) costs nothing; only new text goes to the model.
+    """
     system = resources.files("planner_ingest.prompts").joinpath("prereq_parse.md").read_text()
+    store = dict(known or {})
     codes = sorted(notes)
-    batches = [codes[i : i + batch_size] for i in range(0, len(codes), batch_size)]
+    todo = [code for code in codes if notes[code] not in store]
+    batches = [todo[i : i + batch_size] for i in range(0, len(todo), batch_size)]
 
     def ask(batch: list[str]) -> list[dict[str, Any]]:
         user = "\n".join(f"{code} | {notes[code]}" for code in batch)
@@ -150,9 +160,11 @@ def parse_prereqs(
                 if a["code"] in notes
             }
 
-    answers = collect(batches)
-    skipped = [code for code in codes if code not in answers]
-    answers |= collect([skipped[i : i + batch_size] for i in range(0, len(skipped), batch_size)])
+    fresh = collect(batches)
+    skipped = [code for code in todo if code not in fresh]
+    fresh |= collect([skipped[i : i + batch_size] for i in range(0, len(skipped), batch_size)])
+    store |= {notes[code]: answer for code, answer in fresh.items()}
+    answers = {code: store[notes[code]] for code in codes if notes[code] in store}
 
     trees: dict[str, Prereq | None] = {}
     review: list[dict[str, str]] = []
@@ -175,4 +187,4 @@ def parse_prereqs(
             review.append({"code": code, "notes": notes[code], "reason": "; ".join(problems)})
         if all(p.startswith("unparsed:") for p in problems):
             trees[code] = tree
-    return trees, review
+    return trees, review, store

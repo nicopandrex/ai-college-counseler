@@ -475,3 +475,24 @@ def test_scarce_requirement_beats_one_with_many_options() -> None:
     )
     schedule = solve_term(spec(c("c1", "credit_range", min=3, max=3)), TERM, student).schedules[0]
     assert schedule.courses == ["CS 3410"]  # the only course for its requirement this term
+
+
+def test_verifiable_course_preferred_over_an_unverifiable_equal() -> None:
+    from planner_solver.domain import RequirementTarget, UnparsedPrereq
+
+    courses = dict(TERM.courses)
+    courses["HIST 1010"] = courses["HIST 1010"].model_copy(
+        update={"prereq": UnparsedPrereq(kind="unparsed", text="History majors only")}
+    )
+    term = TERM.model_copy(update={"courses": courses})
+    student = STUDENT.model_copy(
+        update={
+            "open_requirements": {
+                "HUM": RequirementTarget(
+                    title="HUM", selectors=("HIST 1010", "SOC 1000"), needed=1, unit="courses"
+                )
+            }
+        }
+    )
+    schedule = solve_term(spec(c("c1", "credit_range", min=3, max=3)), term, student).schedules[0]
+    assert schedule.courses == ["SOC 1000"]
