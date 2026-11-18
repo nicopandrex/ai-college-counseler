@@ -3,29 +3,21 @@
 Running log. Resume from **Current status**. Newest log entries at the top.
 
 ## Current status
-- **Done:** M0, M1, M2, M5. M4 is done except its "real solve against UVM data" bar.
-- **Blocked:** M3 (UVM data), on the owner's decision: UVM's website Terms of Use prohibit
-  scrapers (see Blockers). M4's real solve, M7 and M8 depend on M3.
-- **Next without the owner:** M6 (NL translator + eval harness). It needs no UVM data, and its
-  50-utterance eval set needs owner review (a STOP).
+- **Done:** M0, M1, M2, M4 (incl. real solve), M5. M3 is done for Spring 2027 (see gaps).
+- **Next:** M6 (NL translator + eval harness). Its 50-utterance eval set needs owner review
+  (STOP).
+- **Demo today:** `planner solve --audit fixtures/private/audit.pdf --spec
+  fixtures/private/specs/example_senior_seminar.json` (env: `LLM_PROVIDER=gemini
+  LLM_MODEL=gemini-3.1-pro-preview LLM_API_KEY=replay-only
+  LLM_CACHE_DIR=fixtures/private/llm-cache`). Solves Spring 2027 in ~2 s.
 
-## Blockers (need owner)
-1. **UVM data source (M3).** UVM's Terms of Use
-   (www.uvm.edu/compliance/website-privacy-policy/terms-use) say: "You agree, further, not
-   to use … any engine, device, technique, software, tool, agent … (including without
-   limitation browsers, spiders, robots, scrapers …) to navigate, access or search this
-   Site, other than generally available third-party web browsers." Also,
-   `serval.uvm.edu/robots.txt` is `Disallow: /`, and `catalogue.uvm.edu` resets
-   connections from this cloud network. Sources found:
-   - `soc.uvm.edu`: the current Schedule of Courses, a CourseLeaf "FOSE" app with a JSON
-     API (`api/?page=fose`). No robots.txt.
-   - `serval.uvm.edu/~rgweb/batch/…`: classic schedule + current/historic enrollment
-     files (robots-disallowed).
-   - `aisweb1.uvm.edu` (Banner course search), `catalogue.uvm.edu` (CourseLeaf catalog).
-   Options for the owner: (a) ask the Registrar for permission or a data export (best,
-   and aligned with V1); (b) the owner saves pages in their own browser (permitted by the
-   ToS wording) and uploads them for a parser; (c) the owner decides the ToS doesn't apply
-   to a low-rate personal tool. That's their call, not mine.
+## Blockers / owner input pending
+1. **Sanity-check** the real Spring 2027 schedules (M4 bar).
+2. **Past terms** for M8 offering patterns: the SOC lists only Fall 2026 + Spring 2027. Ask
+   whether pulling Fall 2026 (one more one-time pull) is wanted. Older terms live only on
+   serval.uvm.edu (robots-disallowed).
+3. **Prerequisite review queue:** `data/raw/uvm/202701/prereq_review.json` (431 entries; 357
+   are usable trees with an unparsed part, 74 are held out and treated as unknown).
 
 ## Milestones
 
@@ -38,18 +30,34 @@ Running log. Resume from **Current status**. Newest log entries at the top.
   unplannable; pending_grade_risk; choice groups keep only the alternative being
   followed. Real audit: Chinese major Track 3 active (only CHIN 4200 left in it); tracks
   1/2/4 not_applicable. "Fail CS 3240" reopens 2 requirements.
-### M3 UVM data ⛔ blocked (see Blockers)
-### M4 Solver, term mode ✅ (synthetic) / ⛔ real-data solve
+### M3 UVM data ✅ Spring 2027 (owner-approved one-time pull)
+- soc.uvm.edu FOSE API: 1 search + 1,844 details calls, about 5 min with 6 workers. robots
+  honoured; raw responses cached in `data/raw/uvm/` (gitignored); serval.uvm.edu never
+  touched.
+- 1,844 courses, 2,737 schedulable sections (2,313 arranged sections are never
+  auto-scheduled). Attribute codes match the audit's. Modality: `schd` letters learned at
+  ≥95% agreement; 249 sections stay unknown.
+- Prerequisites come from the SOC comments (owner tip). The LLM parses them into flat node
+  lists, rebuilt into trees in code: 1,109/1,183 usable, 74 held out as unknown.
+- Report: `docs/uvm-data-report.md`. Capabilities feed validation rule 8.
+- Gaps vs the done-bar: no Postgres load (no Docker here; JSON cache + in-memory parse
+  instead, revisit in M9/M10). Past terms are unavailable from this source.
+### M4 Solver, term mode ✅
 - All 25 term-mode types encoded; hard → assumption literals, soft → 16/8/4/2/1×; minimal
   infeasible subset by deletion; ranked relaxations with schedules unlocked; top-5 by
   distinct course sets. 29 tests incl. 6 infeasible cases with known minimal sets.
-- [ ] real solve against UVM data for the owner's state (needs M3)
+- [x] real solve for the owner's state: 5 Spring 2027 schedules with CHIN 4200 (Track 3),
+      CS 3920, ECON 1400, HST 1440 + a distinct gen ed, nothing before 10:30, 12–16 credits.
+      The verbatim example is refused: CS 3050 is already in progress.
 ### M5 Validation layer ✅
 - Rule 0 (JSON Schema contract) + rules 1–8, 24 tests.
 ### M6 NL translator + eval — next
 ### M7 CLI demo (STOP) · M8 plan mode · M9 web UI · M10 beta — not started
 
-## Schema proposals (batched for owner review; nothing changed in the contract)
+## Schema proposals (owner reviewed 2026-11-18)
+- Approved and documented in the reference: `satisfy_requirement.distinct`, day codes R/U.
+- Pending (owner asked what they mean; explained in chat): instructor polarity values,
+  modality default.
 1. **`satisfy_requirement.distinct` (bool, default false).** Worked example 1 ("English A2 …
    and *one other* course that fulfills any gen ed") implies the gen-ed course must be a
    different course from the A2 one. Today one course may satisfy both constraints:
@@ -65,6 +73,18 @@ Running log. Resume from **Current status**. Newest log entries at the top.
    Proposal: document that default.
 
 ## Decisions
+- **Owner (2026-11-18):** a one-time scrape of Spring 2027 is OK, as fast as reasonable.
+  Prerequisites are in the SOC comments.
+- **Prerequisite trees are flat node lists from the LLM**: unrolled depth-3 schemas exceeded
+  Gemini's limit. A tree with only `unparsed` parts is used (those parts evaluate as
+  unknown); ambiguous/malformed ones are held out and marked unknown, never "none".
+- **Requirement targets come from DegreeWorks' "N Classes/Credits in …" lines** (prefix
+  optional, subject carried forward, ranges, wildcards, attributes, `Except` exclusions),
+  falling back to the extracted rule. Only leaf requirements are targets.
+- **Standing comes from the audit's words** ("03 - Junior"), never inferred from credits.
+- **Output says "counts toward"**: one course may count for several requirements (CS 3920 is
+  both Senior Seminar and inside CS 3000:3990). Whether UVM allows that double-count is
+  DegreeWorks logic we can't see; listed under Open questions.
 - **Owner choices (2026-11-17/18):** provider Gemini (billing on). Target Spring 2027, product
   term-agnostic. In-progress courses count as passed. CS 3050 is in progress (counts as taken).
   For majors with tracks, only the followed track matters.
@@ -88,6 +108,8 @@ Running log. Resume from **Current status**. Newest log entries at the top.
   name/NetID/advisors to the LLM); rule depth 2; Gemini via its OpenAI-compatible endpoint.
 
 ## Open questions
+- Exclusive vs shared course counting between requirements of the same major (see
+  "counts toward" above).
 - Next.js 14 advisories (last 14.x is 14.2.35): decide before the M10 deploy.
 - No Docker daemon in this container: compose is unexercised.
 - Preregistered-course marker unknown (none on this audit).
@@ -96,6 +118,9 @@ Running log. Resume from **Current status**. Newest log entries at the top.
 _(none yet: the translator isn't built)_
 
 ## Log
+- **2026-11-18 (later).** Owner approved a one-time scrape. Built the polite fetcher (6 workers,
+  ~5 min), parser, LLM prerequisite parser, bridge, templated printer and `planner` CLI. Real
+  Spring 2027 solve works. 156 tests green.
 - **2026-11-18.** Paid tier unlocked Gemini Pro. Re-recorded; fixed omissions with req_id-guided
   extraction + follow-ups. M1 done-bar met. M2 built (+ owner's track rule). M3 source
   discovery found the ToS prohibition → blocked. M4 solver and M5 validation built on
