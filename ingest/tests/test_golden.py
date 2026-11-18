@@ -34,10 +34,9 @@ def test_draft_golden_reads_units_from_document_text(setup) -> None:
     assert {c.code for c in golden.courses} == {"CS 1210", "CS 2500", "MATH 1234", "ARTS 1XXX"}
 
 
-def test_correct_extraction_matches_draft_except_extras(setup) -> None:
+def test_correct_extraction_matches_draft(setup) -> None:
     layout, final = setup
-    diffs = compare(final, draft_golden(layout, UVM))
-    assert diffs == ["unexpected requirement electives"]
+    assert compare(final, draft_golden(layout, UVM)) == []
 
 
 def test_compare_reports_status_unit_and_course_differences(setup) -> None:
@@ -57,3 +56,17 @@ def test_golden_round_trips_json(setup) -> None:
     layout, _ = setup
     golden = draft_golden(layout, UVM)
     assert Golden.model_validate_json(golden.model_dump_json()) == golden
+
+
+def test_unparsed_rule_passes_only_when_routed_to_review(setup) -> None:
+    layout, final = setup
+    golden = draft_golden(layout, UVM)
+    seminar = next(r for r in final.requirements if r.title == "Senior Seminar")
+    index = final.requirements.index(seminar)
+    unparsed = {"kind": "unparsed", "text": "Senior Seminar"}
+    reviewed = seminar.model_validate({**seminar.model_dump(by_alias=True), "rule": unparsed,
+                                       "confidence": 0.5})  # fmt: skip
+    final.requirements[index] = reviewed
+    assert not any("senior_seminar" in d for d in compare(final, golden))
+    final.requirements[index] = reviewed.model_copy(update={"confidence": 0.9})
+    assert any("senior_seminar: count_unit" in d for d in compare(final, golden))

@@ -7,6 +7,7 @@ and `COURSE` lines with columns separated by `|`.
 
 from __future__ import annotations
 
+from planner_ingest.ids import requirement_ids
 from planner_ingest.layout import AuditLayout, CourseLine, Row
 
 
@@ -23,9 +24,9 @@ def _course(course: CourseLine) -> str:
     return line
 
 
-def _row(row: Row) -> list[str]:
+def _row(row: Row, req_id: str) -> list[str]:
     pad = "  " * (row.level or 0)
-    tag = f"[icon: {row.icon_status}]" if row.icon_status else "[no icon]"
+    tag = f"[req_id: {req_id}] [icon: {row.icon_status}]" if row.icon_status else "[no icon]"
     lines = [f"{pad}ROW {tag} {row.label}".rstrip()]
     if row.content:
         lines.append(f"{pad}    {' '.join(row.content)}")
@@ -34,15 +35,19 @@ def _row(row: Row) -> list[str]:
 
 
 def render_for_llm(layout: AuditLayout) -> str:
+    ids = requirement_ids(layout)
     out = ["AUDIT SUMMARY"]
     out.extend(f"{label}: {value}" for label, value in layout.summary.items())
     for block in layout.blocks:
         out.append("")
-        status = f" [block status: {block.status_text}]" if block.status_text else ""
-        out.append(f"BLOCK {block.title}{status}")
+        if block.status_text:
+            tag = f"[req_id: {ids[block.block_id]}] "
+            out.append(f"BLOCK {tag}{block.title} [block status: {block.status_text}]")
+        else:
+            out.append(f"BLOCK {block.title} [course listing]")
         out.extend(f"    {info}" for info in block.info)
         for row in block.rows:
-            out.extend(_row(row))
+            out.extend(_row(row, ids[row.row_id]))
     if layout.warnings:
         out.append("")
         out.append("EXTRACTION WARNINGS")

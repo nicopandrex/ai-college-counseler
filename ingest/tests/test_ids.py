@@ -16,6 +16,11 @@ def test_slug_is_short_and_stable() -> None:
         == "language_2_courses_at_least_6"
     )
     assert slug("") == "untitled"
+    assert slug("Option A (recommended)") == "option_a_recommended"
+    assert (
+        slug("COMMON GROUND VALUES:1 course with a D1 designation")
+        == "common_ground_values_1_course_d1"
+    )
 
 
 def test_ids_follow_document_structure_and_are_reproducible(tmp_path: Path) -> None:

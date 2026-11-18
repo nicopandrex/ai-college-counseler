@@ -13,10 +13,16 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict
 
 from planner_ingest.config import RequirementStatus, SchoolConfig
-from planner_ingest.extraction import CourseListRule, CreditTotalRule, ExtractedAudit, Rule
+from planner_ingest.extraction import (
+    CourseListRule,
+    CreditTotalRule,
+    ExtractedAudit,
+    Rule,
+    UnparsedRule,
+)
 from planner_ingest.ids import requirement_ids
 from planner_ingest.layout import AuditLayout
-from planner_ingest.validate import ICON_TO_STATUS, deterministic_courses
+from planner_ingest.validate import ICON_TO_STATUS, LOW_CONFIDENCE, deterministic_courses
 
 CountUnit = Literal["courses", "credits"]
 ROW_UNIT = re.compile(r"\b\d+(?:\.\d+)? (?:\w+ )?(credits?|class(?:es)?|courses?)\b", re.IGNORECASE)
@@ -118,7 +124,10 @@ def compare(audit: ExtractedAudit, golden: Golden) -> list[str]:
         if got[rid].status != want[rid].status:
             diffs.append(f"{rid}: status {got[rid].status!r} != {want[rid].status!r}")
         unit = rule_unit(got[rid].rule)
-        if want[rid].count_unit is not None and unit != want[rid].count_unit:
+        # An unparsed rule routed to human review is the prompt's preferred outcome when the
+        # rule doesn't fit a structured kind; only a structured, wrong unit is a failure.
+        deferred = isinstance(got[rid].rule, UnparsedRule) and got[rid].confidence < LOW_CONFIDENCE
+        if want[rid].count_unit is not None and unit != want[rid].count_unit and not deferred:
             diffs.append(f"{rid}: count_unit {unit!r} != {want[rid].count_unit!r}")
 
     def key(course: Any) -> tuple[str, str | None]:
