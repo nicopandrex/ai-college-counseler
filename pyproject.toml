@@ -2,15 +2,16 @@
 name = "degree-planner"
 version = "0.0.0"
 requires-python = ">=3.12,<3.14"
-dependencies = ["planner-ingest", "planner-llm", "planner-solver"]
+dependencies = ["planner-chat", "planner-ingest", "planner-llm", "planner-solver"]
 
 [tool.uv]
 package = false
 
 [tool.uv.workspace]
-members = ["ingest", "llm", "solver"]
+members = ["chat", "ingest", "llm", "solver"]
 
 [tool.uv.sources]
+planner-chat = { workspace = true }
 planner-ingest = { workspace = true }
 planner-llm = { workspace = true }
 planner-solver = { workspace = true }
@@ -19,7 +20,7 @@ planner-solver = { workspace = true }
 dev = ["httpx==0.28.1", "pytest==8.3.4", "reportlab==5.1.0", "ruff==0.8.4"]
 
 [tool.pytest.ini_options]
-testpaths = ["ingest/tests", "llm/tests", "solver/tests"]
+testpaths = ["chat/tests", "ingest/tests", "llm/tests", "solver/tests"]
 addopts = "--import-mode=importlib"
 pythonpath = ["ingest/tests", "solver/tests"]
 
@@ -31,4 +32,4 @@ target-version = "py312"
 select = ["E", "F", "I", "B", "UP"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["planner_ingest", "planner_llm", "planner_solver"]
+known-first-party = ["planner_chat", "planner_ingest", "planner_llm", "planner_solver"]

@@ -1,0 +1,5 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\n  \"spec_version\": \"0.1\",\n  \"mode\": \"term\",\n  \"target_term\": \"2027SP\",\n  \"restatement\": \"Avoid Professor Aslim for Macroeconomics (ECON 1400) if possible.\",\n  \"constraints\": [\n    {\n      \"id\": \"c1\",\n      \"type\": \"instructor_preference\",\n      \"params_json\": \"{\\\"course\\\":\\\"ECON 1400\\\",\\\"name\\\":\\\"Aslim\\\",\\\"polarity\\\":\\\"exclude\\\"}\",\n      \"enforcement\": \"soft\",\n      \"weight\": 3,\n      \"weight_source\": \"stated\",\n      \"confidence\": 0.85,\n      \"source_text\": \"Avoid Professor Aslim for macro if possible.\",\n      \"data_dependency\": \"reliable\"\n    }\n  ],\n  \"clarifications\": [\n    {\n      \"question\": \"Which macroeconomics course did you mean?\",\n      \"kind\": \"ambiguity\",\n      \"constraint_id\": \"c1\",\n      \"options\": [\n        \"ECON 1400 (Principles of Macroeconomics)\",\n        \"ECON 2400 (Macroeconomic Theory)\",\n        \"CDAE 3530 (Macroeconomics for Appl Econ)\"\n      ],\n      \"blocking\": false\n    }\n  ],\n  \"out_of_scope\": []\n}"
+}

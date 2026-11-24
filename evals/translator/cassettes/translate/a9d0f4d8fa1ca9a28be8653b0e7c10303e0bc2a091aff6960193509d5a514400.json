@@ -1,0 +1,5 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Schedule exactly 4 courses for Spring 2027.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"course_count_range\",\"params_json\":\"{\\\"max\\\": 4, \\\"min\\\": 4}\",\"enforcement\":\"hard\",\"weight\":5,\"weight_source\":\"stated\",\"confidence\":1.0,\"source_text\":\"I need exactly four classes.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}"
+}
