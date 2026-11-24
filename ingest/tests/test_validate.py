@@ -2,12 +2,18 @@ import json
 from pathlib import Path
 
 import pytest
-from synth_degreeworks import sample_audit
+from synth_degreeworks import Cell, Text, block_header, build_pdf, requirement, sample_audit
 
 from planner_ingest.config import load_school_config
 from planner_ingest.extraction import CourseListRule, ExtractedAudit
+from planner_ingest.ids import requirement_ids
 from planner_ingest.layout import AuditLayout, parse_layout
-from planner_ingest.validate import FLAGGED_CONFIDENCE_CAP, finalize, review_items
+from planner_ingest.validate import (
+    FLAGGED_CONFIDENCE_CAP,
+    anchor_requirements,
+    finalize,
+    review_items,
+)
 
 UVM = load_school_config("uvm")
 FIXTURE = Path(__file__).parent / "fixtures" / "synthetic_extraction.json"
@@ -60,7 +66,7 @@ def test_status_mismatch_with_icon_caps_confidence(
     final, issues = finalize(audit, layout, UVM)
     assert "status_mismatch" in codes(issues)
     assert by_title(final, "Senior Seminar").confidence == FLAGGED_CONFIDENCE_CAP
-    assert by_title(final, "Senior Seminar") in review_items(final)
+    assert by_title(final, "Senior Seminar") in review_items(final, issues)
 
 
 def test_count_unit_confusion_is_caught(layout: AuditLayout, audit: ExtractedAudit) -> None:
@@ -142,3 +148,63 @@ def test_attribute_selector_is_a_valid_rule_code(
     )
     _, issues = finalize(audit, layout, UVM)
     assert issues == []
+
+
+def test_unparsed_rule_cannot_claim_high_confidence(
+    layout: AuditLayout, audit: ExtractedAudit
+) -> None:
+    gpa = by_title(audit, "You meet the minimum Overall GPA requirement.")
+    audit.requirements[audit.requirements.index(gpa)] = gpa.model_copy(update={"confidence": 0.9})
+    final, issues = finalize(audit, layout, UVM)
+    assert codes(issues) == ["unparsed_overconfident"]
+    gpa_final = by_title(final, "You meet the minimum Overall GPA requirement.")
+    assert gpa_final.confidence == FLAGGED_CONFIDENCE_CAP
+    # completed (icon-confirmed) and nothing else wrong: reported, but not queued for review
+    assert gpa_final not in review_items(final, issues)
+
+
+def test_listing_block_is_not_a_requirement(layout: AuditLayout, audit: ExtractedAudit) -> None:
+    listing = audit.requirements[0].model_copy(
+        update={"req_id": "electives", "title": "Electives", "status": "unknown",
+                "source_quote": "Electives", "satisfied_by": ["ARTS 1XXX"], "confidence": 0.6}
+    )  # fmt: skip
+    audit.requirements.append(listing)
+    _, issues = finalize(audit, layout, UVM)
+    assert codes(issues) == ["listing_not_requirement"]
+
+
+def test_given_req_id_anchors_exactly_even_with_identical_text(tmp_path: Path) -> None:
+    calc = requirement(2, "incomplete", "Calculus I", content=["4 Credits in MATH 1234"])
+    legend = Cell(height=30.0, texts=[Text(28.3, 8, "Legend", "Helvetica-Bold", 10)])
+    cells = [block_header("Major", "INCOMPLETE", "x"),
+             requirement(0, "incomplete", "TRACK A"), calc,
+             requirement(0, "incomplete", "TRACK B"), calc, legend]  # fmt: skip
+    layout = parse_layout(build_pdf(tmp_path / "t.pdf", [cells]), UVM)
+    base = json.loads(FIXTURE.read_text())
+    template = next(r for r in base["requirements"] if r["title"] == "Calculus II")
+
+    def entry(req_id: str, title: str, quote: str) -> dict:
+        return {**template, "req_id": req_id, "title": title, "source_quote": quote}
+
+    audit = ExtractedAudit.model_validate({**base, "courses_taken": [], "requirements": [
+        entry("major", "Major", "Major"),
+        entry("major.track_b.calculus_i", "Calculus I", "4 Credits in MATH 1234"),
+        entry("major.track_a", "TRACK A", "TRACK A"),
+        entry("major.track_b", "TRACK B", "TRACK B"),
+        entry("major.track_a.calculus_i", "Calculus I", "4 Credits in MATH 1234"),
+    ]})  # fmt: skip
+    anchors = anchor_requirements(audit, layout)
+    rows = {r.row_id: r for r in layout.rows}
+    ids = requirement_ids(layout)
+    assert [ids[a.key] for a in anchors] == [r.req_id for r in audit.requirements]
+    assert rows[anchors[1].key].parent_id == anchors[3].key  # B's copy, not A's
+
+
+def test_review_skips_completed_requirements(layout: AuditLayout, audit: ExtractedAudit) -> None:
+    final, issues = finalize(audit, layout, UVM)
+    gpa = by_title(final, "You meet the minimum Overall GPA requirement.")  # complete, conf 0.6
+    seminar = by_title(final, "Senior Seminar").model_copy(update={"confidence": 0.5})
+    final.requirements[final.requirements.index(by_title(final, "Senior Seminar"))] = seminar
+    items = review_items(final, issues)
+    assert gpa not in items
+    assert seminar in items

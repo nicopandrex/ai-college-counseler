@@ -24,12 +24,14 @@ from planner_ingest.extraction import (
     ExtractedAudit,
     Requirement,
     Rule,
+    UnparsedRule,
 )
 from planner_ingest.ids import requirement_ids
 from planner_ingest.layout import AuditLayout, Block, CourseLine, Row
 
 LOW_CONFIDENCE = 0.8
 FLAGGED_CONFIDENCE_CAP = 0.5
+UNPARSED_MAX_CONFIDENCE = 0.6
 ICON_TO_STATUS: dict[IconStatus, RequirementStatus] = {
     "complete": "complete",
     "incomplete": "incomplete",
@@ -41,7 +43,9 @@ RULE_CODE = re.compile(
     r"|^@ @$"
     r"|^@ @ with attribute = [A-Z0-9]+$"  # DegreeWorks' own attribute-selector notation
 )
-STRUCTURAL_TAG = re.compile(r"^(BLOCK|ROW|COURSE)\s+|\[(icon|block status|no icon)[^\]]*\]\s*")
+STRUCTURAL_TAG = re.compile(
+    r"^(BLOCK|ROW|COURSE)\s+|\[(req_id|icon|block status|no icon|course listing)[^\]]*\]\s*"
+)
 COURSES_UNIT = re.compile(r"\b\d+(\.\d+)? (class|classes|course|courses)\b", re.IGNORECASE)
 CREDITS_UNIT = re.compile(r"\b\d+(\.\d+)? (credit|credits)\b", re.IGNORECASE)
 CREDITS_APPLIED = re.compile(r"Credits applied: (\d+(?:\.\d+)?)")
@@ -89,12 +93,21 @@ def _candidates(layout: AuditLayout) -> list[tuple[Anchor, str, str]]:
 
 
 def anchor_requirements(audit: ExtractedAudit, layout: AuditLayout) -> list[Anchor | None]:
-    """Match requirements to document locations by quote, then title, keeping document order."""
+    """Match requirements to document locations: by the req_id given in the input, else by
+    quote, then title, keeping document order."""
     candidates = _candidates(layout)
+    ids = requirement_ids(layout)
+    by_req_id = {ids[anchor.key]: i for i, (anchor, _, _) in enumerate(candidates)}
     claimed: set[str] = set()
     last = -1
     anchors: list[Anchor | None] = []
     for req in audit.requirements:
+        exact = by_req_id.get(req.req_id)
+        if exact is not None and candidates[exact][0].key not in claimed:
+            claimed.add(candidates[exact][0].key)
+            last = exact
+            anchors.append(candidates[exact][0])
+            continue
         quote, title = quote_text(req.source_quote), normalize(req.title)
         hits = [i for i, (_, text, _) in enumerate(candidates) if quote and quote in text]
         if not hits:
@@ -119,6 +132,22 @@ def anchor_requirements(audit: ExtractedAudit, layout: AuditLayout) -> list[Anch
         last = best
         anchors.append(anchor)
     return anchors
+
+
+def expected_keys(layout: AuditLayout) -> list[str]:
+    """Every block with a status and every row with an icon must become a requirement."""
+    keys: list[str] = []
+    for block in layout.blocks:
+        if block.status_text:
+            keys.append(block.block_id)
+        keys.extend(row.row_id for row in block.rows if row.icon_status)
+    return keys
+
+
+def missing_requirement_ids(audit: ExtractedAudit, layout: AuditLayout) -> list[str]:
+    anchored = {a.key for a in anchor_requirements(audit, layout) if a is not None}
+    ids = requirement_ids(layout)
+    return [ids[key] for key in expected_keys(layout) if key not in anchored]
 
 
 def _course_status(course: CourseLine, config: SchoolConfig) -> str:
@@ -175,6 +204,12 @@ class _Checker:
         if anchor is None:
             self.flag(index, req, "no_anchor", f"could not locate {req.title!r} in the document")
             return
+        if isinstance(req.rule, UnparsedRule) and req.confidence > UNPARSED_MAX_CONFIDENCE:
+            message = f"unparsed rule with confidence {req.confidence} (the prompt caps it at 0.6)"
+            self.flag(index, req, "unparsed_overconfident", message)
+        if anchor.row is None and not anchor.block.status_text:
+            message = f"{anchor.block.title!r} is a course listing, not a requirement"
+            self.flag(index, req, "listing_not_requirement", message)
         expected = self._expected_status(anchor)
         if expected is not None and req.status != expected:
             message = f"status {req.status!r} but the document marks it {expected!r}"
@@ -215,14 +250,18 @@ class _Checker:
 
     def check_coverage(self, anchors: list[Anchor | None], ids: dict[str, str]) -> None:
         anchored = {a.key for a in anchors if a is not None}
-        for block in self.layout.blocks:
-            if block.status_text and block.block_id not in anchored:
-                message = f"block {block.title!r} was not extracted"
-                self.issue("missing_requirement", message, ids[block.block_id], "error")
-            for row in block.rows:
-                if row.icon_status and row.row_id not in anchored:
-                    message = f"row {row.label!r} (page {row.page}) was not extracted"
-                    self.issue("missing_requirement", message, ids[row.row_id], "error")
+        rows = {row.row_id: row for row in self.layout.rows}
+        titles = {block.block_id: block.title for block in self.layout.blocks}
+        for key in expected_keys(self.layout):
+            if key in anchored:
+                continue
+            row = rows.get(key)
+            message = (
+                f"row {row.label!r} (page {row.page}) was not extracted"
+                if row
+                else f"block {titles[key]!r} was not extracted"
+            )
+            self.issue("missing_requirement", message, ids[key], "error")
 
     def check_courses(self, llm: list[CourseTaken], deterministic: list[CourseTaken]) -> None:
         ours = {(c.code, c.term): c for c in deterministic}
@@ -335,6 +374,16 @@ def finalize(
     return final, checker.issues
 
 
-def review_items(audit: ExtractedAudit) -> list[Requirement]:
-    """Requirements the user must confirm before the planner relies on them."""
-    return [r for r in audit.requirements if r.confidence < LOW_CONFIDENCE]
+def review_items(audit: ExtractedAudit, issues: list[Issue]) -> list[Requirement]:
+    """Requirements the user must confirm before the planner relies on them.
+
+    Anything the validator caught (status vs icon, quote, unit, courses...) is reviewed. Low
+    confidence alone matters only while the requirement is still to be planned; the status
+    of a completed one is independently confirmed by its icon.
+    """
+    caught = {i.req_id for i in issues if i.req_id and i.code != "unparsed_overconfident"}
+    return [
+        r
+        for r in audit.requirements
+        if r.req_id in caught or (r.confidence < LOW_CONFIDENCE and r.status != "complete")
+    ]

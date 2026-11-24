@@ -67,3 +67,43 @@ def test_request_is_structured_and_strict(tmp_path: Path) -> None:
     assert request.schema["additionalProperties"] is False
     assert "rule_0" in request.schema["$defs"]
     assert request.user.startswith("AUDIT SUMMARY")
+
+
+class SequenceProvider:
+    """Returns one canned response per call, in order."""
+
+    name = "sequence"
+
+    def __init__(self, texts: list[str]) -> None:
+        self.texts = texts
+        self.requests: list[JsonRequest] = []
+
+    def complete_json(self, request: JsonRequest, model: str) -> str:
+        self.requests.append(request)
+        return self.texts[len(self.requests) - 1]
+
+
+def test_rendered_input_carries_deterministic_req_ids(tmp_path: Path) -> None:
+    layout = parse_layout(sample_audit(tmp_path / "a.pdf"), load_school_config("uvm"))
+    user = extraction_request(layout).user
+    assert "BLOCK [req_id: bachelor_science_test] Bachelor of Science, TEST" in user
+    assert "[req_id: bachelor_science_test.choose_one_track.track_1.calculus_i]" in user
+    assert "[req_id: electives]" not in user  # listing blocks are not requirements
+
+
+def test_omitted_requirements_are_requested_again(tmp_path: Path) -> None:
+    pdf = sample_audit(tmp_path / "audit.pdf")
+    full = json.loads(FIXTURE.read_text())
+    seminar = next(r for r in full["requirements"] if r["title"] == "Senior Seminar")
+    first = {**full, "requirements": [r for r in full["requirements"] if r is not seminar]}
+    seminar = {**seminar, "req_id": "bachelor_science_test.senior_seminar"}
+    second = {**full, "courses_taken": [], "requirements": [seminar]}
+    provider = SequenceProvider([json.dumps(first), json.dumps(second)])
+    gateway = LLMGateway(provider, "m", tmp_path / "c", CacheMode.LIVE)
+
+    result = extract_audit(pdf, gateway)
+    assert result.issues == []
+    assert len(provider.requests) == 2
+    assert "bachelor_science_test.senior_seminar" in provider.requests[1].user
+    ids = [r.req_id for r in result.audit.requirements]
+    assert ids.count("bachelor_science_test.senior_seminar") == 1
