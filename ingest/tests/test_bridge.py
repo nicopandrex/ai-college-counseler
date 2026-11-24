@@ -72,3 +72,23 @@ def test_standing_comes_from_the_audits_own_words() -> None:
     assert standing_from("Graduate") == "graduate"
     assert standing_from(None) is None
     assert standing_from("Level 3") is None  # unknown wording: not guessed
+
+
+def test_needed_amount_and_unit_come_from_the_still_needed_line() -> None:
+    from planner_ingest.bridge import needed_amount
+
+    assert needed_amount("Still needed: 6 Credits in CS 3000:3990 or 3993") == (6.0, "credits")
+    assert needed_amount("2 Classes in @ @ with attribute = AH3") == (2.0, "courses")
+    assert needed_amount("Still needed: 1 Class in CS 3920") == (1.0, "courses")
+    assert needed_amount("Still needed: See Catamount Core section") == (None, None)
+
+
+def test_targets_carry_readable_titles_and_amounts(tmp_path: Path) -> None:
+    layout = parse_layout(sample_audit(tmp_path / "a.pdf"), load_school_config("uvm"))
+    raw = ExtractedAudit.model_validate(json.loads(FIXTURE.read_text()))
+    audit, _ = finalize(raw, layout, load_school_config("uvm"))
+    target = student_term(audit, derive_state(audit)).open_requirements[
+        "bachelor_science_test.choose_one_track.track_1.calculus_ii"
+    ]
+    assert target.title == "CHOOSE ONE TRACK › TRACK 1 › Calculus II"
+    assert (target.needed, target.unit) == (4.0, "credits")  # from the rule: 4 credits of MATH 1248

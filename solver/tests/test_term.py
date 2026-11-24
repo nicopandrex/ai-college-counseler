@@ -400,3 +400,56 @@ def test_excluded_courses_do_not_count_toward_a_requirement() -> None:
     student = STUDENT.model_copy(update={"open_requirements": {"GENED_HUM": target}})
     result = solve_term(spec(c("c1", "satisfy_requirement", req_ids=["GENED_HUM"])), TERM, student)
     assert result.status == "infeasible"  # HIST 1010 was the only HUM course
+
+
+def test_standing_below_the_requirement_blocks_the_course() -> None:
+    from planner_solver.domain import StandingPrereq, prereq_met, unknown_reasons
+
+    senior = StandingPrereq(kind="standing", minimum="senior")
+    assert (
+        prereq_met(senior, STUDENT.model_copy(update={"standing": "junior"})) == "no"
+    )  # owner: block
+    assert prereq_met(senior, STUDENT.model_copy(update={"standing": "senior"})) == "yes"
+    assert prereq_met(senior, STUDENT) == "unknown"  # standing not on the audit
+    assert unknown_reasons(senior, STUDENT) == [
+        "requires senior standing (your standing isn't on the audit)"
+    ]
+
+
+def test_progress_prefers_finishing_a_credit_requirement() -> None:
+    from planner_solver.domain import RequirementTarget
+
+    student = STUDENT.model_copy(
+        update={
+            "open_requirements": {
+                "ELEC": RequirementTarget(
+                    title="CS electives", selectors=("CS 3@",), needed=6, unit="credits"
+                ),
+                "HUM": RequirementTarget(
+                    title="Humanities",
+                    selectors=("@ @ with attribute = HUM",),
+                    needed=1,
+                    unit="courses",
+                ),
+            }
+        }
+    )
+    schedule = solve_term(spec(c("c1", "credit_range", min=9, max=9)), TERM, student).schedules[0]
+    assert {"CS 3200", "CS 3410", "HIST 1010"} == set(schedule.courses)  # fills 6 CS credits + HUM
+    assert schedule.contributions == {"ELEC": ["CS 3200", "CS 3410"], "HUM": ["HIST 1010"]}
+
+
+def test_blocked_course_names_the_real_reason() -> None:
+    from planner_solver.domain import StandingPrereq
+
+    courses = dict(TERM.courses)
+    courses["CS 3200"] = courses["CS 3200"].model_copy(
+        update={"prereq": StandingPrereq(kind="standing", minimum="senior")}
+    )
+    term = TERM.model_copy(update={"courses": courses})
+    junior = STUDENT.model_copy(update={"standing": "junior"})
+    result = solve_term(spec(c("c1", "include_course", course="CS 3200")), term, junior)
+    assert result.status == "infeasible"
+    assert (
+        "CS 3200 is blocked: requires senior standing (your audit says junior)" in result.warnings
+    )

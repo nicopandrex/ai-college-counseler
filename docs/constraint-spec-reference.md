@@ -97,8 +97,8 @@ Day codes: `M` Monday, `T` Tuesday, `W` Wednesday, `R` Thursday, `F` Friday, `S`
 
 | type | params | notes |
 |---|---|---|
-| `instructor_preference` | `{ "name": "John Smith", "polarity": "exclude", "course": "ECON 2020" }` | **`course` is optional but usually present** — "avoid Smith" almost always means for one class. If omitted, applies globally. Needs fuzzy name matching against section data |
-| `modality` | `{ "format": "online" \| "in_person" \| "hybrid", "comparator": "at_most", "count": 2 }` | ⚠️ schedule data usually has this; verify at your school |
+| `instructor_preference` | `{ "name": "John Smith", "polarity": "exclude", "course": "ECON 2020" }` | `polarity`: `"exclude"` (avoid them) or `"include"` (want them). **`course` is optional but usually present** — "avoid Smith" almost always means for one class. If omitted, applies globally. Needs fuzzy name matching against section data |
+| `modality` | `{ "format": "online" \| "in_person" \| "hybrid", "comparator": "at_most", "count": 2 }` | ⚠️ schedule data usually has this; verify at your school. Without `comparator`/`count`, every course must be in that format ("online classes") |
 | `section_size` | `{ "max_enrollment": 40 }` | ⚠️ needs seat-cap data; common in schedule of classes |
 | `campus` | `{ "campus": "Main", "polarity": "only" }` | multi-campus schools |
 | `travel_time` | `{ "min_minutes_between_campuses": 30 }` | pairs with `campus`; prevents impossible back-to-backs |
