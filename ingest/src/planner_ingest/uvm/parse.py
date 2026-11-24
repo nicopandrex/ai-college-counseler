@@ -69,7 +69,8 @@ def _credits(hours: str) -> float | None:
 
 
 def _attributes(html: str) -> frozenset[str]:
-    items = re.findall(r"<li>(.*?)</li>", html or "", re.S)
+    """Attribute codes; several come as an <li> list, a single one as plain text."""
+    items = re.findall(r"<li>(.*?)</li>", html or "", re.S) or re.split(r"<br\s*/?>|\n", html or "")
     return frozenset(
         m.group(1) for item in items if (m := ATTRIBUTE_CODE.search(TAG.sub("", item).strip()))
     )
@@ -151,9 +152,8 @@ def parse_term(cache_dir: Path, srcdb: str) -> tuple[TermData, ParseReport]:
             continue
         meta = _sections_meta(d).get(row["crn"], {})
         status = (meta.get("section_stat") or "").casefold()
-        instructors = tuple(
-            n.strip() for n in (meta.get("instr") or row.get("instr") or "").split(",") if n.strip()
-        )
+        names = (meta.get("instr") or row.get("instr") or "").split(",")
+        instructors = tuple(n.strip(" .") for n in names if n.strip(" ."))
         sections.append(
             Section(
                 section_id=f"{code} {row['no']}",
@@ -170,9 +170,19 @@ def parse_term(cache_dir: Path, srcdb: str) -> tuple[TermData, ParseReport]:
     return term, report
 
 
-def load_capabilities() -> dict[str, str]:
-    """Constraint types UVM's data can't support -> reason shown to the user (rule 8)."""
+def _school_config() -> dict[str, Any]:
     from importlib import resources
 
-    text = resources.files("planner_ingest.uvm").joinpath("capabilities.json").read_text()
-    return json.loads(text)["unavailable"]
+    return json.loads(
+        resources.files("planner_ingest.uvm").joinpath("capabilities.json").read_text()
+    )
+
+
+def load_capabilities() -> dict[str, str]:
+    """Constraint types UVM's data can't support -> reason shown to the user (rule 8)."""
+    return _school_config()["unavailable"]
+
+
+def default_credit_range() -> tuple[float, float]:
+    band = _school_config()["default_credit_range"]
+    return band["min"], band["max"]

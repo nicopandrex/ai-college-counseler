@@ -17,7 +17,7 @@ from planner_ingest.bridge import student_term
 from planner_ingest.pipeline import PURPOSE, extract_audit
 from planner_ingest.state import Assumptions, derive_state
 from planner_ingest.uvm.owner_rules import apply_owner_rules
-from planner_ingest.uvm.parse import load_capabilities, parse_term
+from planner_ingest.uvm.parse import default_credit_range, load_capabilities, parse_term
 from planner_ingest.uvm.prereqs import PURPOSE as PREREQ_PURPOSE
 from planner_ingest.uvm.prereqs import has_prereq_text, parse_prereqs, prereq_notes
 from planner_llm import LLMGateway
@@ -81,6 +81,7 @@ def cmd_solve(args: argparse.Namespace) -> int:
         requirement_ids=frozenset(r.req_id for r in extraction.audit.requirements),
         unplannable_courses=student.unplannable_courses,
         capabilities=SchoolCapabilities(unavailable=load_capabilities()),
+        default_credit_range=default_credit_range(),
     )
     checked = validate_spec(json.loads(args.spec.read_text()), context)
     for note in checked.notes:
