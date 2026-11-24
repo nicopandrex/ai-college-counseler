@@ -64,8 +64,9 @@ def test_unparsed_rule_passes_only_when_routed_to_review(setup) -> None:
     seminar = next(r for r in final.requirements if r.title == "Senior Seminar")
     index = final.requirements.index(seminar)
     unparsed = {"kind": "unparsed", "text": "Senior Seminar"}
-    reviewed = seminar.model_validate({**seminar.model_dump(by_alias=True), "rule": unparsed,
-                                       "confidence": 0.5})  # fmt: skip
+    reviewed = seminar.model_validate(
+        {**seminar.model_dump(by_alias=True), "rule": unparsed, "confidence": 0.5}
+    )
     final.requirements[index] = reviewed
     assert not any("senior_seminar" in d for d in compare(final, golden))
     final.requirements[index] = reviewed.model_copy(update={"confidence": 0.9})

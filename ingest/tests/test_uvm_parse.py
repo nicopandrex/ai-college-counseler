@@ -101,3 +101,54 @@ def test_method_rules() -> None:
     assert classify_method("Lecture and Lab") == ("LEC", "in_person")
     assert classify_method("Laboratory") == ("LAB", "in_person")
     assert classify_method("Thesis/Dissertation") == ("ARR", None)
+
+
+def test_load_term_attaches_parsed_prerequisites(tmp_path: Path) -> None:
+    from planner_ingest.cli import load_term
+    from planner_solver.domain import CoursePrereq
+
+    term_dir = write(
+        tmp_path / "202701",
+        [row("CS 2240", "1", "A", "L", []), row("CS 1210", "2", "A", "L", [])],
+        [details("CS 2240", "1", "Lecture"), details("CS 1210", "2", "Lecture")],
+    )
+    assert load_term("202701", tmp_path).prereqs_loaded is False
+    (term_dir / "prereqs.json").write_text(
+        json.dumps(
+            {
+                "CS 2240": {
+                    "kind": "course",
+                    "code": "CS 2100",
+                    "min_grade": None,
+                    "concurrent_ok": False,
+                }
+            }
+        )
+    )
+    term = load_term("202701", tmp_path)
+    assert term.prereqs_loaded is True
+    assert term.courses["CS 2240"].prereq == CoursePrereq(kind="course", code="CS 2100")
+    assert term.courses["CS 1210"].prereq is None
+
+
+def test_lecture_and_discussion_is_a_lecture() -> None:
+    assert classify_method("Lecture and Discussion") == ("LEC", "in_person")
+    assert classify_method("Discussion") == ("DIS", "in_person")
+
+
+def test_schd_meaning_is_the_dominant_one_with_enough_evidence(tmp_path: Path) -> None:
+    rows, dets = [], []
+    for i in range(20):  # 19 hybrid courses + 1 online one, all coded "V"
+        code = f"HY {1000 + i}"
+        rows.append(row(code, str(i), "A", "V", []))
+        dets.append(
+            details(
+                code, str(i), "Online Asynchronous" if i == 0 else "Hybrid (Online and In Class)"
+            )
+        )
+    rows += [row("ODD 1000", "90", "A", "Q", []), row("ODD 1001", "91", "A", "Q", [])]
+    dets += [details("ODD 1000", "90", "Lecture"), details("ODD 1001", "91", "Practicum")]
+    write(tmp_path, rows, dets)
+    term, report = parse_term(tmp_path, "202701")
+    assert {s.modality for s in term.sections if s.course.startswith("HY")} == {"hybrid"}  # 95%
+    assert report.ambiguous_schd == ["Q"]  # 1 lecture vs 1 practicum: too little to decide

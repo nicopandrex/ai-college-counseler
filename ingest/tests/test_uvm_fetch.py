@@ -66,3 +66,11 @@ def test_robots_disallow_stops_everything(tmp_path: Path) -> None:
             log=lambda _: None,
         )
     assert [c for c in calls if c.startswith("POST")] == []
+
+
+def test_parallel_workers_fetch_each_course_exactly_once(tmp_path: Path) -> None:
+    calls: list[str] = []
+    fetcher = make(tmp_path, calls)
+    pull_term("202701", tmp_path, fetcher, log=lambda _: None, workers=4)
+    details = [c for c in calls if "route=details" in c]
+    assert len(details) == 2  # CS 1210 and MATH 1234, once each
