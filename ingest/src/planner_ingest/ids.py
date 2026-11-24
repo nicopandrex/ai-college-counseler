@@ -18,7 +18,9 @@ FILLER = {"a", "an", "the", "with", "in", "of", "and", "or", "for", "to", "desig
 
 
 def slug(text: str) -> str:
-    words = [w for w in re.findall(r"[a-z0-9]+", text.lower()) if w not in FILLER]
+    # A lone capital letter is an identifier ("TRACK A", "Option A"), not the article "a".
+    tokens = re.findall(r"[A-Za-z0-9]+", text)
+    words = [t.lower() for t in tokens if t.lower() not in FILLER or re.fullmatch(r"[A-Z]", t)]
     return "_".join(words[:MAX_WORDS]) or "untitled"
 
 
