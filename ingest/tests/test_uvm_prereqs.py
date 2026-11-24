@@ -118,7 +118,7 @@ def test_trees_are_mapped_and_doubtful_ones_queued(tmp_path: Path) -> None:
         ),
     }
     gateway = LLMGateway(Stub(answers), "m", tmp_path / "c", CacheMode.LIVE)
-    trees, review = parse_prereqs(notes, gateway, batch_size=2)
+    trees, review, _ = parse_prereqs(notes, gateway, batch_size=2)
 
     assert trees["CS 2240"] == CoursePrereq(kind="course", code="CS 2100", min_grade="C-")
     assert isinstance(trees["ALE 2010"], AnyPrereq) and isinstance(
@@ -140,7 +140,7 @@ def test_a_skipped_course_is_asked_again_then_queued(tmp_path: Path) -> None:
 
     skipper = Skipper({})
     gateway = LLMGateway(skipper, "m", tmp_path / "c", CacheMode.LIVE)
-    trees, review = parse_prereqs({"CS 3200": "Prerequisite: CS 2240"}, gateway)
+    trees, review, _ = parse_prereqs({"CS 3200": "Prerequisite: CS 2240"}, gateway)
     assert len(skipper.requests) == 2  # one re-ask for the skipped course
     assert "CS 3200" not in trees
     assert review == [
@@ -158,7 +158,7 @@ def test_a_skipped_course_answered_on_the_re_ask_is_kept(tmp_path: Path) -> None
             return json.dumps({"courses": [course("CS 3200", node)]})
 
     gateway = LLMGateway(SkipOnce({}), "m", tmp_path / "c", CacheMode.LIVE)
-    trees, review = parse_prereqs({"CS 3200": "Prerequisite: CS 2240"}, gateway)
+    trees, review, _ = parse_prereqs({"CS 3200": "Prerequisite: CS 2240"}, gateway)
     assert trees["CS 3200"] == CoursePrereq(kind="course", code="CS 2240") and review == []
 
 
@@ -192,9 +192,21 @@ def test_deep_nesting_and_broken_references(tmp_path: Path) -> None:
     broken["nodes"][0]["children"] = ["n9"]  # dangling reference
     answers = {"ASCI 2120": course("ASCI 2120", deep), "BAD 1000": broken}
     gateway = LLMGateway(Stub(answers), "m", tmp_path / "c", CacheMode.LIVE)
-    trees, review = parse_prereqs({"ASCI 2120": "deep", "BAD 1000": "broken"}, gateway)
+    trees, review, _ = parse_prereqs({"ASCI 2120": "deep", "BAD 1000": "broken"}, gateway)
     inner = trees["ASCI 2120"].items[0].items[1]
     assert isinstance(inner, AllPrereq) and inner.items[1] == CoursePrereq(
         kind="course", code="ANPS 1200"
     )
     assert "BAD 1000" not in trees and review[0]["code"] == "BAD 1000"
+
+
+def test_known_answers_are_reused_and_only_new_notes_cost_a_call(tmp_path: Path) -> None:
+    node = {"kind": "course", "code": "CS 2100", "min_grade": None, "concurrent_ok": False}
+    known = {"Prerequisite: CS 2100": course("CS 2240", node)}
+    stub = Stub({"CS 3200": course("CS 3200", {"kind": "course", "code": "CS 2240"})})
+    gateway = LLMGateway(stub, "m", tmp_path / "c", CacheMode.LIVE)
+    notes = {"CS 2240": "Prerequisite: CS 2100", "CS 3200": "Prerequisite: CS 2240"}
+    trees, review, answers = parse_prereqs(notes, gateway, known=known)
+    assert len(stub.requests) == 1 and "CS 2240 |" not in stub.requests[0].user  # only the new note
+    assert set(trees) == {"CS 2240", "CS 3200"} and review == []
+    assert set(answers) == {"Prerequisite: CS 2100", "Prerequisite: CS 2240"}  # store grows

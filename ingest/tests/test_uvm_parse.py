@@ -104,15 +104,18 @@ def test_method_rules() -> None:
 
 
 def test_load_term_attaches_parsed_prerequisites(tmp_path: Path) -> None:
-    from planner_ingest.cli import load_term
+    from planner_ingest.uvm.store import build_term, load_term
     from planner_solver.domain import CoursePrereq
 
-    term_dir = write(
+    write(
         tmp_path / "202701",
         [row("CS 2240", "1", "A", "L", []), row("CS 1210", "2", "A", "L", [])],
         [details("CS 2240", "1", "Lecture"), details("CS 1210", "2", "Lecture")],
     )
-    assert load_term("202701", tmp_path).prereqs_loaded is False
+    data = tmp_path / "data"
+    build_term("202701", raw=tmp_path, data=data)
+    term_dir = data / "202701"
+    assert load_term("202701", data).prereqs_loaded is False
     (term_dir / "prereqs.json").write_text(
         json.dumps(
             {
@@ -125,7 +128,7 @@ def test_load_term_attaches_parsed_prerequisites(tmp_path: Path) -> None:
             }
         )
     )
-    term = load_term("202701", tmp_path)
+    term = load_term("202701", data)
     assert term.prereqs_loaded is True
     assert term.courses["CS 2240"].prereq == CoursePrereq(kind="course", code="CS 2100")
     assert term.courses["CS 1210"].prereq is None
@@ -155,34 +158,37 @@ def test_schd_meaning_is_the_dominant_one_with_enough_evidence(tmp_path: Path) -
 
 
 def test_load_term_marks_review_queue_courses_unknown_not_free(tmp_path: Path) -> None:
-    from planner_ingest.cli import load_term
+    from planner_ingest.uvm.store import build_term, load_term
     from planner_solver.domain import UnparsedPrereq
 
     rows, dets = [row("CS 3200", "1", "A", "L", [])], [details("CS 3200", "1", "Lecture")]
-    term_dir = write(tmp_path / "202701", rows, dets)
+    write(tmp_path / "202701", rows, dets)
+    build_term("202701", raw=tmp_path, data=tmp_path / "data")
+    term_dir = tmp_path / "data" / "202701"
     (term_dir / "prereqs.json").write_text("{}")
     queued = [
         {"code": "CS 3200", "notes": "Prereq: CS 2240 & 2250 ?", "reason": "flagged ambiguous"}
     ]
     (term_dir / "prereq_review.json").write_text(json.dumps(queued))
-    prereq = load_term("202701", tmp_path).courses["CS 3200"].prereq
+    prereq = load_term("202701", tmp_path / "data").courses["CS 3200"].prereq
     assert prereq == UnparsedPrereq(kind="unparsed", text="Prereq: CS 2240 & 2250 ?")
 
 
 def test_owner_rule_senior_seminar_requires_senior_standing(tmp_path: Path) -> None:
-    from planner_ingest.cli import load_term
+    from planner_ingest.uvm.store import build_term, load_term
     from planner_solver.domain import AllPrereq, CoursePrereq, StandingPrereq
 
     rows = [row("CS 3920", "1", "A", "L", []), row("HST 4990", "2", "A", "L", [])]
     dets = [details("CS 3920", "1", "Lecture"), details("HST 4990", "2", "Lecture")]
-    term_dir = write(tmp_path / "202701", rows, dets)
-    raw = json.loads((term_dir / "search_all.json").read_text())
+    raw_dir = write(tmp_path / "202701", rows, dets)
+    raw = json.loads((raw_dir / "search_all.json").read_text())
     raw["results"][0]["title"] = "Senior Seminar"
     raw["results"][1]["title"] = "History Senior Seminar"
-    (term_dir / "search_all.json").write_text(json.dumps(raw))
+    (raw_dir / "search_all.json").write_text(json.dumps(raw))
+    build_term("202701", raw=tmp_path, data=tmp_path / "data")
     tree = {"kind": "course", "code": "HST 2000", "min_grade": None, "concurrent_ok": False}
-    (term_dir / "prereqs.json").write_text(json.dumps({"HST 4990": tree}))
-    courses = load_term("202701", tmp_path).courses
+    (tmp_path / "data" / "202701" / "prereqs.json").write_text(json.dumps({"HST 4990": tree}))
+    courses = load_term("202701", tmp_path / "data").courses
     senior = StandingPrereq(kind="standing", minimum="senior")
     assert courses["CS 3920"].prereq == senior
     assert courses["HST 4990"].prereq == AllPrereq(
@@ -206,3 +212,18 @@ def test_placeholder_instructor_names_are_cleaned(tmp_path: Path) -> None:
     write(tmp_path, rows, [details("CS 3990", "1", "Lecture")])  # no section meta: row name used
     term, _ = parse_term(tmp_path, "202701")
     assert term.sections[0].instructors == ("Staff",)
+
+
+def test_build_term_saves_prerequisite_note_text(tmp_path: Path) -> None:
+    from planner_ingest.uvm.store import build_term, load_notes
+
+    dets = [details("CS 3200", "1", "Lecture"), details("CS 1210", "2", "Lecture")]
+    dets[0]["clssnotes"] = "<p>Prerequisite: CS 2240</p>"
+    dets[1]["clssnotes"] = "Open to Degree and PACE students"
+    write(
+        tmp_path / "202701",
+        [row("CS 3200", "1", "A", "L", []), row("CS 1210", "2", "A", "L", [])],
+        dets,
+    )
+    build_term("202701", raw=tmp_path, data=tmp_path / "data")
+    assert load_notes("202701", tmp_path / "data") == {"CS 3200": "Prerequisite: CS 2240"}
