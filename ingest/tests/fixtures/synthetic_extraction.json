@@ -1,0 +1,295 @@
+{
+ "student": {
+  "catalog_year": "2024-2025",
+  "programs": [
+   {
+    "type": "degree",
+    "name": "Bachelor of Science",
+    "degree": "Bachelor of Science"
+   },
+   {
+    "type": "major",
+    "name": "Computer Science",
+    "degree": null
+   }
+  ],
+  "class_standing": null,
+  "overall_credits_earned": 10,
+  "overall_credits_in_progress": 3,
+  "overall_gpa": null
+ },
+ "courses_taken": [
+  {
+   "code": "CS 1210",
+   "title": "Intro Programming",
+   "credits": 3,
+   "grade": "A",
+   "term": "Fall 2024",
+   "status": "complete",
+   "applied_to_req_ids": [
+    "bs_cs1"
+   ],
+   "source_quote": "CS 1210 Intro Programming A 3 Fall 2024"
+  },
+  {
+   "code": "CS 2500",
+   "title": "Intro to Databases",
+   "credits": 3,
+   "grade": "IP",
+   "term": "Fall 2026",
+   "status": "in_progress",
+   "applied_to_req_ids": [
+    "bs_intermediate"
+   ],
+   "source_quote": "CS 2500 Intro to Databases IP (3) Fall 2026"
+  },
+  {
+   "code": "MATH 1234",
+   "title": "Calculus I",
+   "credits": 4,
+   "grade": "B+",
+   "term": "Fall 2024",
+   "status": "complete",
+   "applied_to_req_ids": [
+    "bs_track1_calc1"
+   ],
+   "source_quote": "MATH 1234 Calculus I B+ 4 Fall 2024"
+  },
+  {
+   "code": "ARTS 1XXX",
+   "title": "1000 Level ARTS",
+   "credits": 1,
+   "grade": "TR",
+   "term": "Summer 2025",
+   "status": "complete",
+   "applied_to_req_ids": [],
+   "source_quote": "ARTS 1XXX 1000 Level ARTS TR 1 Summer 2025"
+  }
+ ],
+ "courses_not_used": [],
+ "requirements": [
+  {
+   "req_id": "bs",
+   "title": "Bachelor of Science, TEST",
+   "program": "Bachelor of Science",
+   "status": "incomplete",
+   "rule": {
+    "kind": "all_of",
+    "items": [
+     {
+      "kind": "unparsed",
+      "text": "Blocks of this degree"
+     }
+    ]
+   },
+   "still_needed_text": null,
+   "satisfied_by": [],
+   "has_wildcard": false,
+   "confidence": 0.9,
+   "source_quote": "Bachelor of Science, TEST"
+  },
+  {
+   "req_id": "bs_total_credits",
+   "title": "Total Credit Requirement",
+   "program": "Bachelor of Science",
+   "status": "incomplete",
+   "rule": {
+    "kind": "credit_total",
+    "count": 120,
+    "constraints_text": null
+   },
+   "still_needed_text": "Still needed: 120 credits are required. You currently have 10 (including in-progress courses); you need 110 more credits.",
+   "satisfied_by": [],
+   "has_wildcard": false,
+   "confidence": 0.95,
+   "source_quote": "Total Credit Requirement"
+  },
+  {
+   "req_id": "bs_gpa",
+   "title": "You meet the minimum Overall GPA requirement.",
+   "program": "Bachelor of Science",
+   "status": "complete",
+   "rule": {
+    "kind": "unparsed",
+    "text": "You meet the minimum Overall GPA requirement."
+   },
+   "still_needed_text": null,
+   "satisfied_by": [],
+   "has_wildcard": false,
+   "confidence": 0.6,
+   "source_quote": "You meet the minimum Overall GPA requirement."
+  },
+  {
+   "req_id": "bs_cs1",
+   "title": "Computer Programming I",
+   "program": "Computer Science",
+   "status": "complete",
+   "rule": {
+    "kind": "course_list",
+    "count": 1,
+    "count_unit": "courses",
+    "from": [
+     "CS 1210"
+    ]
+   },
+   "still_needed_text": null,
+   "satisfied_by": [
+    "CS 1210"
+   ],
+   "has_wildcard": false,
+   "confidence": 0.9,
+   "source_quote": "Computer Programming I"
+  },
+  {
+   "req_id": "bs_intermediate",
+   "title": "INTERMEDIATE LEVEL. 3 additional credits:",
+   "program": "Computer Science",
+   "status": "in_progress",
+   "rule": {
+    "kind": "course_list",
+    "count": 3,
+    "count_unit": "credits",
+    "from": [
+     "CS 2500"
+    ]
+   },
+   "still_needed_text": null,
+   "satisfied_by": [
+    "CS 2500"
+   ],
+   "has_wildcard": false,
+   "confidence": 0.85,
+   "source_quote": "INTERMEDIATE LEVEL. 3 additional credits:"
+  },
+  {
+   "req_id": "bs_seminar",
+   "title": "Senior Seminar",
+   "program": "Computer Science",
+   "status": "incomplete",
+   "rule": {
+    "kind": "course_list",
+    "count": 1,
+    "count_unit": "courses",
+    "from": [
+     "CS 3920"
+    ]
+   },
+   "still_needed_text": "Still needed: 1 Class in CS 3920",
+   "satisfied_by": [],
+   "has_wildcard": false,
+   "confidence": 0.95,
+   "source_quote": "Still needed: 1 Class in CS 3920"
+  },
+  {
+   "req_id": "bs_tracks",
+   "title": "CHOOSE ONE TRACK:",
+   "program": "Computer Science",
+   "status": "incomplete",
+   "rule": {
+    "kind": "any_of",
+    "items": [
+     {
+      "kind": "all_of",
+      "items": [
+       {
+        "kind": "course_list",
+        "count": 1,
+        "count_unit": "courses",
+        "from": [
+         "MATH 1234"
+        ]
+       },
+       {
+        "kind": "course_list",
+        "count": 4,
+        "count_unit": "credits",
+        "from": [
+         "MATH 1248"
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "still_needed_text": "Still needed: Choose from 1 of the following:",
+   "satisfied_by": [],
+   "has_wildcard": false,
+   "confidence": 0.8,
+   "source_quote": "CHOOSE ONE TRACK:"
+  },
+  {
+   "req_id": "bs_track1",
+   "title": "TRACK 1",
+   "program": "Computer Science",
+   "status": "incomplete",
+   "rule": {
+    "kind": "all_of",
+    "items": [
+     {
+      "kind": "course_list",
+      "count": 1,
+      "count_unit": "courses",
+      "from": [
+       "MATH 1234"
+      ]
+     },
+     {
+      "kind": "course_list",
+      "count": 4,
+      "count_unit": "credits",
+      "from": [
+       "MATH 1248"
+      ]
+     }
+    ]
+   },
+   "still_needed_text": null,
+   "satisfied_by": [],
+   "has_wildcard": false,
+   "confidence": 0.85,
+   "source_quote": "TRACK 1"
+  },
+  {
+   "req_id": "bs_track1_calc1",
+   "title": "Calculus I",
+   "program": "Computer Science",
+   "status": "complete",
+   "rule": {
+    "kind": "course_list",
+    "count": 1,
+    "count_unit": "courses",
+    "from": [
+     "MATH 1234"
+    ]
+   },
+   "still_needed_text": null,
+   "satisfied_by": [
+    "MATH 1234"
+   ],
+   "has_wildcard": false,
+   "confidence": 0.9,
+   "source_quote": "Calculus I"
+  },
+  {
+   "req_id": "bs_track1_calc2",
+   "title": "Calculus II",
+   "program": "Computer Science",
+   "status": "incomplete",
+   "rule": {
+    "kind": "course_list",
+    "count": 4,
+    "count_unit": "credits",
+    "from": [
+     "MATH 1248"
+    ]
+   },
+   "still_needed_text": null,
+   "satisfied_by": [],
+   "has_wildcard": false,
+   "confidence": 0.9,
+   "source_quote": "4 Credits in MATH 1248"
+  }
+ ],
+ "exceptions": [],
+ "parse_notes": []
+}

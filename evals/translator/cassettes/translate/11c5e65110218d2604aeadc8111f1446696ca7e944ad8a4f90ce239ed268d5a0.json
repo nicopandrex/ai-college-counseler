@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"intent\":\"schedule\",\"question_topic\":null,\"question_courses\":[],\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Avoid having two exams in the same week.\",\"constraints\":[],\"clarifications\":[],\"out_of_scope\":[{\"request\":\"avoid having multiple exams in the same week\",\"user_text\":\"I don't want two exams in the same week.\"}]}",
+ "usage": {
+  "input_tokens": 6266,
+  "output_tokens": 92,
+  "reasoning_tokens": 0
+ }
+}

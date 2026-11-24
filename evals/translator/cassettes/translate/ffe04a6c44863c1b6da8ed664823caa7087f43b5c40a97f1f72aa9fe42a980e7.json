@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\n  \"intent\": \"schedule\",\n  \"question_topic\": null,\n  \"question_courses\": [],\n  \"spec_version\": \"0.1\",\n  \"mode\": \"term\",\n  \"target_term\": \"2027SP\",\n  \"restatement\": \"At most one online course, if possible.\",\n  \"constraints\": [\n    {\n      \"id\": \"c1\",\n      \"type\": \"modality\",\n      \"params_json\": \"{\\\"comparator\\\":\\\"at_most\\\",\\\"count\\\":1,\\\"format\\\":\\\"online\\\"}\",\n      \"enforcement\": \"soft\",\n      \"weight\": 3,\n      \"weight_source\": \"inferred\",\n      \"confidence\": 0.95,\n      \"source_text\": \"At most one online class, if possible.\",\n      \"data_dependency\": \"may_be_missing\"\n    }\n  ],\n  \"clarifications\": [],\n  \"out_of_scope\": []\n}",
+ "usage": {
+  "input_tokens": 6263,
+  "output_tokens": 222,
+  "reasoning_tokens": 0
+ }
+}

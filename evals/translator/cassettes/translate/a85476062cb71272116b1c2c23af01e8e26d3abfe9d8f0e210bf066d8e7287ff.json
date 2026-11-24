@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"intent\":\"schedule\",\"question_topic\":null,\"question_courses\":[],\"spec_version\":\"0.1\",\"mode\":\"plan\",\"target_term\":null,\"restatement\":\"Cap credit load at 15 credits per term across all remaining semesters.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"credits_per_term\",\"params_json\":\"{\\\"max\\\": 15, \\\"min\\\": 1}\",\"enforcement\":\"hard\",\"weight\":5,\"weight_source\":\"stated\",\"confidence\":0.95,\"source_text\":\"Across my remaining semesters, I can't take more than 15 credits in any term.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}",
+ "usage": {
+  "input_tokens": 6274,
+  "output_tokens": 151,
+  "reasoning_tokens": 0
+ }
+}

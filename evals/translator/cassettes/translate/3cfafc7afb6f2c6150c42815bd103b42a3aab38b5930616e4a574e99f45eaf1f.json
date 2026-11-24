@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"intent\":\"schedule\",\"question_topic\":null,\"question_courses\":[],\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Prefer a compact schedule with classes scheduled close together.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"compactness\",\"params_json\":\"{\\\"direction\\\":\\\"compact\\\"}\",\"enforcement\":\"soft\",\"weight\":3,\"weight_source\":\"inferred\",\"confidence\":0.95,\"source_text\":\"I'd prefer my classes clustered close together.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}",
+ "usage": {
+  "input_tokens": 6264,
+  "output_tokens": 131,
+  "reasoning_tokens": 0
+ }
+}

@@ -42,12 +42,23 @@ Test data: `fixtures/private/` (the owner's real audit; never committed).
   anonymized fixtures only.
 
 ## Stack / layout
-- `/ingest` (Python): audit PDF → structured audit; `derive_state`.
-- `/solver` (Python, FastAPI, OR-Tools CP-SAT): validation, term + plan solving.
-- `/web` (Next.js 14 + TypeScript + Tailwind).
+- `/ingest` (Python, `planner_ingest`): audit PDF → structured audit; `derive_state`.
+  CLI: `uv run python -m planner_ingest {layout,extract,draft-golden} <pdf>`.
+- `/llm` (Python, `planner_llm`): the ONE LLM gateway. Env: `LLM_PROVIDER`, `LLM_MODEL[_<PURPOSE>]`,
+  `LLM_API_KEY`, `LLM_CACHE_MODE` (replay|record|live; default replay), `LLM_CACHE_DIR`.
+  Real-audit cassettes live in `fixtures/private/llm-cache` (gitignored). Defaults: Flash for
+  everything except prerequisite parsing (Pro); `LLM_MAX_LIVE_CALLS` caps every run (default
+  30). Sample-run any bulk LLM job and report its token cost before running it in full.
+- `data/uvm/` (committed): derived UVM term data + prerequisite answer store. Never re-scrape or
+  re-parse what's there; `data/raw/` (gitignored) is only the raw scrape cache.
+- `/solver` (Python, `planner_solver`, OR-Tools CP-SAT): validation, term solving (plan mode deferred
+  by the owner to a later version).
+- `/api` (Python, `planner_api`, FastAPI): the web API over ChatSession. `make dev` runs it with the web.
+- `/web` (Next.js 14 + TypeScript + Tailwind): upload, chat, schedule canvas. Plain styling in V0.
 - `/docs`, `/evals`, `/fixtures` (`fixtures/private/` is gitignored).
 - Postgres via `docker-compose.yml` for dev.
 - pydantic (Python) and zod (TS), both validated against the JSON schema.
+- Committed tests use the synthetic DegreeWorks PDF generator (`ingest/tests/synth_degreeworks.py`).
 - pytest + vitest. Python via a uv workspace (`uv.lock` pins deps); web via npm (`package-lock.json`).
 - `make test` runs everything; `make test-py`, `make test-web` run one side each.
 

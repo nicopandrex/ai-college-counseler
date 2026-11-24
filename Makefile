@@ -1,4 +1,4 @@
-.PHONY: install test test-py test-web lint db-up db-down solver-dev web-dev
+.PHONY: install test test-py test-web lint db-up db-down api-dev web-dev dev
 
 install:
 	uv sync --frozen
@@ -23,8 +23,12 @@ db-up:
 db-down:
 	docker compose down
 
-solver-dev:
-	uv run --frozen uvicorn planner_solver.app:app --reload --port 8000
+api-dev:
+	uv run --frozen planner-api
 
 web-dev:
 	cd web && npm run dev
+
+# the web app on http://localhost:3000 (API on :8000); needs the LLM_* env (see README)
+dev:
+	$(MAKE) -j2 api-dev web-dev
