@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/constraint-spec.v0.json",
+  "title": "Degree Planner Constraint Spec v0.1",
+  "description": "The contract between the NL translation layer and the CP-SAT solver. The LLM emits an instance of this; the solver consumes it. Nothing else crosses this boundary.",
+  "type": "object",
+  "required": ["mode", "constraints", "restatement"],
+  "additionalProperties": false,
+
+  "properties": {
+    "spec_version": {
+      "type": "string",
+      "const": "0.1"
+    },
+
+    "mode": {
+      "description": "term = pick sections for one upcoming term. plan = assign courses to future terms through graduation. Some constraint types are only valid in one mode.",
+      "enum": ["term", "plan"]
+    },
+
+    "target_term": {
+      "description": "Required when mode=term. Term code, e.g. '2027SP'.",
+      "type": "string"
+    },
+
+    "constraints": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/constraint" }
+    },
+
+    "clarifications": {
+      "description": "Questions the LLM wants answered before or after solving. Empty array is normal.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/clarification" }
+    },
+
+    "restatement": {
+      "description": "One or two sentences in plain English summarizing what the system understood. Shown to the user before solving so they can catch mistranslations.",
+      "type": "string"
+    },
+
+    "out_of_scope": {
+      "description": "Anything the user asked for that has no representation in this schema. Logged as roadmap input; surfaced honestly to the user.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["request"],
+        "properties": {
+          "request": { "type": "string" },
+          "user_text": { "type": "string" }
+        }
+      }
+    }
+  },
+
+  "$defs": {
+    "constraint": {
+      "type": "object",
+      "required": ["id", "type", "params", "enforcement", "weight"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "Unique within the spec, e.g. 'c1'. Used as the CP-SAT assumption literal so infeasibility analysis can name the offending constraint.",
+          "type": "string"
+        },
+        "type": { "$ref": "#/$defs/constraint_type" },
+        "params": {
+          "description": "Shape depends on type. See the reference doc; validate per-type in application code (zod/pydantic), not in this schema.",
+          "type": "object"
+        },
+        "enforcement": {
+          "description": "hard = must hold, filters the search space. soft = scored in the objective, can be violated at a cost.",
+          "enum": ["hard", "soft"]
+        },
+        "weight": {
+          "description": "1-5 importance. Used for soft-constraint scoring AND for ranking which constraints to suggest relaxing when infeasible. On hard constraints, weight is not used in the objective but IS used to order relaxation suggestions.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "weight_source": {
+          "description": "Where the weight came from. Drives whether the UI should ask the user to confirm it.",
+          "enum": ["stated", "inferred", "default", "user_confirmed"],
+          "default": "inferred"
+        },
+        "confidence": {
+          "description": "LLM's confidence it understood this constraint correctly, 0-1. Below ~0.7 should trigger a clarification or a highlighted chip in the restatement UI.",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "source_text": {
+          "description": "The exact span of the user's message this came from. Powers the editable-chip restatement UI and makes debugging trivial.",
+          "type": "string"
+        },
+        "data_dependency": {
+          "description": "Flags constraints that rely on data which may be missing or estimated for a given school. Solver degrades gracefully and the UI warns.",
+          "enum": ["reliable", "estimated", "may_be_missing"],
+          "default": "reliable"
+        }
+      }
+    },
+
+    "clarification": {
+      "type": "object",
+      "required": ["question", "kind"],
+      "additionalProperties": false,
+      "properties": {
+        "question": { "type": "string" },
+        "kind": {
+          "enum": ["weight_check", "ambiguity", "missing_info", "tradeoff"]
+        },
+        "constraint_id": {
+          "description": "Which constraint this question is about, if any.",
+          "type": "string"
+        },
+        "options": {
+          "description": "Suggested answers for a tappable UI. Optional.",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "blocking": {
+          "description": "true = do not solve until answered. false = solve now, ask alongside results.",
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+
+    "constraint_type": {
+      "enum": [
+        "include_course",
+        "exclude_course",
+        "satisfy_requirement",
+        "course_attribute",
+        "level_distribution",
+        "subject_limit",
+        "difficulty_load",
+
+        "credit_range",
+        "course_count_range",
+
+        "no_earlier_than",
+        "no_later_than",
+        "free_day",
+        "free_block",
+        "max_days_on_campus",
+        "max_consecutive_classes",
+        "gap_between_classes",
+        "compactness",
+
+        "instructor_preference",
+        "modality",
+        "section_size",
+        "campus",
+        "travel_time",
+        "open_seats_only",
+
+        "max_consecutive_labs",
+        "max_labs_per_day",
+
+        "target_graduation_term",
+        "credits_per_term",
+        "term_availability",
+        "reserved_term",
+        "add_program",
+        "front_load_prereqs",
+        "balance_difficulty",
+        "keep_option_open"
+      ]
+    }
+  }
+}
