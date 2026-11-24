@@ -87,6 +87,8 @@ def audit() -> ExtractedAudit:
                 req("chinese.tracks.track_2", "incomplete"),
                 req("chinese.tracks.track_2.chin_2100", "complete", ["CHIN 2100"]),
                 req("chinese.tracks.track_2.chin_4200", "incomplete"),
+                req("chinese.culture", "incomplete"),  # applies to every track
+                req("chinese.culture.choose_one", "incomplete"),
             ],
             "exceptions": [],
             "parse_notes": [],
@@ -194,3 +196,9 @@ def test_choice_group_detected_from_degreeworks_wording(audit: ExtractedAudit) -
     s = {r.req_id: r.state for r in state.requirements}
     assert s["chinese.tracks.track_1.chin_1100"] == "not_applicable"
     assert s["chinese.tracks.track_2.chin_4200"] == "open"
+
+
+def test_requirements_outside_the_tracks_stay_open(audit: ExtractedAudit) -> None:
+    s = states(derive_state(audit))
+    assert s["chinese.culture"] == "open"
+    assert s["chinese.culture.choose_one"] == "open"

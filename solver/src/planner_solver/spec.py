@@ -138,6 +138,7 @@ class CourseParams(_Params):
 class SatisfyRequirementParams(_Params):
     req_ids: list[str] = Field(min_length=1)
     count: int = Field(default=1, ge=1)
+    distinct: bool = False  # True: covered by courses not used for other satisfy_requirement
 
 
 class CourseAttributeParams(_Params):
