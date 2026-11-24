@@ -17,7 +17,8 @@ export interface Grid {
   firstHour: number;
   lastHour: number; // exclusive
   blocks: Block[];
-  unplaced: ScheduleSection[]; // online / arranged / weekend: listed under the grid
+  unplaced: ScheduleSection[]; // online / arranged / weekend: shown in their own row
+  colorOf: (course: string) => number; // same color as the course's blocks
 }
 
 export function clock(minute: number): string {
@@ -54,5 +55,11 @@ export function layout(sections: ScheduleSection[]): Grid {
     label: span(m.start, m.end),
   }));
   const placed = new Set(blocks.map((b) => b.section));
-  return { firstHour, lastHour, blocks, unplaced: sections.filter((s) => !placed.has(s.id)) };
+  return {
+    firstHour,
+    lastHour,
+    blocks,
+    unplaced: sections.filter((s) => !placed.has(s.id)),
+    colorOf: (course) => courses.indexOf(course),
+  };
 }
