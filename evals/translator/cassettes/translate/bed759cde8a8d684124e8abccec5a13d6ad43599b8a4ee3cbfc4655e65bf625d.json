@@ -1,0 +1,5 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\n  \"spec_version\": \"0.1\",\n  \"mode\": \"term\",\n  \"target_term\": \"2027SP\",\n  \"restatement\": \"Prefer gaps between classes to be no longer than 2 hours.\",\n  \"constraints\": [\n    {\n      \"id\": \"c1\",\n      \"type\": \"gap_between_classes\",\n      \"params_json\": \"{\\\"max_minutes\\\": 120}\",\n      \"enforcement\": \"soft\",\n      \"weight\": 3,\n      \"weight_source\": \"inferred\",\n      \"confidence\": 0.95,\n      \"source_text\": \"Ideally no huge gaps, nothing over two hours between classes.\",\n      \"data_dependency\": \"reliable\"\n    }\n  ],\n  \"clarifications\": [],\n  \"out_of_scope\": []\n}"
+}

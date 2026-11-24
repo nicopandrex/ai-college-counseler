@@ -1,0 +1,14 @@
+[project]
+name = "planner-chat"
+version = "0.0.0"
+description = "NL -> constraint spec translation (M6) and the chat CLI"
+requires-python = ">=3.12,<3.14"
+dependencies = ["planner-llm", "planner-solver", "pydantic==2.14.3"]
+
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[tool.uv.sources]
+planner-llm = { workspace = true }
+planner-solver = { workspace = true }

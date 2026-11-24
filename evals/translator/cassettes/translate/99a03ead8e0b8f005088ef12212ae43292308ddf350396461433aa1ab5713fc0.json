@@ -1,0 +1,5 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Prefer taking at most one 3000-level course.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"level_distribution\",\"params_json\":\"{\\\"level\\\": 3000, \\\"comparator\\\": \\\"at_most\\\", \\\"count\\\": 1}\",\"enforcement\":\"soft\",\"weight\":3,\"weight_source\":\"inferred\",\"confidence\":0.95,\"source_text\":\"I'd prefer no more than one 3000-level course.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}"
+}

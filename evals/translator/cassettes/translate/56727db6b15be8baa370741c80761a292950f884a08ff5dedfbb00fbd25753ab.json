@@ -1,0 +1,5 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Limit schedule to at most two CS courses for 2027SP.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"subject_limit\",\"params_json\":\"{\\\"subject\\\":\\\"CS\\\",\\\"comparator\\\":\\\"at_most\\\",\\\"count\\\":2}\",\"enforcement\":\"hard\",\"weight\":4,\"weight_source\":\"inferred\",\"confidence\":0.95,\"source_text\":\"I want at most two CS classes.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}"
+}

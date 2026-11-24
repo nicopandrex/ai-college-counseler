@@ -1,0 +1,5 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\n  \"spec_version\": \"0.1\",\n  \"mode\": \"term\",\n  \"target_term\": \"2027SP\",\n  \"restatement\": \"Fulfill both Humanities (AH3) and Social Sciences (S1) general education requirements this term.\",\n  \"constraints\": [\n    {\n      \"id\": \"c1\",\n      \"type\": \"satisfy_requirement\",\n      \"params_json\": \"{\\\"req_ids\\\":[\\\"GENED_AH3\\\",\\\"GENED_S1\\\"],\\\"count\\\":2}\",\n      \"enforcement\": \"hard\",\n      \"weight\": 5,\n      \"weight_source\": \"stated\",\n      \"confidence\": 0.95,\n      \"source_text\": \"I need to knock out both my humanities and my social science gen eds this term.\",\n      \"data_dependency\": \"reliable\"\n    }\n  ],\n  \"clarifications\": [],\n  \"out_of_scope\": []\n}"
+}

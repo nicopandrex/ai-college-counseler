@@ -1,0 +1,5 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Search for professors who grade the easiest.\",\"constraints\":[],\"clarifications\":[],\"out_of_scope\":[{\"request\":\"Filter or rank professors by grading leniency / grade distribution\",\"user_text\":\"Find me the professors who grade the easiest.\"}]}"
+}

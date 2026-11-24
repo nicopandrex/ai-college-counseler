@@ -1,0 +1,5 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Only include sections that currently have open seats available.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"open_seats_only\",\"params_json\":\"{\\\"value\\\": true}\",\"enforcement\":\"hard\",\"weight\":5,\"weight_source\":\"stated\",\"confidence\":1.0,\"source_text\":\"I need classes that still have open seats.\",\"data_dependency\":\"may_be_missing\"}],\"clarifications\":[],\"out_of_scope\":[]}"
+}

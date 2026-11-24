@@ -1,0 +1,5 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"One course that fulfills any open general education requirement.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"satisfy_requirement\",\"params_json\":\"{\\\"req_ids\\\":[\\\"GENED_S1\\\",\\\"GENED_AH3\\\",\\\"GENED_D1\\\",\\\"GENED_WIL2\\\",\\\"GENED_N2\\\"],\\\"count\\\":1}\",\"enforcement\":\"hard\",\"weight\":5,\"weight_source\":\"stated\",\"confidence\":0.95,\"source_text\":\"I need one course that counts toward any of my open gen eds.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}"
+}
