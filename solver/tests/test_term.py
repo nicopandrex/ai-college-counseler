@@ -383,3 +383,20 @@ def test_distinct_requires_a_different_course() -> None:
     assert run(distinct=False, max_credits=3).schedules[0].courses == ["ENGL 2600"]  # double-counts
     assert run(distinct=True, max_credits=3).status == "infeasible"
     assert run(distinct=True, max_credits=6).schedules[0].courses == ["ENGL 2600", "HIST 1010"]
+
+
+def test_unloaded_prerequisites_are_flagged_not_assumed_met() -> None:
+    term = TERM.model_copy(update={"prereqs_loaded": False})
+    result = solve_term(spec(c("c1", "credit_range", min=3, max=3)), term, STUDENT)
+    assert result.warnings[0].startswith("prerequisites were not checked")
+
+
+def test_excluded_courses_do_not_count_toward_a_requirement() -> None:
+    from planner_solver.domain import RequirementTarget
+
+    target = RequirementTarget(
+        title="HUM", selectors=("@ @ with attribute = HUM",), excluded=("HIST 1010",)
+    )
+    student = STUDENT.model_copy(update={"open_requirements": {"GENED_HUM": target}})
+    result = solve_term(spec(c("c1", "satisfy_requirement", req_ids=["GENED_HUM"])), TERM, student)
+    assert result.status == "infeasible"  # HIST 1010 was the only HUM course
