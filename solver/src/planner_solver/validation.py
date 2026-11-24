@@ -152,7 +152,8 @@ def _contradictions(constraints: list[Constraint]) -> list[Issue]:
         for b in hard:
             if a.type == "no_earlier_than" and b.type == "no_later_than" and days(a) & days(b):
                 if minutes(a.params["time"]) >= minutes(b.params["time"]):
-                    msg = f"no class before {a.params['time']} and none after {b.params['time']} leaves no time"
+                    start, end = a.params["time"], b.params["time"]
+                    msg = f"no class before {start} and none after {end} leaves no time"
                     issues.append(Issue(6, msg + f" ({a.id}, {b.id})", a.id))
             if a.type == "include_course" and b.type == "exclude_course":
                 if a.params["course"] == b.params["course"]:
