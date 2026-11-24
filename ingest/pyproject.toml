@@ -12,3 +12,6 @@ build-backend = "hatchling.build"
 [tool.uv.sources]
 planner-llm = { workspace = true }
 planner-solver = { workspace = true }
+
+[project.scripts]
+planner = "planner_ingest.cli:main"

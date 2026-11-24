@@ -165,9 +165,15 @@ def test_unparsed_rule_cannot_claim_high_confidence(
 
 def test_listing_block_is_not_a_requirement(layout: AuditLayout, audit: ExtractedAudit) -> None:
     listing = audit.requirements[0].model_copy(
-        update={"req_id": "electives", "title": "Electives", "status": "unknown",
-                "source_quote": "Electives", "satisfied_by": ["ARTS 1XXX"], "confidence": 0.6}
-    )  # fmt: skip
+        update={
+            "req_id": "electives",
+            "title": "Electives",
+            "status": "unknown",
+            "source_quote": "Electives",
+            "satisfied_by": ["ARTS 1XXX"],
+            "confidence": 0.6,
+        }
+    )
     audit.requirements.append(listing)
     _, issues = finalize(audit, layout, UVM)
     assert codes(issues) == ["listing_not_requirement"]
@@ -176,9 +182,14 @@ def test_listing_block_is_not_a_requirement(layout: AuditLayout, audit: Extracte
 def test_given_req_id_anchors_exactly_even_with_identical_text(tmp_path: Path) -> None:
     calc = requirement(2, "incomplete", "Calculus I", content=["4 Credits in MATH 1234"])
     legend = Cell(height=30.0, texts=[Text(28.3, 8, "Legend", "Helvetica-Bold", 10)])
-    cells = [block_header("Major", "INCOMPLETE", "x"),
-             requirement(0, "incomplete", "TRACK A"), calc,
-             requirement(0, "incomplete", "TRACK B"), calc, legend]  # fmt: skip
+    cells = [
+        block_header("Major", "INCOMPLETE", "x"),
+        requirement(0, "incomplete", "TRACK A"),
+        calc,
+        requirement(0, "incomplete", "TRACK B"),
+        calc,
+        legend,
+    ]
     layout = parse_layout(build_pdf(tmp_path / "t.pdf", [cells]), UVM)
     base = json.loads(FIXTURE.read_text())
     template = next(r for r in base["requirements"] if r["title"] == "Calculus II")
@@ -186,13 +197,19 @@ def test_given_req_id_anchors_exactly_even_with_identical_text(tmp_path: Path) -
     def entry(req_id: str, title: str, quote: str) -> dict:
         return {**template, "req_id": req_id, "title": title, "source_quote": quote}
 
-    audit = ExtractedAudit.model_validate({**base, "courses_taken": [], "requirements": [
-        entry("major", "Major", "Major"),
-        entry("major.track_b.calculus_i", "Calculus I", "4 Credits in MATH 1234"),
-        entry("major.track_a", "TRACK A", "TRACK A"),
-        entry("major.track_b", "TRACK B", "TRACK B"),
-        entry("major.track_a.calculus_i", "Calculus I", "4 Credits in MATH 1234"),
-    ]})  # fmt: skip
+    audit = ExtractedAudit.model_validate(
+        {
+            **base,
+            "courses_taken": [],
+            "requirements": [
+                entry("major", "Major", "Major"),
+                entry("major.track_b.calculus_i", "Calculus I", "4 Credits in MATH 1234"),
+                entry("major.track_a", "TRACK A", "TRACK A"),
+                entry("major.track_b", "TRACK B", "TRACK B"),
+                entry("major.track_a.calculus_i", "Calculus I", "4 Credits in MATH 1234"),
+            ],
+        }
+    )
     anchors = anchor_requirements(audit, layout)
     rows = {r.row_id: r for r in layout.rows}
     ids = requirement_ids(layout)
