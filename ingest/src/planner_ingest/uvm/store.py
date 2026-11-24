@@ -24,6 +24,12 @@ from planner_solver.domain import Prereq, TermData, UnparsedPrereq
 RAW = Path("data/raw/uvm")
 DATA = Path("data/uvm")
 TREES = TypeAdapter(dict[str, Prereq | None])
+_SEASON_MONTH = {"SP": "01", "SU": "06", "FA": "09"}  # UVM's SOC term codes (202701 = Spring 2027)
+
+
+def soc_term(term: str) -> str:
+    """'2027SP' (the spec's term code) -> '202701' (UVM's Schedule of Courses code)."""
+    return term[:4] + _SEASON_MONTH[term[4:]]
 
 
 def build_term(srcdb: str, raw: Path = RAW, data: Path = DATA) -> TermData:

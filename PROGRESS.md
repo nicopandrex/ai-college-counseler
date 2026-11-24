@@ -4,7 +4,7 @@ Running log. Resume from **Current status**. Newest log entries at the top.
 
 ## Current status
 - **Done:** M0, M1, M2, M4 (incl. real solve), M5. M3 is done for Spring 2027 (see gaps).
-- **Next:** M6 owner review of the eval set, then M7 (CLI chat demo, STOP with transcript).
+- **Next:** owner reviews the M6 eval set and the M7 transcript; then M8 (plan mode).
 - **Demo today:** `planner solve --audit fixtures/private/audit.pdf --spec
   fixtures/private/specs/example_senior_seminar.json` (env: `LLM_PROVIDER=gemini
   LLM_MODEL=gemini-3.1-pro-preview LLM_API_KEY=replay-only
@@ -77,7 +77,25 @@ Running log. Resume from **Current status**. Newest log entries at the top.
      Mitigation: the M9 chip UI shows inferred weights as adjustable sliders, and the
      restatement lets the student catch it.
 - Translator model for chat: `gemini-3.5-flash` (the plan's cheap structured-output model).
-### M7 CLI demo (STOP) · M8 plan mode · M9 web UI · M10 beta — not started
+### M7 CLI demo ⏸ (STOP: owner reviews the transcript)
+- `planner chat --audit <pdf> [--term 2027SP] [--standing] [--fail] [--script file]`
+  (`chat/src/planner_chat/session.py`). Each message is one Flash translator call (current spec
+  as prior), then validation, solver and a templated reply. A constraint with a validation
+  problem is left out with the reason, and the rest is solved. Rule-6 contradictions are
+  shown as conflicts. Infeasible results give numbered fixes; replying with a number applies
+  one with no LLM call, and course-scoped rules go with a dropped course. `/spec` lists
+  requests. Out-of-scope asks are told and logged to `.planner/out_of_scope.jsonl`
+  (gitignored).
+- The plan's exact example query works on the real audit (transcript:
+  `fixtures/private/transcripts/m7_transcript.txt`). The demo run cost 2–3 Flash calls,
+  ~30K input tokens each (the full catalog is in context).
+- Fixed from reading the transcript: arranged in-person sections without times (CS 4996
+  Honors Thesis) are never auto-scheduled, only when named; dropping a course drops rules
+  scoped to it (the restatement had said "macro" after macro was dropped); a soft default
+  load preference of 12–16 inside the hard 12–19 (it had packed 19 credits).
+- Idea logged: warn when a hard preference costs a bottleneck requirement (Fridays free
+  removes CHIN 4200, MWF-only, Track 3's last course).
+### M8 plan mode · M9 web UI · M10 beta — not started
 
 ## Schema proposals (owner reviewed 2026-11-18)
 - Approved and documented in the reference: `satisfy_requirement.distinct`, day codes R/U.
@@ -98,6 +116,9 @@ Running log. Resume from **Current status**. Newest log entries at the top.
    Proposal: document that default.
 
 ## Decisions
+- **Soft default load 12–16** inside the hard 12–19 band, added by validation only when no
+  load is stated (`uvm/capabilities.json` `preferred_credit_range`). My judgment, pending the
+  owner: without it, degree-progress maximisation packed every schedule to 19 credits.
 - **Model per task (measured 2026-11-18 on the owner's $5):**
   - *Audit extraction: Flash.* 2 calls, 19,415 in + 31,405 out tokens. Golden test green. Its
     own course list garbled "A+" as "A process" (4×), but courses come from the PDF parse, so

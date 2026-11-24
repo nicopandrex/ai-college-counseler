@@ -3,13 +3,14 @@ name = "planner-ingest"
 version = "0.0.0"
 description = "DegreeWorks audit PDF ingestion and derive_state"
 requires-python = ">=3.12,<3.14"
-dependencies = ["httpx==0.28.1", "pdfplumber==0.11.4", "planner-llm", "planner-solver", "pydantic==2.14.3"]
+dependencies = ["httpx==0.28.1", "pdfplumber==0.11.4", "planner-chat", "planner-llm", "planner-solver", "pydantic==2.14.3"]
 
 [build-system]
 requires = ["hatchling==1.27.0"]
 build-backend = "hatchling.build"
 
 [tool.uv.sources]
+planner-chat = { workspace = true }
 planner-llm = { workspace = true }
 planner-solver = { workspace = true }
 
