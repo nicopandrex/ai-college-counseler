@@ -653,15 +653,19 @@ name = "planner-ingest"
 version = "0.0.0"
 source = { editable = "ingest" }
 dependencies = [
+    { name = "httpx" },
     { name = "pdfplumber" },
     { name = "planner-llm" },
+    { name = "planner-solver" },
     { name = "pydantic" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "httpx", specifier = "==0.28.1" },
     { name = "pdfplumber", specifier = "==0.11.4" },
     { name = "planner-llm", editable = "llm" },
+    { name = "planner-solver", editable = "solver" },
     { name = "pydantic", specifier = "==2.14.3" },
 ]
 

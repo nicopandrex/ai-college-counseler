@@ -101,16 +101,17 @@ class Course(_Model):
 
 
 class TermData(_Model):
-    term: str  # e.g. "2027SP"
+    term: str  # e.g. "2027SP" or a source's own code ("202701")
     courses: dict[str, Course]
     sections: tuple[Section, ...]
+    prereqs_loaded: bool = True  # False: course prerequisites are unknown, not absent
 
 
 class RequirementTarget(_Model):
     title: str
-    selectors: tuple[
-        str, ...
-    ]  # rule codes/selectors: "CS 2100", "CS 3@", "@ @ with attribute = AH1"
+    # rule codes/selectors: "CS 2100", "CS 3@", "@ @ with attribute = AH1"
+    selectors: tuple[str, ...]
+    excluded: tuple[str, ...] = ()  # courses that don't count ("Except ...")
 
 
 class StudentTerm(_Model):

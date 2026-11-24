@@ -491,7 +491,7 @@ def _eligible_sections(
                 warnings.append(f"{req_id}: cannot interpret {selector!r}")
             else:
                 courses |= resolved
-        requirement_courses[req_id] = courses
+        requirement_courses[req_id] = courses - set(target.excluded)
     wanted = set().union(*requirement_courses.values()) if requirement_courses else set()
     for c in spec.constraints:
         if c.type == "include_course":
@@ -643,6 +643,8 @@ def solve_term(
     spec: ConstraintSpec, data: TermData, student: StudentTerm, limit: int = MAX_SCHEDULES
 ) -> TermResult:
     sections, requirement_courses, warnings = _eligible_sections(data, student, spec)
+    if not data.prereqs_loaded:
+        warnings.insert(0, "prerequisites were not checked: catalog prerequisite data isn't loaded")
     ctx, holds = _build(spec, data, student, sections, requirement_courses)
     warnings += ctx.warnings
     hard = _hard(spec, holds)
