@@ -12,7 +12,7 @@ from planner_llm import (
     LLMError,
     LLMGateway,
 )
-from planner_llm.gateway import DEFAULT_MAX_LIVE_CALLS, DEFAULT_MODEL
+from planner_llm.gateway import DEFAULT_MAX_LIVE_CALLS, DEFAULT_MODEL, DEFAULT_MODELS
 
 SCHEMA = {
     "type": "object",
@@ -158,3 +158,12 @@ def test_from_env_defaults_to_the_cheap_model_and_a_budget(
     monkeypatch.setenv("LLM_CACHE_DIR", str(tmp_path))
     gateway = LLMGateway.from_env()
     assert gateway.model == DEFAULT_MODEL and gateway.max_live_calls == DEFAULT_MAX_LIVE_CALLS
+
+
+def test_per_purpose_default_models(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("LLM_MODEL", raising=False)
+    monkeypatch.setenv("LLM_CACHE_DIR", str(tmp_path))
+    assert LLMGateway.from_env("prereq_parse").model == DEFAULT_MODELS["prereq_parse"]
+    assert LLMGateway.from_env("audit_extraction").model == DEFAULT_MODEL
+    monkeypatch.setenv("LLM_MODEL", "chosen")
+    assert LLMGateway.from_env("prereq_parse").model == "chosen"  # explicit choice wins

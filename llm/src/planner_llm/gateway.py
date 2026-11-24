@@ -36,6 +36,9 @@ class LLMBudgetError(LLMError):
 
 
 DEFAULT_MODEL = "gemini-3.5-flash"  # cheap by default; stronger models only when chosen
+# Measured exception (PROGRESS.md): Flash drops enrollment restrictions from prerequisite
+# notes. Prerequisite parsing is one-off per changed note (answer store), so Pro stays cheap.
+DEFAULT_MODELS = {"prereq_parse": "gemini-3.1-pro-preview"}
 DEFAULT_MAX_LIVE_CALLS = 30
 USAGE_KEYS = ("input_tokens", "output_tokens", "reasoning_tokens")
 
@@ -88,7 +91,7 @@ class LLMGateway:
         model = (
             os.environ.get(f"LLM_MODEL_{purpose.upper()}")
             or os.environ.get("LLM_MODEL")
-            or DEFAULT_MODEL
+            or DEFAULT_MODELS.get(purpose, DEFAULT_MODEL)
         )
         mode = CacheMode(os.environ.get("LLM_CACHE_MODE", CacheMode.REPLAY.value))
         cache_dir = Path(os.environ.get("LLM_CACHE_DIR", ".llm-cache"))
