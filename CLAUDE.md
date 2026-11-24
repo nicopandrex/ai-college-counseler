@@ -42,12 +42,17 @@ Test data: `fixtures/private/` (the owner's real audit; never committed).
   anonymized fixtures only.
 
 ## Stack / layout
-- `/ingest` (Python): audit PDF → structured audit; `derive_state`.
-- `/solver` (Python, FastAPI, OR-Tools CP-SAT): validation, term + plan solving.
+- `/ingest` (Python, `planner_ingest`): audit PDF → structured audit; `derive_state`.
+  CLI: `uv run python -m planner_ingest {layout,extract,draft-golden} <pdf>`.
+- `/llm` (Python, `planner_llm`): the ONE LLM gateway. Env: `LLM_PROVIDER`, `LLM_MODEL[_<PURPOSE>]`,
+  `LLM_API_KEY`, `LLM_CACHE_MODE` (replay|record|live; default replay), `LLM_CACHE_DIR`.
+  Real-audit cassettes live in `fixtures/private/llm-cache` (gitignored).
+- `/solver` (Python, `planner_solver`, FastAPI, OR-Tools CP-SAT): validation, term + plan solving.
 - `/web` (Next.js 14 + TypeScript + Tailwind).
 - `/docs`, `/evals`, `/fixtures` (`fixtures/private/` is gitignored).
 - Postgres via `docker-compose.yml` for dev.
 - pydantic (Python) and zod (TS), both validated against the JSON schema.
+- Committed tests use the synthetic DegreeWorks PDF generator (`ingest/tests/synth_degreeworks.py`).
 - pytest + vitest. Python via a uv workspace (`uv.lock` pins deps); web via npm (`package-lock.json`).
 - `make test` runs everything; `make test-py`, `make test-web` run one side each.
 
