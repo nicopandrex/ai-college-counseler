@@ -3,6 +3,24 @@
 Every LLM call in the product goes through `LLMGateway.complete_json`.
 """
 
-from planner_llm.gateway import CacheMiss, CacheMode, JsonRequest, LLMError, LLMGateway, Provider
+from planner_llm.gateway import (
+    CacheMiss,
+    CacheMode,
+    Completion,
+    JsonRequest,
+    LLMBudgetError,
+    LLMError,
+    LLMGateway,
+    Provider,
+)
 
-__all__ = ["CacheMiss", "CacheMode", "JsonRequest", "LLMError", "LLMGateway", "Provider"]
+__all__ = [
+    "CacheMiss",
+    "CacheMode",
+    "Completion",
+    "JsonRequest",
+    "LLMBudgetError",
+    "LLMError",
+    "LLMGateway",
+    "Provider",
+]

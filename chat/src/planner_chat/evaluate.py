@@ -193,6 +193,7 @@ def main() -> int:
     mode = CacheMode(os.environ.get("LLM_CACHE_MODE", "replay"))
     gateway = LLMGateway(provider_from_env(), args.model, EVAL_DIR / "cassettes", mode)
     outcomes = run(gateway)
+    print(gateway.usage_summary())
     passed = sum(r.passed for _, r, _ in outcomes)
     categories = Counter((r.category or "").split(":")[0] for _, r, _ in outcomes if not r.passed)
     rate = passed / len(outcomes)

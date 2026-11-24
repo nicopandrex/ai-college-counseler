@@ -32,7 +32,9 @@ def main(argv: list[str] | None = None) -> int:
         _emit(golden.model_dump_json(indent=2), args.out)
         return 0
 
-    result = extract_audit(args.pdf, LLMGateway.from_env(PURPOSE), args.school)
+    gateway = LLMGateway.from_env(PURPOSE)
+    result = extract_audit(args.pdf, gateway, args.school)
+    print(gateway.usage_summary(), file=sys.stderr)
     _emit(json.dumps(result.report(), indent=2), args.out)
     errors = sum(1 for issue in result.issues if issue.severity == "error")
     review = len(result.report()["needs_review"])

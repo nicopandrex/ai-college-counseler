@@ -3,7 +3,16 @@ from pathlib import Path
 
 import pytest
 
-from planner_llm import CacheMiss, CacheMode, JsonRequest, LLMError, LLMGateway
+from planner_llm import (
+    CacheMiss,
+    CacheMode,
+    Completion,
+    JsonRequest,
+    LLMBudgetError,
+    LLMError,
+    LLMGateway,
+)
+from planner_llm.gateway import DEFAULT_MAX_LIVE_CALLS, DEFAULT_MODEL
 
 SCHEMA = {
     "type": "object",
@@ -104,3 +113,48 @@ def test_from_env_purpose_specific_model(tmp_path: Path, monkeypatch: pytest.Mon
     monkeypatch.setenv("LLM_MODEL_CHAT", "cheap-model")
     assert LLMGateway.from_env(purpose="chat").model == "cheap-model"
     assert LLMGateway.from_env(purpose="audit_extraction").model == "default-model"
+
+
+class MeteredProvider(FakeProvider):
+    def complete_json(self, request: JsonRequest, model: str) -> Completion:
+        self.calls += 1
+        return Completion(
+            json.dumps(self.payload),
+            {"input_tokens": 100, "output_tokens": 40, "reasoning_tokens": 25},
+        )
+
+
+def test_usage_is_recorded_and_totalled(tmp_path: Path) -> None:
+    gateway = LLMGateway(MeteredProvider({"answer": "x"}), "m1", tmp_path, CacheMode.RECORD)
+    gateway.complete_json(make_request("a"))
+    gateway.complete_json(make_request("b"))
+    gateway.complete_json(make_request("a"))  # cached: costs nothing
+    assert gateway.usage == {
+        "live_calls": 2,
+        "input_tokens": 200,
+        "output_tokens": 80,
+        "reasoning_tokens": 50,
+    }
+    cassette = json.loads(next((tmp_path / "test").glob("*.json")).read_text())
+    assert cassette["usage"]["output_tokens"] == 40
+
+
+def test_live_call_budget_stops_runaway_jobs(tmp_path: Path) -> None:
+    provider = FakeProvider({"answer": "x"})
+    gateway = LLMGateway(provider, "m1", tmp_path, CacheMode.RECORD, max_live_calls=2)
+    gateway.complete_json(make_request("a"))
+    gateway.complete_json(make_request("b"))
+    with pytest.raises(LLMBudgetError):
+        gateway.complete_json(make_request("c"))
+    assert provider.calls == 2
+    assert gateway.complete_json(make_request("a")) == {"answer": "x"}  # replays stay free
+
+
+def test_from_env_defaults_to_the_cheap_model_and_a_budget(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.delenv("LLM_MODEL", raising=False)
+    monkeypatch.delenv("LLM_MAX_LIVE_CALLS", raising=False)
+    monkeypatch.setenv("LLM_CACHE_DIR", str(tmp_path))
+    gateway = LLMGateway.from_env()
+    assert gateway.model == DEFAULT_MODEL and gateway.max_live_calls == DEFAULT_MAX_LIVE_CALLS
