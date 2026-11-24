@@ -61,7 +61,7 @@ class LLMGateway:
         model = os.environ.get(f"LLM_MODEL_{purpose.upper()}") or os.environ.get("LLM_MODEL", "")
         mode = CacheMode(os.environ.get("LLM_CACHE_MODE", CacheMode.REPLAY.value))
         cache_dir = Path(os.environ.get("LLM_CACHE_DIR", ".llm-cache"))
-        return cls(_provider_from_env(), model=model, cache_dir=cache_dir, mode=mode)
+        return cls(provider_from_env(), model=model, cache_dir=cache_dir, mode=mode)
 
     def cache_key(self, request: JsonRequest) -> str:
         material = {"provider": self.provider.name, "model": self.model, **asdict(request)}
@@ -96,7 +96,7 @@ def _parse(text: str) -> dict[str, Any]:
     return value
 
 
-def _provider_from_env() -> Provider:
+def provider_from_env() -> Provider:
     name = os.environ.get("LLM_PROVIDER", "anthropic")
     if name == "anthropic":
         from planner_llm.providers.anthropic import AnthropicProvider
