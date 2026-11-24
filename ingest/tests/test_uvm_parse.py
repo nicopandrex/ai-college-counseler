@@ -152,3 +152,18 @@ def test_schd_meaning_is_the_dominant_one_with_enough_evidence(tmp_path: Path) -
     term, report = parse_term(tmp_path, "202701")
     assert {s.modality for s in term.sections if s.course.startswith("HY")} == {"hybrid"}  # 95%
     assert report.ambiguous_schd == ["Q"]  # 1 lecture vs 1 practicum: too little to decide
+
+
+def test_load_term_marks_review_queue_courses_unknown_not_free(tmp_path: Path) -> None:
+    from planner_ingest.cli import load_term
+    from planner_solver.domain import UnparsedPrereq
+
+    rows, dets = [row("CS 3200", "1", "A", "L", [])], [details("CS 3200", "1", "Lecture")]
+    term_dir = write(tmp_path / "202701", rows, dets)
+    (term_dir / "prereqs.json").write_text("{}")
+    queued = [
+        {"code": "CS 3200", "notes": "Prereq: CS 2240 & 2250 ?", "reason": "flagged ambiguous"}
+    ]
+    (term_dir / "prereq_review.json").write_text(json.dumps(queued))
+    prereq = load_term("202701", tmp_path).courses["CS 3200"].prereq
+    assert prereq == UnparsedPrereq(kind="unparsed", text="Prereq: CS 2240 & 2250 ?")

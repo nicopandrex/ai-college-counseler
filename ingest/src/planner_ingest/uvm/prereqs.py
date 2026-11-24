@@ -1,8 +1,11 @@
 """SOC comment prose -> prerequisite trees (LLM), with a review queue for doubtful ones.
 
-Only courses whose comments mention prerequisites, standing or permission are sent. A tree is
-queued for human review (and kept out of the solver) if the model flags it ambiguous, it
-contains an `unparsed` node, a course code is malformed, or the model skipped the course.
+Only courses whose comments mention prerequisites, standing or permission are sent; a course
+the model skips is asked about once more. Every doubtful course goes to the review queue:
+- a tree whose only problem is an `unparsed` part is still used: that part evaluates as
+  "unknown", so it can never make a prerequisite look met;
+- an ambiguous, invalid or malformed-code tree, or a skipped course, is kept out of the solver
+  (the caller marks it unknown).
 """
 
 from __future__ import annotations
@@ -20,7 +23,6 @@ from planner_solver.domain import AllPrereq, AnyPrereq, CoursePrereq, Prereq, Un
 PURPOSE = "prereq_parse"
 BATCH_SIZE = 25
 WORKERS = 6
-TREE_DEPTH = 2  # or -> and -> course; deeper notes come back as `unparsed`
 MENTIONS = re.compile(
     r"pre-?req|co-?req|standing|permission|consent of|minimum grade|or better", re.I
 )
@@ -51,45 +53,62 @@ def _obj(props: dict[str, Any]) -> dict[str, Any]:
 
 
 def output_schema() -> dict[str, Any]:
-    leaves = [
-        _obj(
-            {
-                "kind": {"const": "course"},
-                "code": {"type": "string"},
-                "min_grade": _nullable({"type": "string"}),
-                "concurrent_ok": {"type": "boolean"},
-            }
-        ),
-        _obj(
-            {
-                "kind": {"const": "standing"},
-                "minimum": {"enum": ["sophomore", "junior", "senior", "graduate"]},
-            }
-        ),
-        _obj({"kind": {"const": "permission"}, "text": {"type": "string"}}),
-        _obj({"kind": {"const": "unparsed"}, "text": {"type": "string"}}),
-    ]
-    defs: dict[str, Any] = {"node_0": {"anyOf": leaves}}
-    for depth in range(1, TREE_DEPTH + 1):
-        child = {"type": "array", "items": {"$ref": f"#/$defs/node_{depth - 1}"}}
-        defs[f"node_{depth}"] = {
-            "anyOf": [
-                *leaves,
-                _obj({"kind": {"const": "and"}, "items": child}),
-                _obj({"kind": {"const": "or"}, "items": child}),
-            ]
+    """Flat node list (children by id): any nesting depth, without a recursive schema."""
+    node = _obj(
+        {
+            "id": {"type": "string"},
+            "kind": {"enum": ["and", "or", "course", "standing", "permission", "unparsed"]},
+            "children": {"type": "array", "items": {"type": "string"}},
+            "code": _nullable({"type": "string"}),
+            "min_grade": _nullable({"type": "string"}),
+            "concurrent_ok": {"type": "boolean"},
+            "minimum": _nullable({"enum": ["sophomore", "junior", "senior", "graduate"]}),
+            "text": _nullable({"type": "string"}),
         }
+    )
     entry = _obj(
         {
             "code": {"type": "string"},
-            "prereq": _nullable({"$ref": f"#/$defs/node_{TREE_DEPTH}"}),
+            "nodes": {"type": "array", "items": node},
+            "root": _nullable({"type": "string"}),
             "ambiguous": {"type": "boolean"},
             "note": _nullable({"type": "string"}),
         }
     )
-    schema = _obj({"courses": {"type": "array", "items": entry}})
-    schema["$defs"] = defs
-    return schema
+    return _obj({"courses": {"type": "array", "items": entry}})
+
+
+class _BadTree(ValueError):
+    pass
+
+
+def build_tree(nodes: list[dict[str, Any]], root: str | None) -> Prereq | None:
+    """Rebuild the nested tree; dangling ids, cycles and kind/field mismatches are errors."""
+    if root is None:
+        return None
+    by_id = {n["id"]: n for n in nodes}
+
+    def build(nid: str, path: frozenset[str]) -> dict[str, Any]:
+        if nid not in by_id or nid in path:
+            raise _BadTree(f"node {nid!r} is missing or cyclic")
+        n = by_id[nid]
+        kind = n["kind"]
+        if kind in ("and", "or"):
+            if not n["children"]:
+                raise _BadTree(f"{kind} node {nid!r} has no children")
+            return {"kind": kind, "items": [build(c, path | {nid}) for c in n["children"]]}
+        fields = {
+            "course": ("code", "min_grade", "concurrent_ok"),
+            "standing": ("minimum",),
+            "permission": ("text",),
+            "unparsed": ("text",),
+        }[kind]
+        out = {"kind": kind, **{f: n[f] for f in fields}}
+        if kind == "course" and out["min_grade"] is None:
+            del out["min_grade"]
+        return out
+
+    return _PREREQ.validate_python(build(root, frozenset()))
 
 
 def _problems(tree: Prereq) -> list[str]:
@@ -122,10 +141,18 @@ def parse_prereqs(
         )
         return gateway.complete_json(request)["courses"]
 
-    with ThreadPoolExecutor(max_workers=workers) as pool:
-        answers = {
-            a["code"]: a for result in pool.map(ask, batches) for a in result if a["code"] in notes
-        }
+    def collect(groups: list[list[str]]) -> dict[str, dict[str, Any]]:
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            return {
+                a["code"]: a
+                for result in pool.map(ask, groups)
+                for a in result
+                if a["code"] in notes
+            }
+
+    answers = collect(batches)
+    skipped = [code for code in codes if code not in answers]
+    answers |= collect([skipped[i : i + batch_size] for i in range(0, len(skipped), batch_size)])
 
     trees: dict[str, Prereq | None] = {}
     review: list[dict[str, str]] = []
@@ -137,8 +164,8 @@ def parse_prereqs(
             )
             continue
         try:
-            tree = None if answer["prereq"] is None else _PREREQ.validate_python(answer["prereq"])
-        except ValidationError as exc:
+            tree = build_tree(answer["nodes"], answer["root"])
+        except (_BadTree, ValidationError) as exc:
             review.append({"code": code, "notes": notes[code], "reason": f"invalid tree: {exc}"})
             continue
         problems = ([answer.get("note") or "flagged ambiguous"] if answer["ambiguous"] else []) + (
@@ -146,6 +173,6 @@ def parse_prereqs(
         )
         if problems:
             review.append({"code": code, "notes": notes[code], "reason": "; ".join(problems)})
-        else:
+        if all(p.startswith("unparsed:") for p in problems):
             trees[code] = tree
     return trees, review

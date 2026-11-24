@@ -62,3 +62,13 @@ def test_still_needed_prefix_is_optional() -> None:
     )
     assert parse_still_needed(text) == (["@ @ with attribute = AH3"], ["CAS 1720"])
     assert parse_still_needed("You must complete 2 courses in the major") == ([], [])
+
+
+def test_standing_comes_from_the_audits_own_words() -> None:
+    from planner_ingest.bridge import standing_from
+
+    assert standing_from("03 - Junior") == "junior"
+    assert standing_from("Senior") == "senior"
+    assert standing_from("Graduate") == "graduate"
+    assert standing_from(None) is None
+    assert standing_from("Level 3") is None  # unknown wording: not guessed
