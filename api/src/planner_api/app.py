@@ -86,6 +86,10 @@ def create_app(opener: Opener = open_from_pdf) -> FastAPI:
     def view(session_id: str) -> dict[str, Any]:
         return live(session_id).chat.view()
 
+    @app.get("/api/sessions/{session_id}/catalog")
+    def catalog(session_id: str, q: str = "") -> dict[str, Any]:
+        return live(session_id).chat.catalog(q[:200])
+
     @app.post("/api/sessions/{session_id}/messages")
     def message(session_id: str, body: Message) -> dict[str, Any]:
         return turn(session_id, lambda chat: chat.handle(body.text))

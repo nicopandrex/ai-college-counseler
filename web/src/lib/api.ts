@@ -51,6 +51,32 @@ export const ViewSchema = z.object({
 export type View = z.infer<typeof ViewSchema>;
 export type ScheduleSection = z.infer<typeof Section>;
 
+const CatalogSchema = z.object({
+  total: z.number(),
+  courses: z.array(
+    z.object({
+      code: z.string(),
+      title: z.string(),
+      credits: z.number(),
+      status: z.enum(["open", "taken", "blocked", "check"]),
+      notes: z.array(z.string()),
+      counts_toward: z.array(z.string()),
+      sections: z.array(
+        z.object({
+          id: z.string(),
+          component: z.string(),
+          when: z.string(),
+          instructors: z.array(z.string()),
+          online: z.boolean(),
+          seats_open: z.number().nullable(),
+        }),
+      ),
+    }),
+  ),
+});
+export type Catalog = z.infer<typeof CatalogSchema>;
+export type CatalogCourse = Catalog["courses"][number];
+
 const TurnSchema = z.object({ reply: z.string(), view: ViewSchema });
 const StartedSchema = TurnSchema.extend({ id: z.string() });
 export type Turn = z.infer<typeof TurnSchema>;
@@ -86,4 +112,10 @@ export function dropRule(session: string, rule: string): Promise<Turn> {
   return call(TurnSchema, `/api/sessions/${session}/rules/${encodeURIComponent(rule)}`, {
     method: "DELETE",
   });
+}
+
+/** Course search over this term's data (no LLM). An empty query lists what counts toward you. */
+export function searchCatalog(session: string, query: string, signal?: AbortSignal): Promise<Catalog> {
+  const q = encodeURIComponent(query);
+  return call(CatalogSchema, `/api/sessions/${session}/catalog?q=${q}`, { signal });
 }

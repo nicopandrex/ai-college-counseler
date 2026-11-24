@@ -17,11 +17,13 @@ from planner_chat.translator import TranslatorContext, translate
 from planner_llm import LLMError, LLMGateway
 from planner_solver.describe import DEFAULT_IDS, describe, summary
 from planner_solver.domain import (
+    Section,
     StudentTerm,
     TermData,
     blocking_reasons,
     prereq_met,
     resolve_selector,
+    unknown_reasons,
     when,
 )
 from planner_solver.present import SHOWN, label, render_result
@@ -49,6 +51,7 @@ NO_OPINIONS = (
     "who you'd like to take or avoid and I'll plan around it."
 )
 OTHER = "I can only help with your {term} schedule and what's on your audit."
+CATALOG_LIMIT = 60  # rows per catalog search; `total` says how many matched
 
 
 @dataclass(frozen=True)
@@ -91,6 +94,7 @@ class ChatSession:
     _waived: set[str] = field(
         default_factory=set, repr=False
     )  # system defaults the student removed
+    _requirement_courses: list[tuple[str, set[str]]] | None = field(default=None, repr=False)
     questions: list[dict[str, Any]] = field(default_factory=list)  # asked on the last turn
     list_schedules: bool = True  # False when the schedules are drawn elsewhere (web canvas)
 
@@ -240,15 +244,7 @@ class ChatSession:
                 f"  {s.section_id}  {when(s)}  · {', '.join(s.instructors) or 'instructor TBA'}"
                 for s in sections
             ] or ["  no sections this term"]
-            counts = [
-                t.title
-                for t in self.student.open_requirements.values()
-                if any(
-                    code in (resolve_selector(sel, self.term.courses) or set())
-                    for sel in t.selectors
-                )
-                and code not in t.excluded
-            ]
+            counts = self._counts_toward(code)
             if code in self.student.unplannable_courses:
                 lines.append("  You've already taken it or are registered.")
             elif prereq_met(course.prereq, self.student) == "no":
@@ -292,7 +288,74 @@ class ChatSession:
         )
         return intro + "\n" + render_result(result, checked.spec, self.term, student)
 
+    def catalog(self, query: str = "") -> dict[str, Any]:
+        """This term's courses matching every word of `query` (code, title or instructor),
+        straight from the term data. No query: the courses that count toward an open
+        requirement. No LLM; nothing here is generated."""
+        words = query.lower().split()
+        offered: dict[str, list[Section]] = {}
+        for s in self.term.sections:
+            offered.setdefault(s.course, []).append(s)
+        matches: list[dict[str, Any]] = []
+        for code, course in sorted(self.term.courses.items()):
+            sections = offered.get(code, [])
+            counts = self._counts_toward(code)
+            if words:
+                names = " ".join(i for s in sections for i in s.instructors)
+                haystack = f"{code} {code.replace(' ', '')} {course.title} {names}".lower()
+                if not all(w in haystack for w in words):
+                    continue
+            elif not counts:
+                continue
+            if code in self.student.unplannable_courses:
+                status, notes = "taken", []
+            elif blocked := blocking_reasons(course.prereq, self.student):
+                status, notes = "blocked", blocked
+            elif unsure := unknown_reasons(course.prereq, self.student):
+                status, notes = "check", unsure
+            else:
+                status, notes = "open", []
+            matches.append(
+                {
+                    "code": code,
+                    "title": course.title,
+                    "credits": course.credits,
+                    "status": status,
+                    "notes": notes,
+                    "counts_toward": counts,
+                    "sections": [
+                        {
+                            "id": s.section_id,
+                            "component": s.component,
+                            "when": when(s),
+                            "instructors": list(s.instructors),
+                            "online": s.modality == "online",
+                            "seats_open": s.seats_open,
+                        }
+                        for s in sections
+                    ],
+                }
+            )
+        return {"courses": matches[:CATALOG_LIMIT], "total": len(matches)}
+
     # -- helpers -------------------------------------------------------------------------
+
+    def _counts_toward(self, code: str) -> list[str]:
+        """Titles of the open requirements this course could count toward."""
+        if self._requirement_courses is None:  # resolved once: the catalog asks per course
+            self._requirement_courses = [
+                (
+                    t.title,
+                    {
+                        c
+                        for sel in t.selectors
+                        for c in resolve_selector(sel, self.term.courses) or set()
+                    }
+                    - set(t.excluded),
+                )
+                for t in self.student.open_requirements.values()
+            ]
+        return [title for title, codes in self._requirement_courses if code in codes]
 
     def _prior(self) -> dict[str, Any] | None:
         """The current spec for the translator, without the system's own defaults."""

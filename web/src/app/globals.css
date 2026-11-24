@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    @apply h-full bg-paper text-ink antialiased;
+  }
+  ::selection {
+    @apply bg-yellow text-ink;
+  }
+  :focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-blue;
+  }
+}
+
+@layer components {
+  .label {
+    @apply text-[11px] font-semibold uppercase tracking-[0.18em];
+  }
+  .thin-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #141414 transparent;
+  }
+}

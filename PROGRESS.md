@@ -272,6 +272,13 @@ Running log. Resume from **Current status**. Newest log entries at the top.
   (UVM publishes no caps).
 
 ## Log
+- **2026-11-24 (UI redesign).** Owner asked for a calendar-first layout in a Bauhaus style:
+  pull-out course catalog (left), weekly calendar (center), assistant chat (right). Added a
+  deterministic catalog search (`ChatSession.catalog`, `GET /api/sessions/{id}/catalog?q=`):
+  matches every word against code/title/instructor; no query lists what counts toward open
+  requirements; status taken/blocked/check from the prereq tree. No LLM; "+ Add" sends
+  "Add <code> to my schedule" through the normal chat pipeline. Fixed two tests that read docs
+  without UTF-8 (failed on Windows). 239 Python + 6 web tests green.
 - **2026-11-24 (Windows).** Owner is on Windows; `make`/`export` don't exist there. Added `.env`
   loading (`planner_llm/envfile.py`, real env vars win), `.env.example`, root `npm run
   setup|dev|test` (concurrently runs API + web). Fixed Windows bugs: every file read/write

@@ -383,3 +383,41 @@ def test_questions_are_in_the_view_for_tap_to_answer(tmp_path: Path) -> None:
     assert chat.view()["questions"] == [
         {"question": "How early is too early?", "options": ["9:00", "10:00"]}
     ]
+
+
+def test_catalog_search_matches_code_title_or_instructor_from_the_term_data(
+    tmp_path: Path,
+) -> None:
+    chat = session(Script(), tmp_path)
+    found = chat.catalog("econ2020")
+    assert found["total"] == 1
+    macro = found["courses"][0]
+    assert (macro["code"], macro["title"], macro["status"]) == (
+        "ECON 2020",
+        "Macroeconomics",
+        "open",
+    )
+    assert macro["counts_toward"] == ["Macroeconomics"]
+    assert macro["sections"][1] == {
+        "id": "ECON 2020 B",
+        "component": "LEC",
+        "when": "TR 11:30am–12:45pm",
+        "instructors": ["Ana Diaz"],
+        "online": False,
+        "seats_open": 4,
+    }
+    assert [c["code"] for c in chat.catalog("kim lee")["courses"]] == ["CS 3200", "CS 3410"]
+    assert [c["code"] for c in chat.catalog("software")["courses"]] == ["CS 3200"]
+
+
+def test_catalog_marks_taken_and_blocked_courses_and_defaults_to_what_counts(
+    tmp_path: Path,
+) -> None:
+    chat = session(Script(), tmp_path)
+    taken = chat.catalog("CS 1210")["courses"][0]
+    assert taken["status"] == "taken" and taken["notes"] == []
+    blocked = chat.catalog("capstone")["courses"][0]
+    assert blocked["status"] == "blocked" and blocked["notes"] == ["requires CS 3999"]
+    default = [c["code"] for c in chat.catalog("")["courses"]]
+    assert "ART 1100" not in default and "ECON 2020" in default  # counts for nothing: hidden
+    assert chat.catalog("zzz") == {"courses": [], "total": 0}

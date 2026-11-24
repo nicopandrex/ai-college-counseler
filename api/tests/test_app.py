@@ -119,3 +119,12 @@ def test_an_unreadable_audit_says_so(tmp_path: Path) -> None:
     assert (
         response.status_code == 422 and "no requirement blocks found" in response.json()["detail"]
     )
+
+
+def test_catalog_search_is_read_from_the_session_without_the_llm(tmp_path: Path) -> None:
+    provider = Script()
+    api, _ = client(tmp_path, provider)
+    sid = api.post("/api/sessions", content=PDF).json()["id"]
+    found = api.get(f"/api/sessions/{sid}/catalog", params={"q": "macro"}).json()
+    assert [c["code"] for c in found["courses"]] == ["ECON 2020"] and provider.calls == 0
+    assert api.get("/api/sessions/nope/catalog").status_code == 404
