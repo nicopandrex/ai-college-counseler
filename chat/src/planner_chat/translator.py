@@ -106,10 +106,9 @@ def output_schema() -> dict[str, Any]:
 
 def system_prompt() -> str:
     folder = resources.files("planner_chat.prompts")
-    return (
-        folder.joinpath("translator.md").read_text()
-        + folder.joinpath("constraint-spec-reference.md").read_text()
-    )
+    return folder.joinpath("translator.md").read_text(encoding="utf-8") + folder.joinpath(
+        "constraint-spec-reference.md"
+    ).read_text(encoding="utf-8")
 
 
 def user_message(message: str, context: TranslatorContext, prior: dict[str, Any] | None) -> str:

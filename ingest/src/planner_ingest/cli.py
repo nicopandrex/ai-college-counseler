@@ -27,6 +27,7 @@ from planner_ingest.uvm.store import (
     soc_term,
 )
 from planner_llm import LLMGateway
+from planner_llm.envfile import load_env_file
 from planner_solver.domain import StudentTerm
 from planner_solver.present import render_result
 from planner_solver.term import solve_term
@@ -66,7 +67,7 @@ def _student(args: argparse.Namespace) -> tuple[ExtractedAudit, StudentTerm]:
 def cmd_chat(args: argparse.Namespace) -> int:
     audit, _ = _student(args)
     chat = open_chat(audit, args.term, args.standing, tuple(args.fail))
-    messages = args.script.read_text().splitlines() if args.script else None
+    messages = args.script.read_text(encoding="utf-8").splitlines() if args.script else None
     print(f"Planning {args.term}. Tell me what you want; /spec shows your requests, /quit exits.")
     while True:
         if messages is not None:
@@ -91,7 +92,7 @@ def cmd_solve(args: argparse.Namespace) -> int:
     audit, student = _student(args)
     term = load_term(soc_term(args.term))
     context = validation_context(term, audit, student)
-    checked = validate_spec(json.loads(args.spec.read_text()), context)
+    checked = validate_spec(json.loads(args.spec.read_text(encoding="utf-8")), context)
     for note in checked.notes:
         print(f"note: {note}")
     if not checked.ok or checked.spec is None:
@@ -108,6 +109,7 @@ def cmd_solve(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    load_env_file()
     parser = argparse.ArgumentParser(prog="planner")
     sub = parser.add_subparsers(dest="command", required=True)
     build = sub.add_parser("build-term", help="raw SOC scrape -> committed data/uvm/<term>/")

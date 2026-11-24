@@ -21,6 +21,7 @@ from pydantic import BaseModel, Field
 
 from planner_chat.session import ChatSession
 from planner_ingest.chat_setup import open_chat, read_audit
+from planner_llm.envfile import load_env_file
 
 MAX_PDF_BYTES = 20 * 1024 * 1024
 Opener = Callable[[Path], ChatSession]  # audit PDF on disk -> a ready chat session
@@ -69,7 +70,7 @@ def create_app(opener: Opener = open_from_pdf) -> FastAPI:
             raise HTTPException(413, "That file is too big for an audit PDF.")
         if not body.startswith(b"%PDF"):
             raise HTTPException(400, "Please upload your DegreeWorks audit as a PDF.")
-        with tempfile.TemporaryDirectory() as folder:
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as folder:  # Windows
             pdf = Path(folder) / "audit.pdf"
             pdf.write_bytes(body)
             try:
@@ -96,6 +97,7 @@ def create_app(opener: Opener = open_from_pdf) -> FastAPI:
     return app
 
 
+load_env_file()  # .env in the folder you start from (the repo root)
 app = create_app()
 
 

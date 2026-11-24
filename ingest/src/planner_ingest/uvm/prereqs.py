@@ -133,7 +133,11 @@ def parse_prereqs(
     `known` maps a note's exact text to the model's earlier answer for it, so an unchanged
     note (most of them, term to term) costs nothing; only new text goes to the model.
     """
-    system = resources.files("planner_ingest.prompts").joinpath("prereq_parse.md").read_text()
+    system = (
+        resources.files("planner_ingest.prompts")
+        .joinpath("prereq_parse.md")
+        .read_text(encoding="utf-8")
+    )
     store = dict(known or {})
     codes = sorted(notes)
     todo = [code for code in codes if notes[code] not in store]

@@ -146,7 +146,7 @@ def score(item: dict[str, Any], spec: dict[str, Any]) -> Result:
 
 
 def load(eval_dir: Path = EVAL_DIR) -> tuple[TranslatorContext, list[dict[str, Any]]]:
-    raw = json.loads((eval_dir / "context.json").read_text())
+    raw = json.loads((eval_dir / "context.json").read_text(encoding="utf-8"))
     context = TranslatorContext(
         target_term=raw["target_term"],
         open_requirements=[tuple(r) for r in raw["open_requirements"]],  # type: ignore[misc]
@@ -155,7 +155,7 @@ def load(eval_dir: Path = EVAL_DIR) -> tuple[TranslatorContext, list[dict[str, A
     )
     items = [
         json.loads(line)
-        for line in (eval_dir / "utterances.jsonl").read_text().splitlines()
+        for line in (eval_dir / "utterances.jsonl").read_text(encoding="utf-8").splitlines()
         if line
     ]
     return context, items
@@ -210,7 +210,7 @@ def main() -> int:
         "total": len(outcomes),
         "results": [{**asdict(r), "message": i["message"], "spec": s} for i, r, s in outcomes],
     }
-    args.out.write_text(json.dumps(report, indent=1) + "\n")
+    args.out.write_text(json.dumps(report, indent=1) + "\n", encoding="utf-8")
     return 0
 
 

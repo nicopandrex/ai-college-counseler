@@ -53,7 +53,7 @@ class Fetcher:
     def _post(self, route: str, body: dict[str, Any], cache_name: str) -> dict[str, Any]:
         path = self.cache_dir / cache_name
         if path.exists():
-            return json.loads(path.read_text())
+            return json.loads(path.read_text(encoding="utf-8"))
         with self._lock:
             pause = self.requests > 0
             self.requests += 1
@@ -62,7 +62,7 @@ class Fetcher:
         response = self.client.post(API + route, json=body)
         response.raise_for_status()
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(response.text)
+        path.write_text(response.text, encoding="utf-8")
         return response.json()
 
     def search(self, srcdb: str) -> dict[str, Any]:

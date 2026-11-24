@@ -364,7 +364,7 @@ class ChatSession:
         if self.out_of_scope_log is None:
             return
         self.out_of_scope_log.parent.mkdir(parents=True, exist_ok=True)
-        with self.out_of_scope_log.open("a") as log:
+        with self.out_of_scope_log.open("a", encoding="utf-8") as log:
             log.write(json.dumps(item) + "\n")
 
     # -- structured view (the web canvas; same facts as the text) -----------------------------

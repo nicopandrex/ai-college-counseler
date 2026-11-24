@@ -1,0 +1,12 @@
+{
+  "name": "degree-planner",
+  "private": true,
+  "scripts": {
+    "setup": "uv sync && npm --prefix web install",
+    "dev": "concurrently -k -n api,web -c blue,green \"uv run planner-api\" \"npm --prefix web run dev\"",
+    "test": "uv run pytest -q && npm --prefix web test"
+  },
+  "devDependencies": {
+    "concurrently": "9.1.2"
+  }
+}
