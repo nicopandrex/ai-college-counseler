@@ -51,12 +51,15 @@ def render_result(
     titles = {rid: t.title for rid, t in student.open_requirements.items()}
     for n, schedule in enumerate(result.schedules, start=1):
         covered = ", ".join(titles.get(r, r) for r in schedule.requirements_covered) or "none"
-        lines.append(f"Schedule {n} · {schedule.credits:g} credits · covers: {covered}")
+        lines.append(f"Schedule {n} · {schedule.credits:g} credits · counts toward: {covered}")
         for sid in schedule.sections:
             s = sections[sid]
             course = term.courses[s.course]
             who = ", ".join(s.instructors) or "instructor TBA"
-            lines.append(f"  {sid}  {course.title} ({course.credits:g} cr)  {_when(s)}  · {who}")
+            flag = "  ⚠ check prerequisite" if s.course in result.prereq_unchecked else ""
+            lines.append(
+                f"  {sid}  {course.title} ({course.credits:g} cr)  {_when(s)}  · {who}{flag}"
+            )
         if schedule.soft_missed:
             missed = "; ".join(_label(by_id[c]) for c in schedule.soft_missed)
             lines.append(f"  preferences not met: {missed}")

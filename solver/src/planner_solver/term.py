@@ -95,6 +95,7 @@ class TermResult:
     relaxations: list[Relaxation] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     estimates: list[str] = field(default_factory=list)  # constraint ids answered with a proxy
+    prereq_unchecked: list[str] = field(default_factory=list)  # courses whose prereq is "unknown"
 
 
 def _normalize_name(name: str) -> tuple[str, str]:
@@ -480,8 +481,9 @@ ESTIMATED = {"difficulty_load"}
 
 def _eligible_sections(
     data: TermData, student: StudentTerm, spec: ConstraintSpec
-) -> tuple[list[Section], dict[str, set[str]], list[str]]:
+) -> tuple[list[Section], dict[str, set[str]], list[str], list[str]]:
     warnings: list[str] = []
+    unchecked: list[str] = []  # courses allowed, but their prerequisite couldn't be verified
     requirement_courses: dict[str, set[str]] = {}
     for req_id, target in student.open_requirements.items():
         courses: set[str] = set()
@@ -507,11 +509,9 @@ def _eligible_sections(
         if met == "no":
             continue
         if met == "unknown":
-            warnings.append(
-                f"{code}: prerequisite needs checking (permission, standing or unparsed)"
-            )
+            unchecked.append(code)
         sections.extend(s for s in data.sections if s.course == code)
-    return sections, requirement_courses, warnings
+    return sections, requirement_courses, warnings, unchecked
 
 
 def _build(
@@ -642,7 +642,7 @@ def _schedules(
 def solve_term(
     spec: ConstraintSpec, data: TermData, student: StudentTerm, limit: int = MAX_SCHEDULES
 ) -> TermResult:
-    sections, requirement_courses, warnings = _eligible_sections(data, student, spec)
+    sections, requirement_courses, warnings, unchecked = _eligible_sections(data, student, spec)
     if not data.prereqs_loaded:
         warnings.insert(0, "prerequisites were not checked: catalog prerequisite data isn't loaded")
     ctx, holds = _build(spec, data, student, sections, requirement_courses)
@@ -669,7 +669,14 @@ def solve_term(
             relaxations=relaxations,
             warnings=warnings,
             estimates=ctx.estimates,
+            prereq_unchecked=unchecked,
         )
 
     schedules = _schedules(ctx, spec, holds, list(hard.values()), requirement_courses, limit)
-    return TermResult("ok", schedules=schedules, warnings=warnings, estimates=ctx.estimates)
+    return TermResult(
+        "ok",
+        schedules=schedules,
+        warnings=warnings,
+        estimates=ctx.estimates,
+        prereq_unchecked=unchecked,
+    )
