@@ -104,12 +104,12 @@ def _sections_meta(details: dict[str, Any]) -> dict[str, dict[str, str]]:
 
 def parse_term(cache_dir: Path, srcdb: str) -> tuple[TermData, ParseReport]:
     report = ParseReport()
-    results = json.loads((cache_dir / "search_all.json").read_text())["results"]
+    results = json.loads((cache_dir / "search_all.json").read_text(encoding="utf-8"))["results"]
     details: dict[str, dict[str, Any]] = {}
     for row in results:
         path = cache_dir / "details" / f"{row['code'].replace(' ', '_')}.json"
         if row["code"] not in details and path.exists():
-            details[row["code"]] = json.loads(path.read_text())
+            details[row["code"]] = json.loads(path.read_text(encoding="utf-8"))
 
     # learn what each schd letter means from representative sections
     seen: dict[str, Counter[tuple[str, str | None]]] = defaultdict(Counter)
@@ -174,7 +174,9 @@ def _school_config() -> dict[str, Any]:
     from importlib import resources
 
     return json.loads(
-        resources.files("planner_ingest.uvm").joinpath("capabilities.json").read_text()
+        resources.files("planner_ingest.uvm")
+        .joinpath("capabilities.json")
+        .read_text(encoding="utf-8")
     )
 
 

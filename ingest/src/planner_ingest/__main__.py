@@ -47,7 +47,7 @@ def _emit(text: str, out: Path | None) -> None:
         sys.stdout.write(text + "\n")
         return
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(text + "\n")
+    out.write_text(text + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":

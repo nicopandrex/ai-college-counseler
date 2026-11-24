@@ -119,7 +119,7 @@ class LLMGateway:
     def complete_json(self, request: JsonRequest) -> dict[str, Any]:
         path = self.cache_dir / request.purpose / f"{self.cache_key(request)}.json"
         if self.mode is not CacheMode.LIVE and path.exists():
-            return _parse(json.loads(path.read_text())["response"])
+            return _parse(json.loads(path.read_text(encoding="utf-8"))["response"])
         if self.mode is CacheMode.REPLAY:
             raise CacheMiss(f"no recorded response for {request.purpose} at {path}")
         if not self.model:
@@ -146,7 +146,7 @@ class LLMGateway:
                 "response": completion.text,
                 "usage": completion.usage,
             }
-            path.write_text(json.dumps(record, indent=1))
+            path.write_text(json.dumps(record, indent=1), encoding="utf-8")
         return parsed
 
 

@@ -5,5 +5,5 @@ from importlib import resources
 
 def extraction_system_prompt() -> str:
     folder = resources.files("planner_ingest.prompts")
-    prompt = folder.joinpath("audit_extraction.md").read_text()
-    return prompt + "\n" + folder.joinpath("input_format.md").read_text()
+    prompt = folder.joinpath("audit_extraction.md").read_text(encoding="utf-8")
+    return prompt + "\n" + folder.joinpath("input_format.md").read_text(encoding="utf-8")

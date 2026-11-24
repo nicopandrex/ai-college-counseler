@@ -43,5 +43,9 @@ class SchoolConfig(BaseModel):
 
 
 def load_school_config(school_id: str) -> SchoolConfig:
-    text = resources.files("planner_ingest.schools").joinpath(f"{school_id}.json").read_text()
+    text = (
+        resources.files("planner_ingest.schools")
+        .joinpath(f"{school_id}.json")
+        .read_text(encoding="utf-8")
+    )
     return SchoolConfig.model_validate_json(text)

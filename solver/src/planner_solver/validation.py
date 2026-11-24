@@ -69,7 +69,7 @@ def contract_schema() -> dict[str, Any]:
     text = (
         resources.files("planner_solver.contract")
         .joinpath("constraint-spec.schema.json")
-        .read_text()
+        .read_text(encoding="utf-8")
     )
     return json.loads(text)
 

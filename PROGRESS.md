@@ -272,6 +272,11 @@ Running log. Resume from **Current status**. Newest log entries at the top.
   (UVM publishes no caps).
 
 ## Log
+- **2026-11-24 (Windows).** Owner is on Windows; `make`/`export` don't exist there. Added `.env`
+  loading (`planner_llm/envfile.py`, real env vars win), `.env.example`, root `npm run
+  setup|dev|test` (concurrently runs API + web). Fixed Windows bugs: every file read/write
+  now names UTF-8 (Windows defaults to cp1252 and would crash on "›"/"–"); temp-dir cleanup
+  tolerates a still-open PDF handle.
 - **2026-11-24 (M9).** Web app: FastAPI over ChatSession + Next.js page (upload, chat,
   chips, weekly grid, conflicts with one-tap fixes). M8 deferred by the owner. 235 Python +
   4 web tests green.

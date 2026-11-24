@@ -4,26 +4,38 @@ Upload a UVM DegreeWorks audit, then plan Spring 2027 by chatting: "no classes b
 Fridays off, macro but not with Rodrigues". The schedules, conflicts and requirement credit
 all come from a CP-SAT solver and the audit; the LLM only translates what you type.
 
-## Run it locally
+## Run it locally (Windows, Mac or Linux)
 
-Needs Python 3.12–3.13, [uv](https://docs.astral.sh/uv/), Node 18+ and a Gemini API key.
+You need [Node.js](https://nodejs.org) (LTS) and [uv](https://docs.astral.sh/uv/), which also
+installs the right Python for you. On Windows, install uv from PowerShell:
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+Then close and reopen your terminal. In the project folder:
+
+1. Copy `.env.example` to `.env` and paste your Gemini API key into it (`.env` is never committed).
+2. Install everything once:
 
 ```bash
-make install
+npm install
 ```
 
 ```bash
-export LLM_PROVIDER=gemini LLM_API_KEY=your-gemini-key LLM_CACHE_MODE=record LLM_CACHE_DIR=fixtures/private/llm-cache
+npm run setup
 ```
 
+3. Start the app (API and web together; Ctrl+C stops both):
+
 ```bash
-make dev
+npm run dev
 ```
 
 Open http://localhost:3000 and upload your audit PDF. The first upload reads the audit with two
 Flash calls (up to a minute); each chat message is one Flash call. Repeats are cached in
-`fixtures/private/llm-cache` (gitignored) and cost nothing. `LLM_MAX_LIVE_CALLS` (default 30)
-caps paid calls per uploaded audit.
+`fixtures/private/llm-cache` (gitignored) and cost nothing. `LLM_MAX_LIVE_CALLS` in `.env` caps
+paid calls per uploaded audit.
 
 The audit PDF is read from a temporary file and deleted; sessions live in memory and end when
 the server stops.
@@ -33,7 +45,7 @@ Terminal version: `uv run planner chat --audit path/to/audit.pdf`.
 ## Tests
 
 ```bash
-make test
+npm test
 ```
 
 Committed tests use synthetic data only. Never commit `fixtures/private/`.

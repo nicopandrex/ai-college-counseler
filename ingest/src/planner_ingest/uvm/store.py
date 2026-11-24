@@ -37,24 +37,26 @@ def build_term(srcdb: str, raw: Path = RAW, data: Path = DATA) -> TermData:
     term, _ = parse_term(raw / srcdb, srcdb)
     notes = {}
     for path in sorted((raw / srcdb / "details").glob("*.json")):
-        details = json.loads(path.read_text())
+        details = json.loads(path.read_text(encoding="utf-8"))
         text = prereq_notes(details)
         if has_prereq_text(text):
             notes[details["code"]] = text
     out = data / srcdb
     out.mkdir(parents=True, exist_ok=True)
-    (out / "term.json").write_text(term.model_dump_json())
-    (out / "prereq_notes.json").write_text(json.dumps(notes, indent=1, sort_keys=True) + "\n")
+    (out / "term.json").write_text(term.model_dump_json(), encoding="utf-8")
+    (out / "prereq_notes.json").write_text(
+        json.dumps(notes, indent=1, sort_keys=True) + "\n", encoding="utf-8"
+    )
     return term
 
 
 def load_notes(srcdb: str, data: Path = DATA) -> dict[str, str]:
-    return json.loads((data / srcdb / "prereq_notes.json").read_text())
+    return json.loads((data / srcdb / "prereq_notes.json").read_text(encoding="utf-8"))
 
 
 def load_answers(data: Path = DATA) -> dict[str, dict[str, Any]]:
     path = data / "prereq_answers.json"
-    return json.loads(path.read_text()) if path.exists() else {}
+    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
 
 
 def save_prereqs(
@@ -65,22 +67,26 @@ def save_prereqs(
     data: Path = DATA,
 ) -> None:
     out = data / srcdb
-    (out / "prereqs.json").write_text(TREES.dump_json(trees, indent=1).decode() + "\n")
-    (out / "prereq_review.json").write_text(json.dumps(review, indent=1) + "\n")
-    (data / "prereq_answers.json").write_text(json.dumps(answers, indent=1, sort_keys=True) + "\n")
+    (out / "prereqs.json").write_text(
+        TREES.dump_json(trees, indent=1).decode() + "\n", encoding="utf-8"
+    )
+    (out / "prereq_review.json").write_text(json.dumps(review, indent=1) + "\n", encoding="utf-8")
+    (data / "prereq_answers.json").write_text(
+        json.dumps(answers, indent=1, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
 
 def load_term(srcdb: str, data: Path = DATA) -> TermData:
     path = data / srcdb / "term.json"
     if not path.exists():
         raise FileNotFoundError(f"{path} missing: run `planner build-term --term {srcdb}`")
-    term = TermData.model_validate_json(path.read_text())
+    term = TermData.model_validate_json(path.read_text(encoding="utf-8"))
     trees_path = data / srcdb / "prereqs.json"
     if not trees_path.exists():
         return term.model_copy(update={"courses": apply_owner_rules(term.courses)})
-    trees = TREES.validate_json(trees_path.read_text())
+    trees = TREES.validate_json(trees_path.read_text(encoding="utf-8"))
     review_path = data / srcdb / "prereq_review.json"
-    for item in json.loads(review_path.read_text()) if review_path.exists() else []:
+    for item in json.loads(review_path.read_text(encoding="utf-8")) if review_path.exists() else []:
         # doubtful and not usable: unknown, never "no prerequisite"
         trees.setdefault(item["code"], UnparsedPrereq(kind="unparsed", text=item["notes"]))
     courses = {
