@@ -178,3 +178,19 @@ def test_derive_state_is_pure(audit: ExtractedAudit) -> None:
     before = audit.model_dump()
     assert derive_state(audit) == derive_state(audit)
     assert audit.model_dump() == before
+
+
+def test_choice_group_detected_from_degreeworks_wording(audit: ExtractedAudit) -> None:
+    group = next(r for r in audit.requirements if r.req_id == "chinese.tracks")
+    unparsed = group.model_validate(
+        {
+            **group.model_dump(by_alias=True),
+            "rule": {"kind": "unparsed", "text": "CHOOSE ONE TRACK:"},
+            "still_needed_text": "Still needed: Choose from 1 of the following:",
+        }
+    )
+    audit.requirements[audit.requirements.index(group)] = unparsed
+    state = derive_state(audit)
+    s = {r.req_id: r.state for r in state.requirements}
+    assert s["chinese.tracks.track_1.chin_1100"] == "not_applicable"
+    assert s["chinese.tracks.track_2.chin_4200"] == "open"
