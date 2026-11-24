@@ -525,10 +525,14 @@ version = "0.0.0"
 source = { editable = "llm" }
 dependencies = [
     { name = "anthropic" },
+    { name = "httpx" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "anthropic", specifier = "==2.8.0" }]
+requires-dist = [
+    { name = "anthropic", specifier = "==2.8.0" },
+    { name = "httpx", specifier = "==0.28.1" },
+]
 
 [[package]]
 name = "planner-solver"
