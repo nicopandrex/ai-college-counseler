@@ -35,7 +35,7 @@ pytestmark = pytest.mark.skipif(
 def test_real_audit_matches_reviewed_golden(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("LLM_PROVIDER", os.environ.get("LLM_PROVIDER", "gemini"))
     monkeypatch.setenv("LLM_API_KEY", os.environ.get("LLM_API_KEY", "replay-only"))
-    model = os.environ.get("LLM_MODEL", "gemini-3.5-flash")
+    model = os.environ.get("LLM_MODEL", "gemini-3.1-pro-preview")
     gateway = LLMGateway(provider_from_env(), model, CACHE, CacheMode.REPLAY)
     result = extract_audit(PDF, gateway)
     assert compare(result.audit, Golden.model_validate_json(GOLDEN.read_text())) == []
