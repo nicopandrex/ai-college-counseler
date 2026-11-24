@@ -58,7 +58,11 @@ def cmd_prereqs(args: argparse.Namespace) -> int:
         text = prereq_notes(details)
         if has_prereq_text(text):
             notes[details["code"]] = text
-    trees, review = parse_prereqs(notes, LLMGateway.from_env(PREREQ_PURPOSE))
+    if args.sample:  # check cost and quality on a few courses before a bulk run
+        notes = dict(sorted(notes.items())[: args.sample])
+    gateway = LLMGateway.from_env(PREREQ_PURPOSE)
+    trees, review = parse_prereqs(notes, gateway)
+    print(gateway.usage_summary(), file=sys.stderr)
     (cache / "prereqs.json").write_text(_TREES.dump_json(trees, indent=1).decode())
     (cache / "prereq_review.json").write_text(json.dumps(review, indent=1))
     summary = f"{len(trees)} parsed, {len(review)} to review"
@@ -67,7 +71,10 @@ def cmd_prereqs(args: argparse.Namespace) -> int:
 
 
 def cmd_solve(args: argparse.Namespace) -> int:
-    extraction = extract_audit(args.audit, LLMGateway.from_env(PURPOSE))
+    gateway = LLMGateway.from_env(PURPOSE)
+    extraction = extract_audit(args.audit, gateway)
+    if gateway.usage["live_calls"]:
+        print(gateway.usage_summary(), file=sys.stderr)
     policy = "per_course" if args.fail else "assume_pass"
     state = derive_state(
         extraction.audit, Assumptions(in_progress_policy=policy, failed_courses=tuple(args.fail))
@@ -104,6 +111,7 @@ def main(argv: list[str] | None = None) -> int:
     sub = parser.add_subparsers(dest="command", required=True)
     pre = sub.add_parser("prereqs", help="parse SOC prerequisite notes (LLM, cached)")
     pre.add_argument("--term", default="202701")
+    pre.add_argument("--sample", type=int, help="parse only the first N courses (cost check)")
     solve = sub.add_parser("solve", help="solve one term for an audit and a constraint spec")
     solve.add_argument("--audit", type=Path, required=True)
     solve.add_argument("--spec", type=Path, required=True)

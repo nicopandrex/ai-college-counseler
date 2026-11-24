@@ -7,7 +7,7 @@ from typing import Any
 
 import httpx
 
-from planner_llm.gateway import JsonRequest, LLMError
+from planner_llm.gateway import Completion, JsonRequest, LLMError
 
 BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai"
 TIMEOUT_SECONDS = 600.0  # long audits at high reasoning effort can take minutes
@@ -73,7 +73,8 @@ class GeminiProvider:
             time.sleep(self._backoff * 2**attempt)
         if response.status_code != 200:
             raise LLMError(f"Gemini API {response.status_code}: {_error_message(response)}")
-        choice = response.json()["choices"][0]
+        payload = response.json()
+        choice = payload["choices"][0]
         if choice.get("finish_reason") == "length":
             raise LLMError("response truncated at max_tokens")
         content = choice["message"].get("content")
@@ -81,4 +82,13 @@ class GeminiProvider:
             raise LLMError(
                 f"response contained no content (finish_reason={choice.get('finish_reason')})"
             )
-        return content
+        usage = payload.get("usage") or {}
+        reasoning = (usage.get("completion_tokens_details") or {}).get("reasoning_tokens", 0)
+        return Completion(
+            content,
+            {
+                "input_tokens": usage.get("prompt_tokens", 0),
+                "output_tokens": usage.get("completion_tokens", 0),
+                "reasoning_tokens": reasoning or 0,
+            },
+        )

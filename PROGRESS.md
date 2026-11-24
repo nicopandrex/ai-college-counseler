@@ -98,6 +98,15 @@ Running log. Resume from **Current status**. Newest log entries at the top.
    Proposal: document that default.
 
 ## Decisions
+- **Cost controls (2026-11-18, after $10 of credits went fast).** Root cause: the bulk
+  prerequisite parse (1,183 courses) ran on Gemini **Pro**, **twice** (format change), with
+  no sample run and no cap, plus hidden thinking tokens billed as output. Fixes:
+  every call's token usage (incl. thinking) is recorded in the cassette and summarised per
+  command; `LLM_MAX_LIVE_CALLS` (default 30) stops runaway jobs; the default model is
+  `gemini-3.5-flash` everywhere, with Pro only when explicitly set; the bulk prereq parse uses
+  low effort; `planner prereqs --sample N` checks cost and quality before a bulk run.
+  **Rule going forward:** sample-run every bulk LLM job and report its cost before running it
+  in full.
 - **The translator omits credit_range unless a load is stated.** Validation adds the 12–19 default
   deterministically (the reference says "always emit one"; doing it in code is stricter).
 - **Owner (2026-11-18, latest):** degree requirements come before extra classes unless a class

@@ -137,7 +137,7 @@ def parse_prereqs(
             user=user,
             schema=output_schema(),
             max_tokens=32000,
-            effort="medium",
+            effort="low",  # bulk job: thinking tokens are billed as output
         )
         return gateway.complete_json(request)["courses"]
 
