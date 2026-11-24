@@ -225,9 +225,7 @@ def _satisfy(ctx: _Ctx, h: Lit, p: SatisfyRequirementParams) -> None:
 
 def _distinct_assignments(ctx: _Ctx) -> None:
     """A course counted for a `distinct` constraint isn't also counted for another one."""
-    for (a, (use_a, distinct_a)), (b, (use_b, distinct_b)) in combinations(
-        ctx.assignments.items(), 2
-    ):
+    for (use_a, distinct_a), (use_b, distinct_b) in combinations(ctx.assignments.values(), 2):
         if distinct_a or distinct_b:
             for code in use_a.keys() & use_b.keys():
                 ctx.model.Add(use_a[code] + use_b[code] <= 1)
