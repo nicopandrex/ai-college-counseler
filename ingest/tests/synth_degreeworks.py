@@ -18,10 +18,22 @@ TABLE_TOP = 22.676
 GREEN = (0.0, 0.502, 0.302)
 RED = (0.8314, 0.1569, 0.1569)
 BLUE = (0.1569, 0.4549, 0.7333)
-MAIN_COLUMNS = {"Course": 222.7, "Title": 280.5, "Grade": 417.6, "Credits": 450.1,
-                "Term": 482.6, "Repeated": 548.5}  # fmt: skip
-WIDE_COLUMNS = {"Course": 28.3, "Title": 117.2, "Grade": 344.9, "Credits": 389.3,
-                "Term": 433.7, "Repeated": 539.2}  # fmt: skip
+MAIN_COLUMNS = {
+    "Course": 222.7,
+    "Title": 280.5,
+    "Grade": 417.6,
+    "Credits": 450.1,
+    "Term": 482.6,
+    "Repeated": 548.5,
+}
+WIDE_COLUMNS = {
+    "Course": 28.3,
+    "Title": 117.2,
+    "Grade": 344.9,
+    "Credits": 389.3,
+    "Term": 433.7,
+    "Repeated": 539.2,
+}
 DATA_X = {"code": 224.7, "title": 282.1, "grade": 430.0, "credits": 464.8, "term": 483.1}
 WIDE_DATA_X = {"code": 28.3, "title": 117.2, "grade": 344.9, "credits": 389.3, "term": 433.7}
 
@@ -65,7 +77,11 @@ def course_texts(course: Course, dy: float, wide: bool = False) -> list[Text]:
         Text(x["code"], dy, course.code),
         Text(x["title"], dy, course.title),
         Text(x["grade"], dy, course.grade),
-        Text(x["credits"] - (2.6 if course.credits.startswith("(") else 0), dy, course.credits),
+        Text(
+            x["credits"] - (2.6 if course.credits.startswith("(") and not wide else 0),
+            dy,
+            course.credits,
+        ),
         Text(x["term"], dy, course.term),
     ]
 
@@ -124,8 +140,10 @@ def course_list_cell(courses: list[Course]) -> Cell:
 
 
 def legend_cell() -> Cell:
-    return Cell(height=40.0, texts=[Text(28.3, 8, "Legend", "Helvetica-Bold", 10),
-                                    Text(56.0, 28, "Complete")])  # fmt: skip
+    return Cell(
+        height=40.0,
+        texts=[Text(28.3, 8, "Legend", "Helvetica-Bold", 10), Text(56.0, 28, "Complete")],
+    )
 
 
 def _draw_icon(canvas: Canvas, icon: IconMark, cell_top: float) -> None:
@@ -182,12 +200,12 @@ def sample_audit(path: Path) -> Path:
                 [("Student name", "Example, Alex"), ("Program", "Bachelor of Science")],
                 [("Level", "Undergraduate"), ("Majors", "Computer Science"), ("NetID", "aexampl")],
             ]
-        ),  # fmt: skip
+        ),
         block_header(
             "Bachelor of Science, TEST",
             "INCOMPLETE",
             "Credits required: 120 Credits applied: 10 Catalog year: 2024-2025",
-        ),  # fmt: skip
+        ),
         Cell(
             height=60.0,
             texts=[
@@ -202,16 +220,16 @@ def sample_audit(path: Path) -> Path:
         requirement(0, "in_progress", "INTERMEDIATE LEVEL. 3 additional credits:", courses=[ip]),
         requirement(
             0, "incomplete", "Senior Seminar", still_needed=["Still needed: 1 Class in CS 3920"]
-        ),  # fmt: skip
+        ),
         requirement(
             0,
             "incomplete",
             "CHOOSE ONE TRACK:",
             still_needed=["Still needed: Choose from 1 of the following:"],
-        ),  # fmt: skip
+        ),
         requirement(
             1, "incomplete", "TRACK 1", content=["You must complete all of the following:"]
-        ),  # fmt: skip
+        ),
         requirement(2, "complete", "Calculus I", courses=[calc]),
         requirement(2, "incomplete", "Calculus II", content=["4 Credits in MATH 1248"]),
     ]
