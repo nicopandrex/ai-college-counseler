@@ -8,7 +8,9 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from planner_ingest.config import RequirementStatus
 
-RULE_DEPTH = 4  # structured outputs reject recursive schemas; nesting is unrolled this deep
+RULE_DEPTH = (
+    2  # recursive schemas are rejected, so nesting is unrolled; deeper exceeds Gemini limits
+)
 
 
 class _Model(BaseModel):

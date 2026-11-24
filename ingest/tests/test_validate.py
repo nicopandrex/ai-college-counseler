@@ -117,3 +117,28 @@ def test_malformed_rule_code(layout: AuditLayout, audit: ExtractedAudit) -> None
     audit.requirements[audit.requirements.index(seminar)] = seminar.model_copy(update={"rule": bad})
     _, issues = finalize(audit, layout, UVM)
     assert codes(issues) == ["malformed_course_code"]
+
+
+def test_structural_tags_in_quotes_do_not_misanchor(
+    layout: AuditLayout, audit: ExtractedAudit
+) -> None:
+    block = by_title(audit, "Bachelor of Science, TEST")
+    tagged = block.model_copy(update={"source_quote": "BLOCK Bachelor of Science, TEST"})
+    audit.requirements[audit.requirements.index(block)] = tagged
+    final, issues = finalize(audit, layout, UVM)
+    assert issues == []
+    assert by_title(final, "Bachelor of Science, TEST").req_id == "bachelor_science_test"
+
+
+def test_attribute_selector_is_a_valid_rule_code(
+    layout: AuditLayout, audit: ExtractedAudit
+) -> None:
+    seminar = by_title(audit, "Senior Seminar")
+    rule = CourseListRule(
+        kind="course_list", count=1, count_unit="courses", from_=["@ @ with attribute = WIL1"]
+    )
+    audit.requirements[audit.requirements.index(seminar)] = seminar.model_copy(
+        update={"rule": rule, "has_wildcard": True}
+    )
+    _, issues = finalize(audit, layout, UVM)
+    assert issues == []

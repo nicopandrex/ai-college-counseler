@@ -26,3 +26,9 @@ The audit below was extracted deterministically from the PDF. It is in document 
 Extract one requirement for every BLOCK and for every ROW that has an icon, in document order.
 Skip none of them. The `ROW`/`COURSE` tags, `|` separators and `[...]` annotations are not
 document text, so never put them in a `source_quote`.
+
+Requirements counted by attribute designation (for example "1 course with a WIL1
+designation" or "3 credits in courses with an AH1 designation") are `course_list` rules whose
+`from` is DegreeWorks' own selector notation, `["@ @ with attribute = WIL1"]`, with
+`has_wildcard: true`. Designations such as AH1, WIL1, D1, QD and SU are attributes, not
+course codes. Never put a bare designation in `from`.
