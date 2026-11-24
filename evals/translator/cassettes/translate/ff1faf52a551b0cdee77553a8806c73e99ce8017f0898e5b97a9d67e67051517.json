@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\n  \"intent\": \"schedule\",\n  \"question_topic\": null,\n  \"question_courses\": [],\n  \"spec_version\": \"0.1\",\n  \"mode\": \"term\",\n  \"target_term\": \"2027SP\",\n  \"restatement\": \"At most one lab per day.\",\n  \"constraints\": [\n    {\n      \"id\": \"c1\",\n      \"type\": \"max_labs_per_day\",\n      \"params_json\": \"{\\\"count\\\":1}\",\n      \"enforcement\": \"hard\",\n      \"weight\": 5,\n      \"weight_source\": \"stated\",\n      \"confidence\": 1.0,\n      \"source_text\": \"I can't take more than one lab in a day.\",\n      \"data_dependency\": \"reliable\"\n    }\n  ],\n  \"clarifications\": [],\n  \"out_of_scope\": []\n}",
+ "usage": {
+  "input_tokens": 6267,
+  "output_tokens": 213,
+  "reasoning_tokens": 0
+ }
+}

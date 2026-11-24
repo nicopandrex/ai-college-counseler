@@ -56,6 +56,7 @@ COURSES = {
     "BIOL 1400": Course(code="BIOL 1400", title="Biology", credits=4),
     "CHEM 1400": Course(code="CHEM 1400", title="Chemistry", credits=4),
     "CS 1210": Course(code="CS 1210", title="Programming I", credits=3),
+    "ART 1100": Course(code="ART 1100", title="Drawing", credits=3),
     "CS 4999": Course(
         code="CS 4999",
         title="Capstone",
@@ -79,6 +80,7 @@ SECTIONS = (
     sec("CHEM 1400 L1", "CHEM 1400", "R", "16:30", "19:30", "Ike Bay", component="LAB"),
     sec("CS 1210 A", "CS 1210", "MWF", "13:10", "14:00"),
     sec("CS 4999 A", "CS 4999", "MWF", "14:20", "15:10"),
+    sec("ART 1100 A", "ART 1100", "TR", "10:00", "11:15", "Lee Dion"),  # counts for nothing
 )
 
 TERM = TermData(term="2027SP", courses=COURSES, sections=SECTIONS)

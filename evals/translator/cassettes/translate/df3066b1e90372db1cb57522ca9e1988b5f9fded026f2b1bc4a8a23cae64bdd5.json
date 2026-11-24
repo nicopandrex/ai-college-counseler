@@ -1,5 +1,0 @@
-{
- "provider": "gemini",
- "model": "gemini-3.5-flash",
- "response": "{\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"No classes before 10:30 AM.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"no_earlier_than\",\"params_json\":\"{\\\"time\\\": \\\"10:30\\\"}\",\"enforcement\":\"hard\",\"weight\":5,\"weight_source\":\"stated\",\"confidence\":0.95,\"source_text\":\"I can't have any classes before 10:30.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}"
-}

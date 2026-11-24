@@ -1,5 +1,0 @@
-{
- "provider": "gemini",
- "model": "gemini-3.5-flash",
- "response": "{\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Keep Fridays completely free of classes.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"free_day\",\"params_json\":\"{\\\"day\\\":\\\"F\\\"}\",\"enforcement\":\"hard\",\"weight\":5,\"weight_source\":\"stated\",\"confidence\":1.0,\"source_text\":\"Keep Fridays free, I absolutely need that.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}"
-}

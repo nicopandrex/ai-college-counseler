@@ -2,6 +2,7 @@
 
 from term_fixtures import STUDENT, TERM, c, spec
 
+from planner_solver.domain import RequirementTarget
 from planner_solver.spec import PARAMS, ConstraintType
 from planner_solver.term import instructor_matches, solve_term
 
@@ -533,3 +534,48 @@ def test_in_person_section_without_meeting_times_is_not_auto_scheduled() -> None
     )
     assert asked.schedules[0].courses == ["CS 4996"]  # unless the student names it
     del sec
+
+
+def test_wanted_instructor_is_found_outside_requirement_courses() -> None:
+    schedule = best(c("c1", "instructor_preference", name="Professor Dion", polarity="include"))
+    assert "ART 1100" in schedule.courses  # counts for nothing, but it's what they asked for
+
+
+def test_a_course_that_cant_fit_says_when_it_meets() -> None:
+    result = solve_term(
+        spec(
+            c("c1", "include_course", course="ECON 2020"),
+            c("c2", "no_earlier_than", time="13:00"),
+        ),
+        TERM,
+        STUDENT,
+    )
+    assert result.status == "infeasible"
+    assert result.reasons["c1"] == ["ECON 2020 meets MWF 10:50–11:40am or TR 11:30am–12:45pm"]
+
+
+def test_a_requirement_nobody_can_take_says_why() -> None:
+    student = STUDENT.model_copy(
+        update={
+            "open_requirements": {
+                **STUDENT.open_requirements,
+                "CAPSTONE": RequirementTarget(title="Capstone", selectors=("CS 4999",)),
+            }
+        }
+    )
+    result = solve_term(spec(c("c1", "satisfy_requirement", req_ids=["CAPSTONE"])), TERM, student)
+    assert result.status == "infeasible" and result.conflict == ["c1"]
+    assert result.reasons["c1"] == ["Capstone: CS 4999 requires CS 3999"]
+
+
+def test_a_bottleneck_course_lost_to_a_hard_rule_is_flagged() -> None:
+    # MACRO can only be met by ECON 2020 (MWF 10:50 or TR 11:30); "done by 10" rules it out
+    result = solve_term(spec(c("c1", "no_later_than", time="10:00")), TERM, STUDENT)
+    assert result.status == "ok"
+    missed = {m.req_id: m for m in result.missed}
+    assert missed["MACRO"].courses == ["ECON 2020"] and missed["MACRO"].blocked_by == ["c1"]
+
+
+def test_a_bottleneck_left_out_only_by_preference_is_not_flagged() -> None:
+    result = solve_term(spec(c("c1", "credit_range", min=3, max=3)), TERM, STUDENT)
+    assert "MACRO" not in {m.req_id for m in result.missed}

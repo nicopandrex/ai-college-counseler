@@ -1,5 +1,0 @@
-{
- "provider": "gemini",
- "model": "gemini-3.5-flash",
- "response": "{\n  \"spec_version\": \"0.1\",\n  \"mode\": \"term\",\n  \"target_term\": \"2027SP\",\n  \"restatement\": \"No classes on Tuesdays between 1:00 PM and 5:00 PM due to work.\",\n  \"constraints\": [\n    {\n      \"id\": \"c1\",\n      \"type\": \"free_block\",\n      \"params_json\": \"{\\\"day\\\":\\\"T\\\",\\\"end\\\":\\\"17:00\\\",\\\"label\\\":\\\"work\\\",\\\"start\\\":\\\"13:00\\\"}\",\n      \"enforcement\": \"hard\",\n      \"weight\": 5,\n      \"weight_source\": \"stated\",\n      \"confidence\": 0.95,\n      \"source_text\": \"I work Tuesdays from 1 to 5, so I can't have class then.\",\n      \"data_dependency\": \"reliable\"\n    }\n  ],\n  \"clarifications\": [],\n  \"out_of_scope\": []\n}"
-}

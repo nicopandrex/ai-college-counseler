@@ -27,6 +27,7 @@ from planner_solver.spec import (
     minutes,
     parse_params,
 )
+from planner_solver.term import instructor_matches
 
 TERM_ONLY = frozenset(
     {
@@ -50,6 +51,12 @@ TERM_ONLY = frozenset(
 )
 LOW_CONFIDENCE = 0.7
 MAX_QUESTIONS = 2
+DEFAULT_LOAD_NOTE = "no credit load stated, so I'm using full time ({low:g}–{high:g} credits)"
+TAKEN = {  # audit course statuses
+    "complete": "you've already completed {code}",
+    "in_progress": "you're taking {code} now",
+    "preregistered": "you're already registered for {code}",
+}
 COURSE_FIELDS = {
     "include_course": "course",
     "exclude_course": "course",
@@ -82,6 +89,8 @@ class ValidationContext:
     capabilities: SchoolCapabilities = SchoolCapabilities()
     default_credit_range: tuple[float, float] | None = None  # full-time band if none stated
     preferred_credit_range: tuple[float, float] | None = None  # soft default inside that band
+    course_status: dict[str, str] = field(default_factory=dict)  # code -> completed/in_progress/…
+    instructors: dict[str, frozenset[str]] = field(default_factory=dict)  # course -> who teaches
 
 
 @dataclass(frozen=True)
@@ -122,14 +131,60 @@ def _check_course(con: Constraint, ctx: ValidationContext, result: ValidationRes
         return
     if code != value:
         con.params[key] = code
-        result.notes.append(f"{con.id}: read {value!r} as {code}")
+        result.notes.append(f"read “{value}” as {code}")
     wants_it = con.type == "include_course" or (
         con.type == "instructor_preference" and con.params.get("polarity") == "include"
     )
     if wants_it and code in ctx.unplannable_courses:
-        result.errors.append(
-            Issue(1, f"{code} is already completed, in progress or registered", con.id)
-        )
+        status = TAKEN.get(ctx.course_status.get(code, ""), "{code} is already taken or registered")
+        result.errors.append(Issue(1, status.format(code=code), con.id))
+
+
+def _check_instructor(con: Constraint, ctx: ValidationContext, result: ValidationResult) -> None:
+    """The named instructor must teach this term (and the course, if one is given)."""
+    if con.type != "instructor_preference" or not ctx.instructors:
+        return
+    name, course = con.params["name"], con.params.get("course")
+    pool = (
+        ctx.instructors.get(course, frozenset())
+        if course
+        else frozenset().union(*ctx.instructors.values())
+    )
+    if any(instructor_matches(name, who) for who in pool):
+        return
+    everyone = sorted(frozenset().union(*ctx.instructors.values()))
+    if course and any(instructor_matches(name, who) for who in everyone):
+        message = f"{name} doesn't teach {course} this term"
+    else:
+        lasts = {who.split(",")[0].split()[-1].casefold(): who for who in everyone}
+        wanted = name.split(",")[0].split()[-1].casefold()
+        close = [
+            lasts[m] for m in difflib.get_close_matches(wanted, sorted(lasts), n=3, cutoff=0.7)
+        ]
+        hint = f" Did you mean {' or '.join(close)}?" if close else ""
+        message = f"no section this term is taught by anyone named {name}.{hint}"
+    if con.params["polarity"] == "exclude":
+        result.notes.append(f"{message}, so “not with {name}” is already true")
+    else:
+        result.errors.append(Issue(1, message, con.id))
+
+
+def _complete_range(con: Constraint, ctx: ValidationContext, result: ValidationResult) -> None:
+    """'3 classes max' or 'at least 15 credits': fill the unstated end from the defaults."""
+    p = con.params
+    if con.type == "credit_range" and ctx.default_credit_range:
+        low, high = ctx.default_credit_range
+        filled = {"min": low, "max": high}
+    elif con.type == "course_count_range":
+        filled = {"min": 1}
+    else:
+        return
+    missing = {k: v for k, v in filled.items() if k not in p}
+    if missing and ("min" in p or "max" in p):
+        p.update(missing)
+        unit = "credits" if con.type == "credit_range" else "classes"
+        said = f"“{con.source_text}”" if con.source_text else "that"
+        result.notes.append(f"read {said} as {p['min']:g}–{p['max']:g} {unit}")
 
 
 def _contradictions(constraints: list[Constraint]) -> list[Issue]:
@@ -206,19 +261,24 @@ def validate_spec(raw: dict[str, Any], ctx: ValidationContext) -> ValidationResu
                 Issue(3, f"{con.type} only applies to a single term's schedule", con.id)
             )
             continue
+        _complete_range(con, ctx, result)
         try:
             parse_params(con)
-        except (ValidationError, ValueError) as exc:
-            result.errors.append(Issue(5, f"bad params for {con.type}: {exc}", con.id))
+        except ValidationError as exc:
+            problems = "; ".join(
+                f"{'.'.join(map(str, e['loc'])) or 'params'}: {e['msg']}" for e in exc.errors()
+            )
+            result.errors.append(Issue(5, f"bad params for {con.type} ({problems})", con.id))
+            continue
+        except ValueError as exc:
+            result.errors.append(Issue(5, f"bad params for {con.type} ({exc})", con.id))
             continue
         reason = ctx.capabilities.unavailable.get(con.type)
-        if reason:
-            spec.out_of_scope.append(
-                OutOfScope(request=f"{con.type}: {reason}", user_text=con.source_text)
-            )
-            result.notes.append(f"{con.id}: dropped ({reason})")
+        if reason:  # said once, through out_of_scope
+            spec.out_of_scope.append(OutOfScope(request=reason, user_text=con.source_text))
             continue
         _check_course(con, ctx, result)
+        _check_instructor(con, ctx, result)
         if con.type == "satisfy_requirement":
             unknown = [r for r in con.params["req_ids"] if r not in ctx.requirement_ids]
             if unknown:
@@ -227,7 +287,10 @@ def validate_spec(raw: dict[str, Any], ctx: ValidationContext) -> ValidationResu
                 )
         kept.append(con)
     spec.constraints = kept
-    stated = any(con.type == "credit_range" for con in kept)
+    # the full-time band holds unless the student sets a hard load; a stated preference
+    # ("around 12-14") works inside it
+    loads = [con for con in kept if con.type == "credit_range"]
+    stated = any(con.enforcement == "hard" for con in loads)
     if spec.mode == "term" and not stated and ctx.default_credit_range:
         low, high = ctx.default_credit_range
         default = {
@@ -241,11 +304,11 @@ def validate_spec(raw: dict[str, Any], ctx: ValidationContext) -> ValidationResu
             "source_text": "",
         }
         kept.append(Constraint.model_validate(default))
-        result.notes.append(
-            f"default_credits: no credit load stated; using full-time {low:g}–{high:g}"
-        )
-        if ctx.preferred_credit_range:
+        result.notes.append(DEFAULT_LOAD_NOTE.format(low=low, high=high))
+        if ctx.preferred_credit_range and not loads:
             low, high = ctx.preferred_credit_range
+            if any(c.type == "difficulty_load" and c.params.get("target") == "light" for c in kept):
+                high = min(high, low + 1)  # a light load: the low end of full time
             preferred = {
                 "id": "default_load_preference",
                 "type": "credit_range",

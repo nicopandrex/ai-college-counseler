@@ -1,5 +1,0 @@
-{
- "provider": "gemini",
- "model": "gemini-3.5-flash",
- "response": "{\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Prefer classes with fewer than 30 students.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"section_size\",\"params_json\":\"{\\\"max_enrollment\\\": 30}\",\"enforcement\":\"soft\",\"weight\":3,\"weight_source\":\"stated\",\"confidence\":0.95,\"source_text\":\"I prefer small classes, under 30 people.\",\"data_dependency\":\"may_be_missing\"}],\"clarifications\":[],\"out_of_scope\":[]}"
-}

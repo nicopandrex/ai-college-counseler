@@ -1,5 +1,0 @@
-{
- "provider": "gemini",
- "model": "gemini-3.5-flash",
- "response": "{\n  \"spec_version\": \"0.1\",\n  \"mode\": \"term\",\n  \"target_term\": \"2027SP\",\n  \"restatement\": \"All classes must be in-person for Spring 2027.\",\n  \"constraints\": [\n    {\n      \"id\": \"c1\",\n      \"type\": \"modality\",\n      \"params_json\": \"{\\\"format\\\":\\\"in_person\\\"}\",\n      \"enforcement\": \"hard\",\n      \"weight\": 5,\n      \"weight_source\": \"stated\",\n      \"confidence\": 0.95,\n      \"source_text\": \"I need every class to be in person.\",\n      \"data_dependency\": \"reliable\"\n    }\n  ],\n  \"clarifications\": [],\n  \"out_of_scope\": []\n}"
-}

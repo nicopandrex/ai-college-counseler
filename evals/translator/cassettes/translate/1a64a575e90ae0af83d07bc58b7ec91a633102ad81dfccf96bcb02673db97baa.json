@@ -1,5 +1,0 @@
-{
- "provider": "gemini",
- "model": "gemini-3.5-flash",
- "response": "{\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"At least one course must fulfill the Writing & Information Literacy 2 (WIL2) requirement.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"satisfy_requirement\",\"params_json\":\"{\\\"req_ids\\\":[\\\"GENED_WIL2\\\"],\\\"count\\\":1}\",\"enforcement\":\"hard\",\"weight\":4,\"weight_source\":\"inferred\",\"confidence\":0.95,\"source_text\":\"Make sure one of my classes has the WIL2 attribute.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}"
-}

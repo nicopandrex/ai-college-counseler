@@ -1,5 +1,0 @@
-{
- "provider": "gemini",
- "model": "gemini-3.5-flash",
- "response": "{\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Looking for a light, low-stress schedule for Spring 2027 with a reduced credit load.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"difficulty_load\",\"params_json\":\"{\\\"target\\\":\\\"light\\\"}\",\"enforcement\":\"soft\",\"weight\":4,\"weight_source\":\"inferred\",\"confidence\":0.7,\"source_text\":\"I want a chill semester.\",\"data_dependency\":\"estimated\"},{\"id\":\"c2\",\"type\":\"credit_range\",\"params_json\":\"{\\\"min\\\":12,\\\"max\\\":14}\",\"enforcement\":\"soft\",\"weight\":3,\"weight_source\":\"inferred\",\"confidence\":0.6,\"source_text\":\"I want a chill semester.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[{\"question\":\"To keep things chill, are you aiming for 12\u201314 credits, or did you have a specific credit target in mind?\",\"kind\":\"ambiguity\",\"constraint_id\":\"c2\",\"options\":[\"12 credits (minimum full-time)\",\"13\u201314 credits\",\"15\u201316 credits (standard)\"],\"blocking\":false}],\"out_of_scope\":[]}"
-}

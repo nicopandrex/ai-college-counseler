@@ -1,6 +1,6 @@
 {
  "model": "gemini-3.5-flash",
- "passed": 50,
+ "passed": 49,
  "total": 50,
  "results": [
   {
@@ -12,7 +12,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Take CS 3920 (Senior Seminar) next semester.",
+    "restatement": "Include Senior Seminar (CS 3920) in the schedule for next semester.",
     "constraints": [
      {
       "id": "c1",
@@ -20,7 +20,7 @@
       "enforcement": "hard",
       "weight": 5,
       "weight_source": "stated",
-      "confidence": 0.95,
+      "confidence": 1.0,
       "source_text": "I need to take Senior Seminar next semester.",
       "data_dependency": "reliable",
       "params": {
@@ -42,7 +42,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Do not include Software Engineering (CS 3050) in the schedule.",
+    "restatement": "Exclude Software Engineering (CS 3050) from the schedule.",
     "constraints": [
      {
       "id": "c1",
@@ -50,7 +50,7 @@
       "enforcement": "hard",
       "weight": 5,
       "weight_source": "stated",
-      "confidence": 1.0,
+      "confidence": 0.95,
       "source_text": "Don't put me in Software Engineering.",
       "data_dependency": "reliable",
       "params": {
@@ -72,7 +72,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "One course that fulfills any open general education requirement.",
+    "restatement": "Take one course that fulfills any open general education requirement.",
     "constraints": [
      {
       "id": "c1",
@@ -109,7 +109,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Fulfill both Humanities (AH3) and Social Sciences (S1) general education requirements this term.",
+    "restatement": "Satisfy both Humanities and Social Science general education requirements.",
     "constraints": [
      {
       "id": "c1",
@@ -121,11 +121,11 @@
       "source_text": "I need to knock out both my humanities and my social science gen eds this term.",
       "data_dependency": "reliable",
       "params": {
+       "count": 2,
        "req_ids": [
         "GENED_AH3",
         "GENED_S1"
-       ],
-       "count": 2
+       ]
       }
      }
     ],
@@ -143,7 +143,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Take at least one course toward your CS electives requirement.",
+    "restatement": "Include a course for your CS electives requirement for Spring 2027.",
     "constraints": [
      {
       "id": "c1",
@@ -151,14 +151,14 @@
       "enforcement": "hard",
       "weight": 4,
       "weight_source": "inferred",
-      "confidence": 0.95,
+      "confidence": 0.9,
       "source_text": "I want to make progress on my CS electives.",
       "data_dependency": "reliable",
       "params": {
+       "count": 1,
        "req_ids": [
         "CS_ELECTIVES"
-       ],
-       "count": 1
+       ]
       }
      }
     ],
@@ -176,15 +176,15 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Take macroeconomics (ECON 1400) for Spring 2027, avoiding Professor Rodrigues.",
+    "restatement": "Take macroeconomics (defaulting to ECON 1400), avoiding Professor Rodrigues.",
     "constraints": [
      {
       "id": "c1",
       "type": "include_course",
       "enforcement": "hard",
       "weight": 4,
-      "weight_source": "stated",
-      "confidence": 0.8,
+      "weight_source": "inferred",
+      "confidence": 0.75,
       "source_text": "I want macroeconomics",
       "data_dependency": "reliable",
       "params": {
@@ -209,13 +209,13 @@
     ],
     "clarifications": [
      {
-      "question": "Which macroeconomics course did you intend to take?",
+      "question": "Which macroeconomics course would you like to take?",
       "kind": "ambiguity",
       "constraint_id": "c1",
       "options": [
-       "ECON 1400 \u2014 Principles of Macroeconomics",
-       "ECON 2400 \u2014 Macroeconomic Theory",
-       "CDAE 3530 \u2014 Macroeconomics for Appl Econ"
+       "ECON 1400",
+       "ECON 2400",
+       "CDAE 3530"
       ],
       "blocking": false
      }
@@ -233,7 +233,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "At least one course must fulfill the Writing & Information Literacy 2 (WIL2) requirement.",
+    "restatement": "Ensure at least one course fulfills the WIL2 requirement.",
     "constraints": [
      {
       "id": "c1",
@@ -245,10 +245,10 @@
       "source_text": "Make sure one of my classes has the WIL2 attribute.",
       "data_dependency": "reliable",
       "params": {
+       "count": 1,
        "req_ids": [
         "GENED_WIL2"
-       ],
-       "count": 1
+       ]
       }
      }
     ],
@@ -266,16 +266,16 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Limit schedule to at most two CS courses for 2027SP.",
+    "restatement": "Take at most two CS courses next semester.",
     "constraints": [
      {
       "id": "c1",
       "type": "subject_limit",
       "enforcement": "hard",
       "weight": 4,
-      "weight_source": "inferred",
+      "weight_source": "stated",
       "confidence": 0.95,
-      "source_text": "I want at most two CS classes.",
+      "source_text": "I want at most two CS classes",
       "data_dependency": "reliable",
       "params": {
        "subject": "CS",
@@ -298,7 +298,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Prefer taking at most one 3000-level course.",
+    "restatement": "Prefer taking no more than one 3000-level course.",
     "constraints": [
      {
       "id": "c1",
@@ -330,49 +330,23 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Looking for a light, low-stress schedule for Spring 2027 with a reduced credit load.",
+    "restatement": "A lighter/chill workload for Spring 2027.",
     "constraints": [
      {
       "id": "c1",
       "type": "difficulty_load",
       "enforcement": "soft",
-      "weight": 4,
+      "weight": 3,
       "weight_source": "inferred",
-      "confidence": 0.7,
-      "source_text": "I want a chill semester.",
+      "confidence": 0.8,
+      "source_text": "I want a chill semester",
       "data_dependency": "estimated",
       "params": {
        "target": "light"
       }
-     },
-     {
-      "id": "c2",
-      "type": "credit_range",
-      "enforcement": "soft",
-      "weight": 3,
-      "weight_source": "inferred",
-      "confidence": 0.6,
-      "source_text": "I want a chill semester.",
-      "data_dependency": "reliable",
-      "params": {
-       "min": 12,
-       "max": 14
-      }
      }
     ],
-    "clarifications": [
-     {
-      "question": "To keep things chill, are you aiming for 12\u201314 credits, or did you have a specific credit target in mind?",
-      "kind": "ambiguity",
-      "constraint_id": "c2",
-      "options": [
-       "12 credits (minimum full-time)",
-       "13\u201314 credits",
-       "15\u201316 credits (standard)"
-      ],
-      "blocking": false
-     }
-    ],
+    "clarifications": [],
     "out_of_scope": [],
     "target_term": "2027SP"
    }
@@ -386,7 +360,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Take Advanced Data Science (CS 3870) and Algorithm Design & Analysis (CS 3240) in Spring 2027.",
+    "restatement": "Take CS 3870 (Advanced Data Science) and CS 3240 (Algorithm Design & Analysis).",
     "constraints": [
      {
       "id": "c1",
@@ -395,7 +369,7 @@
       "weight": 5,
       "weight_source": "stated",
       "confidence": 1.0,
-      "source_text": "I need to take Advanced Data Science",
+      "source_text": "Advanced Data Science",
       "data_dependency": "reliable",
       "params": {
        "course": "CS 3870"
@@ -462,7 +436,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Prefer to take History of China and Japan (HST 1440).",
+    "restatement": "Prefer taking History of China and Japan (HST 1440).",
     "constraints": [
      {
       "id": "c1",
@@ -492,7 +466,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Targeting 15 to 16 credits for Spring 2027.",
+    "restatement": "Schedule for 15 to 16 credits.",
     "constraints": [
      {
       "id": "c1",
@@ -523,7 +497,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Schedule exactly 4 courses for Spring 2027.",
+    "restatement": "Schedule exactly 4 classes for 2027SP.",
     "constraints": [
      {
       "id": "c1",
@@ -535,8 +509,8 @@
       "source_text": "I need exactly four classes.",
       "data_dependency": "reliable",
       "params": {
-       "max": 4,
-       "min": 4
+       "min": 4,
+       "max": 4
       }
      }
     ],
@@ -547,22 +521,22 @@
   },
   {
    "id": "u16",
-   "passed": true,
-   "category": null,
-   "detail": "",
+   "passed": false,
+   "category": "params:credit_range",
+   "detail": "want {\"type\": \"credit_range\", \"params\": {\"min\": 12, \"max\": 12}, \"enforcement\": \"soft\", \"weight\": 2} got [{\"params\": {\"max\": 14, \"min\": 12}, \"enforcement\": \"hard\", \"weight\": 4}]",
    "message": "I'd rather keep it light, around 12 credits.",
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Keep the semester workload light, targeted at around 12 credits.",
+    "restatement": "Targeting a light course load of around 12 credits for Spring 2027.",
     "constraints": [
      {
       "id": "c1",
       "type": "difficulty_load",
       "enforcement": "soft",
-      "weight": 2,
+      "weight": 3,
       "weight_source": "inferred",
-      "confidence": 0.85,
+      "confidence": 0.8,
       "source_text": "I'd rather keep it light",
       "data_dependency": "estimated",
       "params": {
@@ -572,14 +546,14 @@
      {
       "id": "c2",
       "type": "credit_range",
-      "enforcement": "soft",
-      "weight": 2,
-      "weight_source": "inferred",
-      "confidence": 0.85,
+      "enforcement": "hard",
+      "weight": 4,
+      "weight_source": "stated",
+      "confidence": 0.9,
       "source_text": "around 12 credits",
       "data_dependency": "reliable",
       "params": {
-       "max": 13,
+       "max": 14,
        "min": 12
       }
      }
@@ -628,7 +602,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Prefer not to have classes after 4:00 PM.",
+    "restatement": "Prefer no classes after 4:00 PM.",
     "constraints": [
      {
       "id": "c1",
@@ -658,7 +632,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Keep Fridays completely free of classes.",
+    "restatement": "Keep Fridays completely free.",
     "constraints": [
      {
       "id": "c1",
@@ -688,7 +662,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Prefer to have Mondays off.",
+    "restatement": "Prefer to have Mondays free.",
     "constraints": [
      {
       "id": "c1",
@@ -718,7 +692,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "No classes on Tuesdays between 1:00 PM and 5:00 PM due to work.",
+    "restatement": "Keep Tuesdays from 1:00 PM to 5:00 PM free for work.",
     "constraints": [
      {
       "id": "c1",
@@ -751,7 +725,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Keep Monday and Wednesday afternoons from 3:30 PM to 6:00 PM free for practice.",
+    "restatement": "Keep Mondays and Wednesdays from 3:30 PM to 6:00 PM clear for practice.",
     "constraints": [
      {
       "id": "c1",
@@ -760,7 +734,7 @@
       "weight": 5,
       "weight_source": "stated",
       "confidence": 0.95,
-      "source_text": "I have practice Monday and Wednesday from 3:30 to 6 and I can't miss it.",
+      "source_text": "practice Monday and Wednesday from 3:30 to 6 and I can't miss it",
       "data_dependency": "reliable",
       "params": {
        "day": "M",
@@ -776,7 +750,7 @@
       "weight": 5,
       "weight_source": "stated",
       "confidence": 0.95,
-      "source_text": "I have practice Monday and Wednesday from 3:30 to 6 and I can't miss it.",
+      "source_text": "practice Monday and Wednesday from 3:30 to 6 and I can't miss it",
       "data_dependency": "reliable",
       "params": {
        "day": "W",
@@ -812,11 +786,11 @@
       "source_text": "I can't do anything before 9 on Tuesdays and Thursdays.",
       "data_dependency": "reliable",
       "params": {
+       "time": "09:00",
        "days": [
         "T",
         "R"
-       ],
-       "time": "09:00"
+       ]
       }
      }
     ],
@@ -834,7 +808,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Preferably at most 3 days on campus.",
+    "restatement": "Prefer at most 3 days on campus.",
     "constraints": [
      {
       "id": "c1",
@@ -864,7 +838,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Prefer to have no more than two classes back-to-back.",
+    "restatement": "Prefer at most 2 back-to-back classes.",
     "constraints": [
      {
       "id": "c1",
@@ -924,7 +898,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Prefer gaps between classes to be no longer than 2 hours.",
+    "restatement": "Prefer schedule with no gaps between classes exceeding 2 hours.",
     "constraints": [
      {
       "id": "c1",
@@ -933,7 +907,7 @@
       "weight": 3,
       "weight_source": "inferred",
       "confidence": 0.95,
-      "source_text": "Ideally no huge gaps, nothing over two hours between classes.",
+      "source_text": "no huge gaps, nothing over two hours between classes",
       "data_dependency": "reliable",
       "params": {
        "max_minutes": 120
@@ -954,7 +928,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Prefer a compact schedule with classes clustered closely together.",
+    "restatement": "Prefer a compact schedule with classes scheduled close together.",
     "constraints": [
      {
       "id": "c1",
@@ -993,13 +967,13 @@
       "weight": 5,
       "weight_source": "stated",
       "confidence": 0.95,
-      "source_text": "I need Tuesday and Thursday afternoons free for my internship.",
+      "source_text": "Tuesday and Thursday afternoons free for my internship",
       "data_dependency": "reliable",
       "params": {
        "day": "T",
-       "start": "12:00",
        "end": "17:00",
-       "label": "internship"
+       "label": "internship",
+       "start": "12:00"
       }
      },
      {
@@ -1009,13 +983,13 @@
       "weight": 5,
       "weight_source": "stated",
       "confidence": 0.95,
-      "source_text": "I need Tuesday and Thursday afternoons free for my internship.",
+      "source_text": "Tuesday and Thursday afternoons free for my internship",
       "data_dependency": "reliable",
       "params": {
        "day": "R",
-       "start": "12:00",
        "end": "17:00",
-       "label": "internship"
+       "label": "internship",
+       "start": "12:00"
       }
      }
     ],
@@ -1033,7 +1007,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "No evening classes (no classes at or after 17:00).",
+    "restatement": "No classes in the evening (must finish before 17:00).",
     "constraints": [
      {
       "id": "c1",
@@ -1063,15 +1037,15 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Take at least one course taught by Professor Dion in Spring 2027.",
+    "restatement": "Include a class taught by Professor Dion.",
     "constraints": [
      {
       "id": "c1",
       "type": "instructor_preference",
       "enforcement": "hard",
-      "weight": 4,
+      "weight": 5,
       "weight_source": "stated",
-      "confidence": 0.9,
+      "confidence": 0.95,
       "source_text": "I really want a class with Professor Dion.",
       "data_dependency": "reliable",
       "params": {
@@ -1080,18 +1054,7 @@
       }
      }
     ],
-    "clarifications": [
-     {
-      "question": "Are you looking for Professor Dion for a specific course, or any course they teach?",
-      "kind": "ambiguity",
-      "constraint_id": "c1",
-      "options": [
-       "Any course taught by Dion",
-       "A specific subject/course"
-      ],
-      "blocking": false
-     }
-    ],
+    "clarifications": [],
     "out_of_scope": [],
     "target_term": "2027SP"
    }
@@ -1105,15 +1068,15 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Avoid Professor Aslim for Macroeconomics (ECON 1400) if possible.",
+    "restatement": "Avoid Professor Aslim for macroeconomics if possible.",
     "constraints": [
      {
       "id": "c1",
       "type": "instructor_preference",
       "enforcement": "soft",
       "weight": 3,
-      "weight_source": "stated",
-      "confidence": 0.85,
+      "weight_source": "inferred",
+      "confidence": 0.8,
       "source_text": "Avoid Professor Aslim for macro if possible.",
       "data_dependency": "reliable",
       "params": {
@@ -1123,19 +1086,7 @@
       }
      }
     ],
-    "clarifications": [
-     {
-      "question": "Which macroeconomics course did you mean?",
-      "kind": "ambiguity",
-      "constraint_id": "c1",
-      "options": [
-       "ECON 1400 (Principles of Macroeconomics)",
-       "ECON 2400 (Macroeconomic Theory)",
-       "CDAE 3530 (Macroeconomics for Appl Econ)"
-      ],
-      "blocking": false
-     }
-    ],
+    "clarifications": [],
     "out_of_scope": [],
     "target_term": "2027SP"
    }
@@ -1149,7 +1100,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "All classes must be in-person for Spring 2027.",
+    "restatement": "All courses must be in person.",
     "constraints": [
      {
       "id": "c1",
@@ -1157,7 +1108,7 @@
       "enforcement": "hard",
       "weight": 5,
       "weight_source": "stated",
-      "confidence": 0.95,
+      "confidence": 1.0,
       "source_text": "I need every class to be in person.",
       "data_dependency": "reliable",
       "params": {
@@ -1179,7 +1130,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "At most one online class if possible.",
+    "restatement": "At most one online course, if possible.",
     "constraints": [
      {
       "id": "c1",
@@ -1189,11 +1140,11 @@
       "weight_source": "inferred",
       "confidence": 0.95,
       "source_text": "At most one online class, if possible.",
-      "data_dependency": "reliable",
+      "data_dependency": "may_be_missing",
       "params": {
-       "format": "online",
        "comparator": "at_most",
-       "count": 1
+       "count": 1,
+       "format": "online"
       }
      }
     ],
@@ -1211,7 +1162,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Only include sections that currently have open seats available.",
+    "restatement": "Only include course sections that currently have open seats available.",
     "constraints": [
      {
       "id": "c1",
@@ -1219,7 +1170,7 @@
       "enforcement": "hard",
       "weight": 5,
       "weight_source": "stated",
-      "confidence": 1.0,
+      "confidence": 0.95,
       "source_text": "I need classes that still have open seats.",
       "data_dependency": "may_be_missing",
       "params": {
@@ -1241,14 +1192,14 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Prefer classes with fewer than 30 students.",
+    "restatement": "Prefer small classes with class sizes under 30 students.",
     "constraints": [
      {
       "id": "c1",
       "type": "section_size",
       "enforcement": "soft",
       "weight": 3,
-      "weight_source": "stated",
+      "weight_source": "inferred",
       "confidence": 0.95,
       "source_text": "I prefer small classes, under 30 people.",
       "data_dependency": "may_be_missing",
@@ -1271,7 +1222,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Do not schedule back-to-back lab sections.",
+    "restatement": "No back-to-back labs.",
     "constraints": [
      {
       "id": "c1",
@@ -1301,7 +1252,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Maximum of one lab per day.",
+    "restatement": "At most one lab per day.",
     "constraints": [
      {
       "id": "c1",
@@ -1360,7 +1311,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "plan",
-    "restatement": "Fall 2027 reserved for study abroad with no classes.",
+    "restatement": "Reserve Fall 2027 for study abroad with zero credits.",
     "constraints": [
      {
       "id": "c1",
@@ -1368,7 +1319,7 @@
       "enforcement": "hard",
       "weight": 5,
       "weight_source": "stated",
-      "confidence": 0.95,
+      "confidence": 1.0,
       "source_text": "I'm studying abroad in Fall 2027, so no classes that term.",
       "data_dependency": "reliable",
       "params": {
@@ -1391,7 +1342,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "plan",
-    "restatement": "Limit to at most 15 credits per semester across all remaining terms.",
+    "restatement": "Cap credit load at 15 credits per term across all remaining semesters.",
     "constraints": [
      {
       "id": "c1",
@@ -1400,10 +1351,11 @@
       "weight": 5,
       "weight_source": "stated",
       "confidence": 0.95,
-      "source_text": "I can't take more than 15 credits in any term.",
+      "source_text": "Across my remaining semesters, I can't take more than 15 credits in any term.",
       "data_dependency": "reliable",
       "params": {
-       "max": 15
+       "max": 15,
+       "min": 1
       }
      }
     ],
@@ -1420,7 +1372,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "plan",
-    "restatement": "Explore adding a CS minor to your degree plan.",
+    "restatement": "Explore adding the Computer Science minor to your plan.",
     "constraints": [
      {
       "id": "c1",
@@ -1450,12 +1402,12 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Request to match schedule with a roommate.",
+    "restatement": "Request to match schedule with roommate.",
     "constraints": [],
     "clarifications": [],
     "out_of_scope": [
      {
-      "request": "Match schedule with another student",
+      "request": "Same schedule as roommate",
       "user_text": "Give me the same schedule as my roommate."
      }
     ],
@@ -1471,12 +1423,12 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Avoiding multiple exams in the same week is currently unsupported as it requires exam schedule data.",
+    "restatement": "Avoid having two exams in the same week.",
     "constraints": [],
     "clarifications": [],
     "out_of_scope": [
      {
-      "request": "Avoid multiple exams in the same week",
+      "request": "avoid having multiple exams in the same week",
       "user_text": "I don't want two exams in the same week."
      }
     ],
@@ -1492,12 +1444,12 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Search for professors who grade the easiest.",
+    "restatement": "Asking for professors who grade the easiest.",
     "constraints": [],
     "clarifications": [],
     "out_of_scope": [
      {
-      "request": "Filter or rank professors by grading leniency / grade distribution",
+      "request": "Instructor grading opinions and difficulty ratings are outside system capability.",
       "user_text": "Find me the professors who grade the easiest."
      }
     ],
@@ -1513,12 +1465,12 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Filter all classes to be in Votey Hall.",
+    "restatement": "Request to have all classes scheduled in Votey Hall.",
     "constraints": [],
     "clarifications": [],
     "out_of_scope": [
      {
-      "request": "Restrict classes to a specific building (Votey Hall)",
+      "request": "Filter schedule by specific building (Votey Hall)",
       "user_text": "Put all my classes in Votey Hall."
      }
     ],
@@ -1534,7 +1486,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "No classes before 10:30 AM and limit workload to 12-15 credits.",
+    "restatement": "No classes before 10:30, and 12 to 15 credits total.",
     "constraints": [
      {
       "id": "c1",
@@ -1553,7 +1505,7 @@
       "id": "c2",
       "type": "credit_range",
       "enforcement": "hard",
-      "weight": 3,
+      "weight": 5,
       "weight_source": "stated",
       "confidence": 0.95,
       "source_text": "cap it at 15 credits",
@@ -1578,7 +1530,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Removed Fridays off constraint. Keeping Senior Seminar (CS 3920).",
+    "restatement": "Senior Seminar (CS 3920) next semester.",
     "constraints": [
      {
       "id": "c1",
@@ -1608,7 +1560,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Updated class start time limit to no earlier than 10:00 AM.",
+    "restatement": "No classes before 10:00.",
     "constraints": [
      {
       "id": "c1",
@@ -1638,7 +1590,7 @@
    "spec": {
     "spec_version": "0.1",
     "mode": "term",
-    "restatement": "Take CS 3920 (Senior Seminar), macroeconomics (not with Professor Rodrigues), and one course to fulfill any open gen ed requirement, with no classes starting before 10:30 AM.",
+    "restatement": "Next semester: CS 3920 (Senior Seminar), Principles of Macroeconomics (avoiding Professor Rodrigues), one general education requirement course, and no classes starting before 10:30 AM.",
     "constraints": [
      {
       "id": "c1",
@@ -1659,7 +1611,7 @@
       "enforcement": "hard",
       "weight": 5,
       "weight_source": "stated",
-      "confidence": 0.75,
+      "confidence": 0.8,
       "source_text": "macro",
       "data_dependency": "reliable",
       "params": {
@@ -1685,7 +1637,7 @@
       "id": "c4",
       "type": "satisfy_requirement",
       "enforcement": "hard",
-      "weight": 5,
+      "weight": 4,
       "weight_source": "stated",
       "confidence": 0.9,
       "source_text": "one other course for any of my gen eds",
@@ -1722,9 +1674,9 @@
       "kind": "ambiguity",
       "constraint_id": "c2",
       "options": [
-       "ECON 1400 \u2014 Principles of Macroeconomics",
-       "ECON 2400 \u2014 Macroeconomic Theory",
-       "CDAE 3530 \u2014 Macroeconomics for Appl Econ"
+       "ECON 1400",
+       "ECON 2400",
+       "CDAE 3530"
       ],
       "blocking": false
      }

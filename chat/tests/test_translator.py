@@ -110,3 +110,15 @@ def test_translate_goes_through_the_gateway(tmp_path: Path) -> None:
 
     gateway = LLMGateway(Stub(), "m", tmp_path, CacheMode.LIVE)
     assert translate("macro, no 8ams", CONTEXT, gateway).spec["mode"] == "term"
+
+
+def test_a_stray_quote_after_a_complete_object_is_tolerated() -> None:
+    odd = raw_output()
+    odd["constraints"][1]["params_json"] = '{"time": "09:00"}"'
+    assert to_contract(odd).spec["constraints"][1]["params"] == {"time": "09:00"}
+
+
+def test_anything_else_after_the_object_is_still_rejected() -> None:
+    odd = raw_output()
+    odd["constraints"][1]["params_json"] = '{"time": "09:00"} or maybe 10'
+    assert to_contract(odd).problems

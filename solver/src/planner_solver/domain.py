@@ -212,3 +212,24 @@ def blocking_reasons(prereq: Prereq | None, student: StudentTerm) -> list[str]:
         options = " or ".join(r for item in prereq.items for r in blocking_reasons(item, student))
         return [f"needs one of: {options}"] if options else []
     return []
+
+
+# -- display helpers (shared by the solver's explanations and the presenter) ---------------------
+
+
+def clock(minute: int) -> str:
+    """'1:10pm' style, from minutes after midnight."""
+    hour, mins = divmod(minute, 60)
+    return f"{(hour - 1) % 12 + 1}:{mins:02d}{'am' if hour < 12 else 'pm'}"
+
+
+def span(start: int, end: int) -> str:
+    """'9:40–10:30am', or '11:30am–12:45pm' when it crosses noon."""
+    first, last = clock(start), clock(end)
+    return f"{first[:-2]}–{last}" if first[-2:] == last[-2:] else f"{first}–{last}"
+
+
+def when(section: Section) -> str:
+    if not section.meetings:
+        return "no set meeting time" + (" (online)" if section.modality == "online" else "")
+    return ", ".join(f"{''.join(m.days)} {span(m.start, m.end)}" for m in section.meetings)

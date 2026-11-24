@@ -93,8 +93,46 @@ Running log. Resume from **Current status**. Newest log entries at the top.
   Honors Thesis) are never auto-scheduled, only when named; dropping a course drops rules
   scoped to it (the restatement had said "macro" after macro was dropped); a soft default
   load preference of 12–16 inside the hard 12–19 (it had packed 19 credits).
-- Idea logged: warn when a hard preference costs a bottleneck requirement (Fridays free
-  removes CHIN 4200, MWF-only, Track 3's last course).
+- **Stress test (2026-11-24, owner asked for varied prompts).** 11 private scenarios, 23
+  messages (`fixtures/private/transcripts/stress/`): vague asks, days off, work shifts,
+  instructors, nicknames and typos, already-taken courses, requirement asks, online-only,
+  questions, small talk, graduation planning, what-if-I-fail, conflicts, follow-up edits.
+  What broke and what changed:
+  - **Wrong answers.** Plan-mode specs went to the term solver with no load cap and returned
+    31-credit "schedules". Now the chat refuses plan mode until M8. "Something with
+    Professor Dion" said no section matched, but Dion teaches five courses: only
+    requirement courses were eligible. A wanted instructor's courses now are too.
+  - **Message kinds.** The translator now returns an internal `intent` (schedule /
+    question / greeting / thanks) next to the spec. This is not a contract change. Questions
+    are answered from the audit and catalog, with no re-solve: what's left, credits and
+    standing, when a course meets and what it counts for, what if I fail an in-progress
+    course (re-derives the state with `per_course` and re-solves, one-off), and instructor
+    opinions (declined).
+  - **Honest summaries.** The LLM's restatement is no longer shown. A templated "Working
+    with: …" line is built from the validated spec (`planner_solver/describe.py`), so it
+    can't claim a dropped rule. It had said "at most 3 classes" after that rule failed.
+  - **Explanations.** Conflicts carry catalog facts ("CS 3920 requires senior standing
+    (your audit says junior)", "CHIN 4200 meets MWF 12:00–12:50pm"). A single impossible
+    request reads as one. The logged idea is built: a "Heads up" when hard rules exclude
+    every course that could meet a bottleneck requirement (Fridays free → CHIN 4200). It is
+    skipped when only a load cap is the cause.
+  - **Validation.** Unknown instructors are caught with suggestions. "Taken" says how
+    (completed / taking now / registered). One-sided ranges are completed from the
+    defaults. Pydantic dumps never reach the student. Notes carry no internal ids.
+  - **Defaults.** The full-time band stays unless a *hard* load is stated, since a soft
+    "around 12–14" had silently removed the 12-credit minimum. A light workload aims for
+    12–13 credits.
+  - **Output.** 12-hour times. Three schedules, with 2–3 shown as swaps against schedule 1.
+    One requirement line per course (labs no longer repeat it). Clarifying questions and
+    "can't do yet" are said once and not carried into the next turn. Defaults are not
+    sent back to the translator as if the student said them.
+  - Translator prompt: intent rules, both range ends, instructor-without-course, prefer the
+    course an open requirement names ("a Chinese class" had picked 1st-year Chinese). The
+    translator also gets the student's in-progress courses. `params_json` with a stray
+    trailing quote is accepted (an observed Flash slip); anything else is still rejected.
+  - Eval re-recorded: **49/50 (98%)**. Re-recording cost 3 × ~313K input + ~10K output
+    Flash tokens, and the stress runs ~29K input per message. Remaining miss: "around 12
+    credits" → 12–14 (defensible; owner to judge in the eval review).
 ### M8 plan mode · M9 web UI · M10 beta — not started
 
 ## Schema proposals (owner reviewed 2026-11-18)
@@ -116,6 +154,9 @@ Running log. Resume from **Current status**. Newest log entries at the top.
    Proposal: document that default.
 
 ## Decisions
+- **Templated summaries over LLM restatements** (2026-11-24): every line the student reads
+  comes from the validated spec, the solver, the catalog or the audit. The LLM classifies
+  and translates only.
 - **Soft default load 12–16** inside the hard 12–19 band, added by validation only when no
   load is stated (`uvm/capabilities.json` `preferred_credit_range`). My judgment, pending the
   owner: without it, degree-progress maximisation packed every schedule to 19 credits.
@@ -201,9 +242,14 @@ Running log. Resume from **Current status**. Newest log entries at the top.
 - Preregistered-course marker unknown (none on this audit).
 
 ## out_of_scope requests discovered
-_(none yet: the translator isn't built)_
+- Multi-term planning / "can I graduate by …" (M8).
+- Instructor ratings ("is Professor Hu a good teacher?", "who grades easiest?"): no data.
+- Same schedule as a friend; exams in the same week; building (Votey Hall); section size
+  (UVM publishes no caps).
 
 ## Log
+- **2026-11-24 (M7 hardening).** Stress-tested the chat with 23 varied messages on the real
+  audit and fixed what broke (see M7). 228 Python + 2 web tests green; eval 49/50.
 - **2026-11-18 (M6).** Built the translator + 50-utterance eval: 94% → 100% recorded with
   gemini-3.5-flash. Gemini credits ran out during the live stability check.
 - **2026-11-18 (later).** Owner approved a one-time scrape. Built the polite fetcher (6 workers,

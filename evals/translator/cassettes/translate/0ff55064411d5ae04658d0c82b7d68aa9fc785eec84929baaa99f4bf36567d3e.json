@@ -1,5 +1,0 @@
-{
- "provider": "gemini",
- "model": "gemini-3.5-flash",
- "response": "{\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Filter all classes to be in Votey Hall.\",\"constraints\":[],\"clarifications\":[],\"out_of_scope\":[{\"request\":\"Restrict classes to a specific building (Votey Hall)\",\"user_text\":\"Put all my classes in Votey Hall.\"}]}"
-}

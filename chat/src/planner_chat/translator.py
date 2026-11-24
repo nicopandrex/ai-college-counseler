@@ -3,6 +3,9 @@
 Strict structured output can't express the contract's free-form `params` object, and a
 per-type union exceeds Gemini's schema limits, so the model returns `params_json` (a JSON
 object as a string). It's decoded here and checked by validation rule 0 / rule 5.
+
+The same call also says what kind of message it was (`intent`, outside the contract): only a
+scheduling request changes the spec; greetings and questions are answered by the chat layer.
 """
 
 from __future__ import annotations
@@ -16,6 +19,15 @@ from planner_llm import JsonRequest, LLMGateway
 from planner_solver.spec import PARAMS
 
 PURPOSE = "translate"
+INTENTS = ("schedule", "question", "greeting", "thanks")
+TOPICS = (
+    "remaining_requirements",
+    "credits_earned",
+    "course_info",
+    "what_if_fail",
+    "instructor_opinion",
+    "other",
+)
 
 
 @dataclass(frozen=True)
@@ -24,12 +36,16 @@ class TranslatorContext:
     open_requirements: list[tuple[str, str]]  # (req_id, title)
     catalog: list[tuple[str, str]]  # (code, title)
     programs: list[tuple[str, str]] = field(default_factory=list)  # (program_id, name)
+    in_progress: list[tuple[str, str]] = field(default_factory=list)  # (code, title) this term
 
 
 @dataclass
 class Translation:
     spec: dict[str, Any]  # a contract instance (to be validated)
     problems: list[str]  # constraints dropped because params_json wasn't a JSON object
+    intent: str = "schedule"
+    topic: str | None = None  # for questions
+    courses: list[str] = field(default_factory=list)  # courses a question is about
 
 
 def _nullable(schema: dict[str, Any]) -> dict[str, Any]:
@@ -71,6 +87,9 @@ def output_schema() -> dict[str, Any]:
     )
     return _obj(
         {
+            "intent": {"enum": list(INTENTS)},
+            "question_topic": _nullable({"enum": list(TOPICS)}),
+            "question_courses": {"type": "array", "items": string},
             "spec_version": {"enum": ["0.1"]},
             "mode": {"enum": ["term", "plan"]},
             "target_term": _nullable(string),
@@ -98,6 +117,9 @@ def user_message(message: str, context: TranslatorContext, prior: dict[str, Any]
     lines += [f"- {rid}: {title}" for rid, title in context.open_requirements]
     if context.programs:
         lines += ["", "PROGRAMS:"] + [f"- {pid}: {name}" for pid, name in context.programs]
+    if context.in_progress:
+        lines += ["", "IN-PROGRESS COURSES:"]
+        lines += [f"- {code} — {title}" for code, title in context.in_progress]
     lines += ["", "CATALOG:"] + [f"{code} — {title}" for code, title in context.catalog]
     if prior is not None:
         lines += ["", "PRIOR SPEC:", json.dumps(prior, indent=1)]
@@ -105,15 +127,23 @@ def user_message(message: str, context: TranslatorContext, prior: dict[str, Any]
     return "\n".join(lines) + "\n"
 
 
+def _decode_params(text: Any) -> Any:
+    """A JSON object; a stray quote or whitespace after a complete one is a known model slip."""
+    if not isinstance(text, str):
+        return None
+    try:
+        value, end = json.JSONDecoder().raw_decode(text.strip())
+    except json.JSONDecodeError:
+        return None
+    return value if not text.strip()[end:].strip(" \n\"'") else None
+
+
 def to_contract(raw: dict[str, Any]) -> Translation:
     """The model's output -> a contract instance (params decoded, nulls dropped)."""
     problems: list[str] = []
     constraints = []
     for item in raw.get("constraints", []):
-        try:
-            params = json.loads(item["params_json"])
-        except (json.JSONDecodeError, TypeError):
-            params = None
+        params = _decode_params(item.get("params_json"))
         if not isinstance(params, dict):
             problems.append(
                 f"{item.get('id')}: params_json is not a JSON object: {item.get('params_json')!r}"
@@ -134,7 +164,13 @@ def to_contract(raw: dict[str, Any]) -> Translation:
     }
     if raw.get("target_term"):
         spec["target_term"] = raw["target_term"]
-    return Translation(spec, problems)
+    return Translation(
+        spec,
+        problems,
+        intent=raw.get("intent") or "schedule",
+        topic=raw.get("question_topic"),
+        courses=list(raw.get("question_courses") or []),
+    )
 
 
 def translate(

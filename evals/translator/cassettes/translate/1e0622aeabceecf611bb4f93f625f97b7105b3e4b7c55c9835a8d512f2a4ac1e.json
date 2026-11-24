@@ -1,5 +1,0 @@
-{
- "provider": "gemini",
- "model": "gemini-3.5-flash",
- "response": "{\n  \"spec_version\": \"0.1\",\n  \"mode\": \"term\",\n  \"target_term\": \"2027SP\",\n  \"restatement\": \"Preferably at most 3 days on campus.\",\n  \"constraints\": [\n    {\n      \"id\": \"c1\",\n      \"type\": \"max_days_on_campus\",\n      \"params_json\": \"{\\\"count\\\":3}\",\n      \"enforcement\": \"soft\",\n      \"weight\": 3,\n      \"weight_source\": \"inferred\",\n      \"confidence\": 0.95,\n      \"source_text\": \"Ideally no more than 3 days on campus.\",\n      \"data_dependency\": \"reliable\"\n    }\n  ],\n  \"clarifications\": [],\n  \"out_of_scope\": []\n}"
-}

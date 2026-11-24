@@ -1,5 +1,0 @@
-{
- "provider": "gemini",
- "model": "gemini-3.5-flash",
- "response": "{\n  \"spec_version\": \"0.1\",\n  \"mode\": \"term\",\n  \"target_term\": \"2027SP\",\n  \"restatement\": \"Prefer a compact schedule with classes clustered closely together.\",\n  \"constraints\": [\n    {\n      \"id\": \"c1\",\n      \"type\": \"compactness\",\n      \"params_json\": \"{\\\"direction\\\": \\\"compact\\\"}\",\n      \"enforcement\": \"soft\",\n      \"weight\": 3,\n      \"weight_source\": \"inferred\",\n      \"confidence\": 0.95,\n      \"source_text\": \"I'd prefer my classes clustered close together.\",\n      \"data_dependency\": \"reliable\"\n    }\n  ],\n  \"clarifications\": [],\n  \"out_of_scope\": []\n}"
-}

@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"intent\":\"schedule\",\"question_topic\":null,\"question_courses\":[],\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Satisfy both Humanities and Social Science general education requirements.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"satisfy_requirement\",\"params_json\":\"{\\\"count\\\":2,\\\"req_ids\\\":[\\\"GENED_AH3\\\",\\\"GENED_S1\\\"]}\\\"\",\"enforcement\":\"hard\",\"weight\":5,\"weight_source\":\"stated\",\"confidence\":0.95,\"source_text\":\"I need to knock out both my humanities and my social science gen eds this term.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}",
+ "usage": {
+  "input_tokens": 6271,
+  "output_tokens": 160,
+  "reasoning_tokens": 0
+ }
+}
