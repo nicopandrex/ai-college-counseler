@@ -1,5 +1,0 @@
-{
- "provider": "gemini",
- "model": "gemini-3.5-flash",
- "response": "{\n  \"spec_version\": \"0.1\",\n  \"mode\": \"term\",\n  \"target_term\": \"2027SP\",\n  \"restatement\": \"Keep the semester workload light, targeted at around 12 credits.\",\n  \"constraints\": [\n    {\n      \"id\": \"c1\",\n      \"type\": \"difficulty_load\",\n      \"params_json\": \"{\\\"target\\\":\\\"light\\\"}\",\n      \"enforcement\": \"soft\",\n      \"weight\": 2,\n      \"weight_source\": \"inferred\",\n      \"confidence\": 0.85,\n      \"source_text\": \"I'd rather keep it light\",\n      \"data_dependency\": \"estimated\"\n    },\n    {\n      \"id\": \"c2\",\n      \"type\": \"credit_range\",\n      \"params_json\": \"{\\\"max\\\":13,\\\"min\\\":12}\",\n      \"enforcement\": \"soft\",\n      \"weight\": 2,\n      \"weight_source\": \"inferred\",\n      \"confidence\": 0.85,\n      \"source_text\": \"around 12 credits\",\n      \"data_dependency\": \"reliable\"\n    }\n  ],\n  \"clarifications\": [],\n  \"out_of_scope\": []\n}"
-}

@@ -257,3 +257,69 @@ def test_default_load_preference_is_soft_and_separate() -> None:
     preferred = loads["default_load_preference"]
     assert preferred.params == {"min": 12, "max": 16} and preferred.enforcement == "soft"
     assert preferred.weight_source == "default"
+
+
+# consumer-facing checks ------------------------------------------------------------------------
+
+TAUGHT = ValidationContext(
+    course_codes=CTX.course_codes,
+    requirement_ids=CTX.requirement_ids,
+    unplannable_courses=frozenset({"CS 3050", "ENGL 2010"}),
+    course_status={"CS 3050": "complete", "ENGL 2010": "in_progress"},  # audit statuses
+    instructors={"CS 3200": frozenset({"L. Dion"}), "ECON 2020": frozenset({"Smith, John A"})},
+    default_credit_range=(12, 19),
+    preferred_credit_range=(12, 16),
+)
+
+
+def test_taken_course_says_which_way_it_was_taken() -> None:
+    done = validate_spec(raw(c("c1", "include_course", params={"course": "CS 3050"})), TAUGHT)
+    now = validate_spec(raw(c("c1", "include_course", params={"course": "ENGL 2010"})), TAUGHT)
+    assert done.errors[0].message == "you've already completed CS 3050"
+    assert now.errors[0].message == "you're taking ENGL 2010 now"
+
+
+def test_unknown_instructor_is_caught_with_a_suggestion() -> None:
+    con = c("c1", "instructor_preference", params={"name": "Dionne", "polarity": "include"})
+    result = validate_spec(raw(con), TAUGHT)
+    assert rules(result) == [1]
+    assert "Dionne" in result.errors[0].message and "Dion" in result.errors[0].message
+
+
+def test_known_instructor_passes_and_initials_match() -> None:
+    con = c("c1", "instructor_preference", params={"name": "Professor Dion", "polarity": "include"})
+    assert validate_spec(raw(con), TAUGHT).ok
+
+
+def test_wanting_an_instructor_for_a_course_they_dont_teach_is_an_error() -> None:
+    params = {"name": "Dion", "polarity": "include", "course": "ECON 2020"}
+    result = validate_spec(raw(c("c1", "instructor_preference", params=params)), TAUGHT)
+    assert rules(result) == [1] and "ECON 2020" in result.errors[0].message
+
+
+def test_avoiding_an_instructor_who_doesnt_teach_it_is_just_a_note() -> None:
+    params = {"name": "Dion", "polarity": "exclude", "course": "ECON 2020"}
+    result = validate_spec(raw(c("c1", "instructor_preference", params=params)), TAUGHT)
+    assert result.ok and any("Dion" in n for n in result.notes)
+
+
+def test_a_one_sided_range_is_completed_from_the_defaults() -> None:
+    at_most = c("c1", "course_count_range", params={"max": 3}, source_text="3 classes max")
+    credits = c("c2", "credit_range", params={"min": 15}, source_text="at least 15 credits")
+    result = validate_spec(raw(at_most, credits), TAUGHT)
+    assert result.ok
+    params = {con.id: con.params for con in result.spec.constraints}
+    assert params["c1"] == {"min": 1, "max": 3} and params["c2"] == {"min": 15, "max": 19}
+
+
+def test_a_light_load_aims_for_the_low_end_of_full_time() -> None:
+    light = c("c1", "difficulty_load", "soft", 3, params={"target": "light"})
+    result = validate_spec(raw(light), TAUGHT)
+    preferred = next(x for x in result.spec.constraints if x.id == "default_load_preference")
+    assert preferred.params == {"min": 12, "max": 13}
+
+
+def test_notes_are_written_for_the_student_without_internal_ids() -> None:
+    result = validate_spec(raw(c("c1", "include_course", params={"course": "cs3200"})), TAUGHT)
+    assert result.notes[0] == "read “cs3200” as CS 3200"
+    assert not any("c1" in n or "default_" in n for n in result.notes)

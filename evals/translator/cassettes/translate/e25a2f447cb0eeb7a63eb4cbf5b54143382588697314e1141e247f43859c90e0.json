@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\n  \"intent\": \"schedule\",\n  \"question_topic\": null,\n  \"question_courses\": [],\n  \"spec_version\": \"0.1\",\n  \"mode\": \"term\",\n  \"target_term\": \"2027SP\",\n  \"restatement\": \"Take macroeconomics (defaulting to ECON 1400), avoiding Professor Rodrigues.\",\n  \"constraints\": [\n    {\n      \"id\": \"c1\",\n      \"type\": \"include_course\",\n      \"params_json\": \"{\\\"course\\\":\\\"ECON 1400\\\"}\",\n      \"enforcement\": \"hard\",\n      \"weight\": 4,\n      \"weight_source\": \"inferred\",\n      \"confidence\": 0.75,\n      \"source_text\": \"I want macroeconomics\",\n      \"data_dependency\": \"reliable\"\n    },\n    {\n      \"id\": \"c2\",\n      \"type\": \"instructor_preference\",\n      \"params_json\": \"{\\\"course\\\":\\\"ECON 1400\\\",\\\"name\\\":\\\"Rodrigues\\\",\\\"polarity\\\":\\\"exclude\\\"}\",\n      \"enforcement\": \"hard\",\n      \"weight\": 5,\n      \"weight_source\": \"stated\",\n      \"confidence\": 0.95,\n      \"source_text\": \"not with Professor Rodrigues\",\n      \"data_dependency\": \"reliable\"\n    }\n  ],\n  \"clarifications\": [\n    {\n      \"question\": \"Which macroeconomics course would you like to take?\",\n      \"kind\": \"ambiguity\",\n      \"constraint_id\": \"c1\",\n      \"options\": [\n        \"ECON 1400\",\n        \"ECON 2400\",\n        \"CDAE 3530\"\n      ],\n      \"blocking\": false\n    }\n  ],\n  \"out_of_scope\": []\n}",
+ "usage": {
+  "input_tokens": 6265,
+  "output_tokens": 424,
+  "reasoning_tokens": 0
+ }
+}

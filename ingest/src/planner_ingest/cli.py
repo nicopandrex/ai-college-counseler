@@ -10,10 +10,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
-from planner_chat.session import ChatSession
+from planner_chat.session import ChatSession, StudentFacts
 from planner_chat.translator import PURPOSE as TRANSLATE
 from planner_chat.translator import TranslatorContext
 from planner_ingest.bridge import student_term
@@ -68,15 +69,22 @@ def _student(args: argparse.Namespace) -> tuple[ExtractedAudit, StudentTerm]:
     extraction = extract_audit(args.audit, gateway)
     if gateway.usage["live_calls"]:
         print(gateway.usage_summary(), file=sys.stderr)
-    policy = "per_course" if args.fail else "assume_pass"
-    assumptions = Assumptions(in_progress_policy=policy, failed_courses=tuple(args.fail))
-    student = student_term(extraction.audit, derive_state(extraction.audit, assumptions))
-    if args.standing:  # the student's own statement for the target term overrides the audit
-        student = student.model_copy(update={"standing": args.standing})
-    return extraction.audit, student
+    return extraction.audit, _derive(extraction.audit, tuple(args.fail), args.standing)
+
+
+def _derive(audit: ExtractedAudit, failed: tuple[str, ...], standing: str | None) -> StudentTerm:
+    policy = "per_course" if failed else "assume_pass"
+    assumptions = Assumptions(in_progress_policy=policy, failed_courses=failed)
+    student = student_term(audit, derive_state(audit, assumptions))
+    if standing:  # the student's own statement for the target term overrides the audit
+        student = student.model_copy(update={"standing": standing})
+    return student
 
 
 def _validation(term: TermData, audit: ExtractedAudit, student: StudentTerm) -> ValidationContext:
+    instructors: dict[str, set[str]] = {}
+    for section in term.sections:
+        instructors.setdefault(section.course, set()).update(section.instructors)
     return ValidationContext(
         course_codes=frozenset(term.courses),
         requirement_ids=frozenset(r.req_id for r in audit.requirements),
@@ -84,6 +92,20 @@ def _validation(term: TermData, audit: ExtractedAudit, student: StudentTerm) -> 
         capabilities=SchoolCapabilities(unavailable=load_capabilities()),
         default_credit_range=default_credit_range(),
         preferred_credit_range=preferred_credit_range(),
+        course_status={c.code: c.status for c in audit.courses_taken},
+        instructors={code: frozenset(names) for code, names in instructors.items()},
+    )
+
+
+def _facts(audit: ExtractedAudit) -> StudentFacts:
+    s = audit.student
+    return StudentFacts(
+        credits_earned=s.overall_credits_earned,
+        credits_in_progress=s.overall_credits_in_progress,
+        standing=re.sub(r"^\d+\s*-\s*", "", s.class_standing or "") or None,  # "03 - Junior"
+        in_progress=tuple(
+            sorted({c.code for c in audit.courses_taken if c.status == "in_progress"})
+        ),
     )
 
 
@@ -98,7 +120,15 @@ def cmd_chat(args: argparse.Namespace) -> int:
             for rid, t in student.open_requirements.items()
         ],
         catalog=sorted((c.code, c.title) for c in term.courses.values()),
+        in_progress=sorted(
+            {(c.code, c.title or c.code) for c in audit.courses_taken if c.status == "in_progress"}
+        ),
     )
+
+    def what_if(failed: tuple[str, ...]) -> tuple[StudentTerm, ValidationContext]:
+        changed = _derive(audit, tuple(sorted({*args.fail, *failed})), args.standing)
+        return changed, _validation(term, audit, changed)
+
     chat = ChatSession(
         context,
         term,
@@ -106,6 +136,8 @@ def cmd_chat(args: argparse.Namespace) -> int:
         _validation(term, audit, student),
         LLMGateway.from_env(TRANSLATE),
         OUT_OF_SCOPE_LOG,
+        facts=_facts(audit),
+        what_if=what_if,
     )
     messages = args.script.read_text().splitlines() if args.script else None
     print(f"Planning {args.term}. Tell me what you want; /spec shows your requests, /quit exits.")

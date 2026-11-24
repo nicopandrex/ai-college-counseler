@@ -27,6 +27,7 @@ from planner_solver.domain import (
     prereq_met,
     resolve_selector,
     unknown_reasons,
+    when,
 )
 from planner_solver.spec import (
     PLAN_ONLY,
@@ -35,6 +36,7 @@ from planner_solver.spec import (
     CompactnessParams,
     Comparator,
     ConsecutiveParams,
+    Constraint,
     ConstraintSpec,
     CountParams,
     CourseAttributeParams,
@@ -64,6 +66,7 @@ TIME_LIMIT_SECONDS = 10.0
 SCARCE_COURSES = 2  # a requirement with at most this many eligible courses this term...
 SCARCE_BONUS = 3  # ...gets its progress weighted this much more
 UNVERIFIED_PENALTY = 3  # half a course's progress: breaks ties, never outweighs real progress
+LOAD_TYPES = frozenset({"credit_range", "course_count_range"})
 Lit = cp_model.IntVar
 
 
@@ -94,6 +97,15 @@ class Relaxation:
 
 
 @dataclass
+class Bottleneck:
+    """An open requirement only `courses` can meet this term, and hard rules rule them all out."""
+
+    req_id: str
+    courses: list[str]
+    blocked_by: list[str]  # hard constraint ids that, together, exclude every one of them
+
+
+@dataclass
 class TermResult:
     status: Literal["ok", "infeasible"]
     schedules: list[Schedule] = field(default_factory=list)
@@ -103,6 +115,8 @@ class TermResult:
     estimates: list[str] = field(default_factory=list)  # constraint ids answered with a proxy
     # courses allowed though part of their prerequisite couldn't be verified -> why
     prereq_unchecked: dict[str, list[str]] = field(default_factory=dict)
+    reasons: dict[str, list[str]] = field(default_factory=dict)  # conflict id -> facts behind it
+    missed: list[Bottleneck] = field(default_factory=list)
 
 
 def _normalize_name(name: str) -> tuple[str, str]:
@@ -389,7 +403,9 @@ def _modality(ctx: _Ctx, h: Lit, p: ModalityParams) -> None:
         c for c, sections in ctx.by_course.items() if all(s.modality == p.format for s in sections)
     }
     if any(s.modality is None for s in ctx.sections):
-        ctx.warnings.append("some sections have no modality data")
+        ctx.warnings.append(
+            "some sections don't say how they're taught; I counted them as in person"
+        )
     if p.comparator is None or p.count is None:
         for c, y in ctx.y.items():
             if c not in matching:
@@ -513,6 +529,12 @@ def _eligible_sections(
     for c in spec.constraints:
         if c.type == "instructor_preference" and c.params.get("course"):
             wanted.add(c.params["course"])
+        elif c.type == "instructor_preference" and c.params.get("polarity") == "include":
+            wanted |= {  # "something with Professor X": any course they teach
+                s.course
+                for s in data.sections
+                if any(instructor_matches(c.params["name"], n) for n in s.instructors)
+            }
     sections = []
     for code in sorted(wanted - student.unplannable_courses):
         course = data.courses.get(code)
@@ -623,12 +645,14 @@ def _hard(spec: ConstraintSpec, holds: dict[str, Lit]) -> dict[str, Lit]:
     }
 
 
-def _minimal_core(ctx: _Ctx, hard: dict[str, Lit], core: list[str]) -> list[str]:
-    """Deletion filter: drop each id whose removal keeps the set infeasible."""
+def _minimal_core(
+    ctx: _Ctx, hard: dict[str, Lit], core: list[str], fixed: Iterable[Lit] = ()
+) -> list[str]:
+    """Deletion filter: drop each id whose removal keeps the set (plus `fixed`) infeasible."""
     kept = list(core)
     for cid in list(core):
         trial = [c for c in kept if c != cid]
-        _, status = _solve(ctx, [hard[c] for c in trial])
+        _, status = _solve(ctx, [*(hard[c] for c in trial), *fixed])
         if not _feasible(status):
             kept = trial
     return kept
@@ -681,6 +705,107 @@ def _schedules(
     return found
 
 
+# -- explanations -------------------------------------------------------------------------------
+
+
+def _meets(code: str, sections: list[Section]) -> str:
+    times = list(dict.fromkeys(when(s) for s in sections if s.course == code))
+    return f"{code} meets {' or '.join(times)}"
+
+
+def _status(code: str, student: StudentTerm, blocked: dict[str, list[str]]) -> str:
+    if code in student.unplannable_courses:
+        return f"{code} is already taken or registered"
+    if code in blocked:
+        return f"{code} {'; '.join(blocked[code])}"
+    return f"{code} has no section this term"
+
+
+def _why(
+    constraint: Constraint,
+    data: TermData,
+    student: StudentTerm,
+    sections: list[Section],
+    requirement_courses: dict[str, set[str]],
+    blocked: dict[str, list[str]],
+) -> list[str]:
+    """The catalog facts behind one constraint of a conflict, in the student's terms."""
+    p = constraint.params
+    offered = {s.course for s in sections}
+    if constraint.type == "include_course":
+        code = p["course"]
+        return [_meets(code, sections) if code in offered else _status(code, student, blocked)]
+    if constraint.type == "satisfy_requirement":
+        lines = []
+        for req_id in p["req_ids"]:
+            target = student.open_requirements.get(req_id)
+            courses = sorted(requirement_courses.get(req_id, set()))
+            available = [c for c in courses if c in offered]
+            title = target.title if target else req_id
+            if available and len(available) <= SCARCE_COURSES:
+                lines.append(f"{title}: " + "; ".join(_meets(c, sections) for c in available))
+            elif not available:
+                stuck = [c for c in courses if c in blocked][: SCARCE_COURSES + 1]
+                facts = [_status(c, student, blocked) for c in stuck] or [
+                    "no course for it is offered this term"
+                ]
+                lines.append(f"{title}: " + "; ".join(facts))
+        return lines
+    if constraint.type == "instructor_preference" and p["polarity"] == "include":
+        theirs = [
+            s
+            for s in data.sections
+            if any(instructor_matches(p["name"], n) for n in s.instructors)
+            and p.get("course") in (None, s.course)
+        ]
+        eligible = {s.section_id for s in sections}
+        mine = [s for s in theirs if s.section_id in eligible]
+        return [
+            _meets(code, mine)
+            if any(s.course == code for s in mine)
+            else _status(code, student, blocked)
+            for code in sorted({s.course for s in theirs})
+        ][: SCARCE_COURSES + 2]
+    return []
+
+
+def _missed(
+    spec: ConstraintSpec,
+    data: TermData,
+    student: StudentTerm,
+    build: Callable[[], tuple[_Ctx, dict[str, Lit]]],
+    requirement_courses: dict[str, set[str]],
+    chosen: set[str],
+) -> list[Bottleneck]:
+    """Requirements only one or two courses can meet this term, left out because hard rules
+    exclude every one of them (not just outscored): the student should hear about these."""
+    found = []
+    probe, _ = build()
+    for req_id, courses in requirement_courses.items():
+        available = sorted(c for c in courses if c in probe.y)
+        if not available or len(available) > SCARCE_COURSES or chosen & set(available):
+            continue
+        culprits: list[str] = []
+        for code in available:
+            ctx, holds = build()
+            hard = _hard(spec, holds)
+            force = ctx.y[code]
+            solver, status = _solve(ctx, [*hard.values(), force])
+            if _feasible(status):
+                culprits = []  # it fits; it lost on preferences, which the student chose
+                break
+            by_index = {lit.Index(): cid for cid, lit in hard.items()}
+            core = [
+                by_index[i] for i in solver.SufficientAssumptionsForInfeasibility() if i in by_index
+            ]
+            culprits += _minimal_core(ctx, hard, core, fixed=[force])
+        by_id = {c.id: c for c in spec.constraints}
+        if culprits and not any(by_id[c].type in LOAD_TYPES for c in culprits):
+            # a load cap leaving a course out is the student's trade-off, not a surprise
+            found.append(Bottleneck(req_id, available, list(dict.fromkeys(culprits))))
+    return found
+
+
 def solve_term(
     spec: ConstraintSpec, data: TermData, student: StudentTerm, limit: int = MAX_SCHEDULES
 ) -> TermResult:
@@ -709,9 +834,15 @@ def solve_term(
             hard_r = [lit for c, lit in _hard(spec, holds_r).items() if c != cid]
             unlocked = len(_schedules(ctx_r, spec, holds_r, hard_r, requirement_courses, limit))
             relaxations.append(Relaxation(cid, weights[cid], unlocked))
+        by_id = {c.id: c for c in spec.constraints}
         return TermResult(
             "infeasible",
             conflict=core,
+            reasons={
+                cid: why
+                for cid in core
+                if (why := _why(by_id[cid], data, student, sections, requirement_courses, blocked))
+            },
             relaxations=relaxations,
             warnings=warnings,
             estimates=ctx.estimates,
@@ -719,9 +850,18 @@ def solve_term(
         )
 
     schedules = _schedules(ctx, spec, holds, list(hard.values()), requirement_courses, limit)
+    missed = _missed(
+        spec,
+        data,
+        student,
+        lambda: _build(spec, data, student, sections, requirement_courses, blocked, unchecked),
+        requirement_courses,
+        set(schedules[0].courses) if schedules else set(),
+    )
     return TermResult(
         "ok",
         schedules=schedules,
+        missed=missed,
         warnings=warnings,
         estimates=ctx.estimates,
         prereq_unchecked=unchecked,

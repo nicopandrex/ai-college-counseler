@@ -1,5 +1,0 @@
-{
- "provider": "gemini",
- "model": "gemini-3.5-flash",
- "response": "{\n  \"spec_version\": \"0.1\",\n  \"mode\": \"term\",\n  \"target_term\": \"2027SP\",\n  \"restatement\": \"Take at least one course taught by Professor Dion in Spring 2027.\",\n  \"constraints\": [\n    {\n      \"id\": \"c1\",\n      \"type\": \"instructor_preference\",\n      \"params_json\": \"{\\\"name\\\": \\\"Dion\\\", \\\"polarity\\\": \\\"include\\\"}\",\n      \"enforcement\": \"hard\",\n      \"weight\": 4,\n      \"weight_source\": \"stated\",\n      \"confidence\": 0.9,\n      \"source_text\": \"I really want a class with Professor Dion.\",\n      \"data_dependency\": \"reliable\"\n    }\n  ],\n  \"clarifications\": [\n    {\n      \"question\": \"Are you looking for Professor Dion for a specific course, or any course they teach?\",\n      \"kind\": \"ambiguity\",\n      \"constraint_id\": \"c1\",\n      \"options\": [\n        \"Any course taught by Dion\",\n        \"A specific subject/course\"\n      ],\n      \"blocking\": false\n    }\n  ],\n  \"out_of_scope\": []\n}"
-}

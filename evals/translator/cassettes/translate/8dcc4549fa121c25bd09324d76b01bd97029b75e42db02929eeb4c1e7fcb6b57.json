@@ -1,5 +1,0 @@
-{
- "provider": "gemini",
- "model": "gemini-3.5-flash",
- "response": "{\"spec_version\":\"0.1\",\"mode\":\"plan\",\"target_term\":null,\"restatement\":\"Explore adding a CS minor to your degree plan.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"add_program\",\"params_json\":\"{\\\"action\\\": \\\"explore\\\", \\\"program_id\\\": \\\"MINOR_CS\\\"}\",\"enforcement\":\"hard\",\"weight\":5,\"weight_source\":\"stated\",\"confidence\":0.95,\"source_text\":\"added the CS minor\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}"
-}
