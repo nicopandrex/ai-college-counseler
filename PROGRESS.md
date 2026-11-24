@@ -4,7 +4,8 @@ Running log. Resume from **Current status**. Newest log entries at the top.
 
 ## Current status
 - **Done:** M0, M1, M2, M4 (incl. real solve), M5. M3 is done for Spring 2027 (see gaps).
-- **Next:** owner reviews the M6 eval set and the M7 transcript; then M8 (plan mode).
+- **Next:** owner tests the web app (`make dev`, see README); owner reviews the M6 eval set.
+  M8 plan mode is deferred to a later version (owner, 2026-11-24).
 - **Demo today:** `planner solve --audit fixtures/private/audit.pdf --spec
   fixtures/private/specs/example_senior_seminar.json` (env: `LLM_PROVIDER=gemini
   LLM_MODEL=gemini-3.1-pro-preview LLM_API_KEY=replay-only
@@ -133,7 +134,30 @@ Running log. Resume from **Current status**. Newest log entries at the top.
   - Eval re-recorded: **49/50 (98%)**. Re-recording cost 3 × ~313K input + ~10K output
     Flash tokens, and the stress runs ~29K input per message. Remaining miss: "around 12
     credits" → 12–14 (defensible; owner to judge in the eval review).
-### M8 plan mode · M9 web UI · M10 beta — not started
+### M8 plan mode — deferred by the owner to a later version (2026-11-24)
+- Findings kept for later: the audit's 120-credit total (95 earned + in progress) isn't a
+  course requirement today, so a plan must add elective credits; class standing must be
+  projected per term (UVM's credit thresholds couldn't be confirmed: the catalogue page
+  returned 503); only Spring 2027 offerings are known.
+### M9 web UI ✅ (plain styling; owner iterates on design in V2)
+- `api/` (`planner_api`, FastAPI): `POST /api/sessions` (raw PDF body, read from a temp file
+  and deleted), `POST /api/sessions/{id}/messages`, `DELETE /api/sessions/{id}/rules/{rule}`,
+  `GET /api/sessions/{id}`. In-memory sessions, one lock each, one LLM gateway (and budget)
+  per session. Session setup shared with the CLI (`planner_ingest/chat_setup.py`).
+- `ChatSession.view()`: rules as chips, top-3 schedules with meetings and what each course
+  counts toward, conflict + why + fixes, tap-to-answer questions, open requirements. The
+  same facts as the text reply. Closing a chip drops that rule with no LLM call (a closed
+  default stays closed). In the web, the chat reply points to the calendar instead of
+  listing schedules.
+- `web/`: upload screen; chat (left); canvas (right) with chips, schedule tabs, a Mon–Fri
+  grid (online/no-time sections listed under it), course table, conflict panel with one-tap
+  fixes, requirement list. Zod-parsed API responses. `make dev` runs both on :3000/:8000.
+- Verified end to end in Chromium on the real audit (upload, schedules, chip removal,
+  conflict + fix).
+- Removed the solver's health-only FastAPI stub (superseded by `api/`).
+- Seen, not fixed: CS 4996 F (Honors Thesis) has a meeting time and no prerequisite in the
+  SOC data, so it can be auto-scheduled as a CS elective.
+### M10 beta — not started
 
 ## Schema proposals (owner reviewed 2026-11-18)
 - Approved and documented in the reference: `satisfy_requirement.distinct`, day codes R/U.
@@ -248,6 +272,9 @@ Running log. Resume from **Current status**. Newest log entries at the top.
   (UVM publishes no caps).
 
 ## Log
+- **2026-11-24 (M9).** Web app: FastAPI over ChatSession + Next.js page (upload, chat,
+  chips, weekly grid, conflicts with one-tap fixes). M8 deferred by the owner. 235 Python +
+  4 web tests green.
 - **2026-11-24 (M7 hardening).** Stress-tested the chat with 23 varied messages on the real
   audit and fixed what broke (see M7). 228 Python + 2 web tests green; eval 49/50.
 - **2026-11-18 (M6).** Built the translator + 50-utterance eval: 94% → 100% recorded with

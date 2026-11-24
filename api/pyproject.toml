@@ -1,0 +1,19 @@
+[project]
+name = "planner-api"
+version = "0.0.0"
+description = "Web API for the chat: upload an audit, then plan by chatting (M9)"
+requires-python = ">=3.12,<3.14"
+dependencies = ["fastapi==0.115.6", "planner-chat", "planner-ingest", "planner-llm", "planner-solver", "uvicorn==0.34.0"]
+
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[tool.uv.sources]
+planner-chat = { workspace = true }
+planner-ingest = { workspace = true }
+planner-llm = { workspace = true }
+planner-solver = { workspace = true }
+
+[project.scripts]
+planner-api = "planner_api.app:main"

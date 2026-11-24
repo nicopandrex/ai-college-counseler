@@ -317,3 +317,69 @@ def test_what_if_i_fail_reruns_with_that_assumption_without_changing_the_plan(
     assert asked == [("CS 1210",)] and chat.spec == before
     assert reply.startswith("If you don't pass CS 1210, here's 2027SP with the same requests")
     assert "Schedule 1" in reply
+
+
+def test_view_carries_the_rules_and_schedules_the_text_describes(tmp_path: Path) -> None:
+    chat = session(
+        Script(answer(con("c1", "include_course", src="macro", course="ECON 2020"))), tmp_path
+    )
+    chat.handle("macro")
+    view = chat.view()
+    assert view["rules"][0] == {
+        "id": "c1",
+        "text": "take ECON 2020 (Macroeconomics)",
+        "must": True,
+        "said": "macro",
+        "default": False,
+    }
+    assert view["status"] == "ok" and 1 <= len(view["schedules"]) <= 3
+    econ = next(s for s in view["schedules"][0]["sections"] if s["course"] == "ECON 2020")
+    assert econ["meetings"] and econ["counts_toward"] == ["Macroeconomics"]
+    assert view["requirements"][0]["title"] and view["why"] == []
+    json.dumps(view)  # JSON-safe for the API
+
+
+def test_closing_a_chip_drops_it_without_the_llm(tmp_path: Path) -> None:
+    provider = Script(
+        answer(
+            con("c1", "include_course", src="macro", course="ECON 2020"),
+            con("c2", "free_day", src="Fridays off", day="F"),
+        )
+    )
+    chat = session(provider, tmp_path)
+    chat.handle("macro, Fridays off")
+    reply = chat.drop("c2")
+    assert reply.startswith("Dropped “Fridays free”.") and len(provider.requests) == 1
+    assert [r["id"] for r in chat.view()["rules"] if not r["default"]] == ["c1"]
+    assert chat.drop("c2") == "That request isn't active any more."
+
+
+def test_a_closed_default_stays_closed_on_the_next_turn(tmp_path: Path) -> None:
+    provider = Script(
+        answer(con("c1", "include_course", src="macro", course="ECON 2020")),
+        answer(
+            con("c1", "include_course", src="macro", course="ECON 2020"),
+            con("c2", "free_day", src="Fridays off", day="F"),
+        ),
+    )
+    chat = session(provider, tmp_path)
+    chat.handle("macro")
+    chat.drop("default_credits")
+    chat.handle("and Fridays off")
+    assert "default_credits" not in {r["id"] for r in chat.view()["rules"]}
+
+
+def test_questions_are_in_the_view_for_tap_to_answer(tmp_path: Path) -> None:
+    question = {
+        "question": "How early is too early?",
+        "kind": "ambiguity",
+        "constraint_id": "c1",
+        "options": ["9:00", "10:00"],
+        "blocking": False,
+    }
+    early = con("c1", "no_earlier_than", "soft", 3, src="no early mornings", time="10:00")
+    chat = session(Script(answer(early, clarifications=[question])), tmp_path)
+    chat.handle("no early mornings")
+    assert chat.view()["questions"] == [
+        {"question": "How early is too early?", "options": ["9:00", "10:00"]}
+    ]

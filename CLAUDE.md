@@ -51,8 +51,10 @@ Test data: `fixtures/private/` (the owner's real audit; never committed).
   30). Sample-run any bulk LLM job and report its token cost before running it in full.
 - `data/uvm/` (committed): derived UVM term data + prerequisite answer store. Never re-scrape or
   re-parse what's there; `data/raw/` (gitignored) is only the raw scrape cache.
-- `/solver` (Python, `planner_solver`, FastAPI, OR-Tools CP-SAT): validation, term + plan solving.
-- `/web` (Next.js 14 + TypeScript + Tailwind).
+- `/solver` (Python, `planner_solver`, OR-Tools CP-SAT): validation, term solving (plan mode deferred
+  by the owner to a later version).
+- `/api` (Python, `planner_api`, FastAPI): the web API over ChatSession. `make dev` runs it with the web.
+- `/web` (Next.js 14 + TypeScript + Tailwind): upload, chat, schedule canvas. Plain styling in V0.
 - `/docs`, `/evals`, `/fixtures` (`fixtures/private/` is gitignored).
 - Postgres via `docker-compose.yml` for dev.
 - pydantic (Python) and zod (TS), both validated against the JSON schema.

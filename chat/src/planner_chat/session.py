@@ -24,9 +24,9 @@ from planner_solver.domain import (
     resolve_selector,
     when,
 )
-from planner_solver.present import label, render_result
+from planner_solver.present import SHOWN, label, render_result
 from planner_solver.spec import Constraint, ConstraintSpec
-from planner_solver.term import TermResult, solve_term
+from planner_solver.term import Schedule, TermResult, solve_term
 from planner_solver.validation import (
     DEFAULT_LOAD_NOTE,
     ValidationContext,
@@ -88,8 +88,14 @@ class ChatSession:
     spec: dict[str, Any] | None = None  # the current request, as a contract instance
     _result: TermResult | None = field(default=None, repr=False)
     _asked: set[str] = field(default_factory=set, repr=False)  # clarifications already shown
+    _waived: set[str] = field(
+        default_factory=set, repr=False
+    )  # system defaults the student removed
+    questions: list[dict[str, Any]] = field(default_factory=list)  # asked on the last turn
+    list_schedules: bool = True  # False when the schedules are drawn elsewhere (web canvas)
 
     def handle(self, message: str) -> str:
+        self.questions = []
         text = message.strip()
         if text == "/spec":
             return self._describe()
@@ -120,6 +126,7 @@ class ChatSession:
         spec, notes = self._validated(raw)
         if spec is None:
             return "\n".join(lines + notes)
+        spec["constraints"] = [c for c in spec["constraints"] if c["id"] not in self._waived]
         checked = ConstraintSpec.model_validate(spec)
         self.spec = {**spec, "clarifications": [], "out_of_scope": []}  # said once, not carried
         lines.insert(0, summary(checked, self.term, self.student.open_requirements))
@@ -131,6 +138,7 @@ class ChatSession:
                 self._asked.add(key)
                 options = f" [{' / '.join(q.options)}]" if q.options else ""
                 lines.append(f"question: {q.question}{options}")
+                self.questions.append({"question": q.question, "options": q.options or []})
         for item in checked.out_of_scope:
             lines.append(f"I can't do “{item.user_text or item.request}” yet.")
             self._log_out_of_scope(item.model_dump())
@@ -141,7 +149,15 @@ class ChatSession:
         fixes = self._result.relaxations
         if not 1 <= number <= len(fixes):
             return f"There's no fix {number}; pick 1–{len(fixes)}."
-        dropped = fixes[number - 1].constraint_id
+        return self.drop(fixes[number - 1].constraint_id)
+
+    def drop(self, dropped: str) -> str:
+        """Remove one request (a fix, or a chip the student closed) and re-solve. No LLM."""
+        if self.spec is None or not any(c["id"] == dropped for c in self.spec["constraints"]):
+            return "That request isn't active any more."
+        self.questions = []
+        if dropped in DEFAULT_IDS:
+            self._waived.add(dropped)
         constraint = next(c for c in self.spec["constraints"] if c["id"] == dropped)
         # rules that only apply to a dropped course go with it (e.g. "not with Smith for macro")
         course = (
@@ -326,7 +342,9 @@ class ChatSession:
         assert self.spec is not None
         spec = ConstraintSpec.model_validate(self.spec)
         self._result = solve_term(spec, self.term, self.student)
-        text = render_result(self._result, spec, self.term, self.student)
+        text = render_result(
+            self._result, spec, self.term, self.student, listing=self.list_schedules
+        )
         return text + ("\n" + FIX_HINT if self._result.status == "infeasible" else "")
 
     def _describe(self) -> str:
@@ -348,3 +366,95 @@ class ChatSession:
         self.out_of_scope_log.parent.mkdir(parents=True, exist_ok=True)
         with self.out_of_scope_log.open("a") as log:
             log.write(json.dumps(item) + "\n")
+
+    # -- structured view (the web canvas; same facts as the text) -----------------------------
+
+    def welcome(self) -> str:
+        """First message after an upload: what was read, from the audit (no LLM)."""
+        f, left = self.facts, len(self.student.open_requirements)
+        read = "I read your audit"
+        if f.credits_earned is not None:
+            read += f": {f.credits_earned:g} credits earned"
+            if f.credits_in_progress:
+                read += f" plus {f.credits_in_progress:g} in progress"
+        read += f", {left} requirement{'s' if left != 1 else ''} still open."
+        return read + " " + GREETING.format(term=self.context.target_term)
+
+    def view(self) -> dict[str, Any]:
+        targets = self.student.open_requirements
+        spec = ConstraintSpec.model_validate(self.spec) if self.spec else None
+        rules = [
+            {
+                "id": c.id,
+                "text": describe(c, self.term, targets),
+                "must": c.enforcement == "hard",
+                "said": c.source_text or "",
+                "default": c.id in DEFAULT_IDS,
+            }
+            for c in (spec.constraints if spec else [])
+        ]
+        result = self._result
+        by_id = {c.id: c for c in spec.constraints} if spec else {}
+        return {
+            "term": self.context.target_term,
+            "rules": rules,
+            "status": result.status if result else None,
+            "schedules": [self._schedule_view(s) for s in result.schedules[:SHOWN]]
+            if result
+            else [],
+            "conflict": [describe(by_id[c], self.term, targets) for c in result.conflict]
+            if result and spec
+            else [],
+            "why": [fact for c in result.conflict for fact in result.reasons.get(c, [])]
+            if result
+            else [],
+            "fixes": [
+                {
+                    "number": n,
+                    "text": describe(by_id[r.constraint_id], self.term, targets),
+                    "unlocks": r.schedules_unlocked,
+                }
+                for n, r in enumerate(result.relaxations if result else [], start=1)
+            ],
+            "questions": self.questions,
+            "requirements": [
+                {"title": t.title, "needed": t.needed, "unit": t.unit} for t in targets.values()
+            ],
+            "facts": {
+                "credits_earned": self.facts.credits_earned,
+                "credits_in_progress": self.facts.credits_in_progress,
+                "standing": self.facts.standing,
+                "in_progress": list(self.facts.in_progress),
+            },
+        }
+
+    def _schedule_view(self, schedule: Schedule) -> dict[str, Any]:
+        assert self._result is not None
+        targets = self.student.open_requirements
+        sections = {s.section_id: s for s in self.term.sections}
+        rows = []
+        for sid in schedule.sections:
+            s = sections[sid]
+            course = self.term.courses[s.course]
+            rows.append(
+                {
+                    "id": sid,
+                    "course": s.course,
+                    "title": course.title,
+                    "credits": course.credits,
+                    "instructors": list(s.instructors),
+                    "when": when(s),
+                    "online": s.modality == "online",
+                    "meetings": [
+                        {"days": "".join(m.days), "start": m.start, "end": m.end}
+                        for m in s.meetings
+                    ],
+                    "counts_toward": [
+                        targets[r].title
+                        for r in targets
+                        if s.course in schedule.contributions.get(r, [])
+                    ],
+                    "warnings": self._result.prereq_unchecked.get(s.course, []),
+                }
+            )
+        return {"credits": schedule.credits, "sections": rows}

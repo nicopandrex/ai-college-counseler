@@ -1,0 +1,89 @@
+import { z } from "zod";
+
+/** Shapes returned by planner_api (ChatSession.view()). Parsed, never trusted blindly. */
+const Meeting = z.object({ days: z.string(), start: z.number(), end: z.number() });
+
+const Section = z.object({
+  id: z.string(),
+  course: z.string(),
+  title: z.string(),
+  credits: z.number(),
+  instructors: z.array(z.string()),
+  when: z.string(),
+  online: z.boolean(),
+  meetings: z.array(Meeting),
+  counts_toward: z.array(z.string()),
+  warnings: z.array(z.string()),
+});
+
+export const ViewSchema = z.object({
+  term: z.string(),
+  rules: z.array(
+    z.object({
+      id: z.string(),
+      text: z.string(),
+      must: z.boolean(),
+      said: z.string(),
+      default: z.boolean(),
+    }),
+  ),
+  status: z.enum(["ok", "infeasible"]).nullable(),
+  schedules: z.array(z.object({ credits: z.number(), sections: z.array(Section) })),
+  conflict: z.array(z.string()),
+  why: z.array(z.string()),
+  fixes: z.array(z.object({ number: z.number(), text: z.string(), unlocks: z.number() })),
+  questions: z.array(z.object({ question: z.string(), options: z.array(z.string()) })),
+  requirements: z.array(
+    z.object({
+      title: z.string(),
+      needed: z.number().nullable(),
+      unit: z.enum(["credits", "courses"]).nullable(),
+    }),
+  ),
+  facts: z.object({
+    credits_earned: z.number().nullable(),
+    credits_in_progress: z.number().nullable(),
+    standing: z.string().nullable(),
+    in_progress: z.array(z.string()),
+  }),
+});
+
+export type View = z.infer<typeof ViewSchema>;
+export type ScheduleSection = z.infer<typeof Section>;
+
+const TurnSchema = z.object({ reply: z.string(), view: ViewSchema });
+const StartedSchema = TurnSchema.extend({ id: z.string() });
+export type Turn = z.infer<typeof TurnSchema>;
+export type Started = z.infer<typeof StartedSchema>;
+
+async function call<T>(schema: z.ZodType<T>, url: string, init: RequestInit): Promise<T> {
+  const response = await fetch(url, init);
+  const body: unknown = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const detail = (body as { detail?: unknown }).detail;
+    throw new Error(typeof detail === "string" ? detail : `Request failed (${response.status})`);
+  }
+  return schema.parse(body);
+}
+
+export function startSession(pdf: File): Promise<Started> {
+  return call(StartedSchema, "/api/sessions", {
+    method: "POST",
+    headers: { "content-type": "application/pdf" },
+    body: pdf,
+  });
+}
+
+export function sendMessage(session: string, text: string): Promise<Turn> {
+  return call(TurnSchema, `/api/sessions/${session}/messages`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ text }),
+  });
+}
+
+export function dropRule(session: string, rule: string): Promise<Turn> {
+  return call(TurnSchema, `/api/sessions/${session}/rules/${encodeURIComponent(rule)}`, {
+    method: "DELETE",
+  });
+}
