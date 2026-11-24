@@ -64,7 +64,7 @@ Bad clarification: *"What is your preferred minimum gap between classes in minut
 |---|---|---|
 | `include_course` | `{ "course": "CS 3200" }` | specific course must be in the result |
 | `exclude_course` | `{ "course": "MATH 220" }` | never suggest this course |
-| `satisfy_requirement` | `{ "req_ids": ["GENED_HUM","GENED_SOC"], "count": 1 }` | **the disjunction workhorse.** "any one of my open gen eds" = all open req_ids, count 1 |
+| `satisfy_requirement` | `{ "req_ids": ["GENED_HUM","GENED_SOC"], "count": 1, "distinct": false }` | **the disjunction workhorse.** "any one of my open gen eds" = all open req_ids, count 1. `distinct` (optional, default false): when true, the course(s) used here may not be the same course(s) used for any other `satisfy_requirement`, as in "one *other* course that fulfills a gen ed". Without it, one course may count for several requirements (double-counting is legal) |
 | `course_attribute` | `{ "attribute": "writing_intensive", "count": 1, "comparator": "at_least" }` | attributes come from the catalog (honors, WI, service-learning) ⚠️ |
 | `level_distribution` | `{ "level": 4000, "comparator": "at_most", "count": 2 }` | "no more than two 4000-levels" |
 | `subject_limit` | `{ "subject": "CS", "comparator": "at_most", "count": 3 }` | avoid a term that's all one department |
@@ -78,6 +78,9 @@ Bad clarification: *"What is your preferred minimum gap between classes in minut
 | `course_count_range` | `{ "min": 4, "max": 5 }` | some students think in courses, not credits |
 
 ### Time
+
+Day codes: `M` Monday, `T` Tuesday, `W` Wednesday, `R` Thursday, `F` Friday, `S` Saturday,
+`U` Sunday.
 
 | type | params | notes |
 |---|---|---|
@@ -150,7 +153,7 @@ Invalid in `mode: "term"` — reject at validation.
       "confidence": 0.95, "source_text": "fulfills my English A2 credit" },
 
     { "id": "c4", "type": "satisfy_requirement",
-      "params": { "req_ids": ["GENED_HUM", "GENED_SOC", "GENED_NAT"], "count": 1 },
+      "params": { "req_ids": ["GENED_HUM", "GENED_SOC", "GENED_NAT"], "count": 1, "distinct": true },
       "enforcement": "hard", "weight": 4, "weight_source": "stated",
       "confidence": 0.85, "source_text": "one other course that fulfills any of my general ed requirements" },
 
