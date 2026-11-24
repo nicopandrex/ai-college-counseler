@@ -44,6 +44,7 @@ describe("layout", () => {
   it("lists online and weekend sections under the grid instead", () => {
     const grid = layout([section("NFS 1073 OL1", "", 0, 0), section("ART 1000 A", "S", 600, 700)]);
     expect(grid.blocks).toEqual([]);
+    expect(grid.colorOf("ART 1000")).toBe(0);
     expect(grid.unplaced.map((s) => s.id)).toEqual(["NFS 1073 OL1", "ART 1000 A"]);
   });
 });

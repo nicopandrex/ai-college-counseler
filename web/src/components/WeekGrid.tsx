@@ -33,6 +33,24 @@ export function WeekGrid({ sections }: { sections: ScheduleSection[] }) {
           </div>
         ))}
       </div>
+      {grid.unplaced.length > 0 && (
+        <div className="mb-2 flex items-start gap-2 border-y border-slate-200 py-2">
+          <div className="w-12 shrink-0 pt-1 text-right text-[10px] leading-tight text-slate-500">
+            online / no set time
+          </div>
+          <div className="flex flex-1 flex-wrap gap-2">
+            {grid.unplaced.map((s) => (
+              <div
+                key={s.id}
+                className={`rounded border-l-4 px-2 py-1 text-[11px] leading-tight ${COLORS[grid.colorOf(s.course) % COLORS.length]}`}
+              >
+                <div className="font-semibold">{s.id}</div>
+                <div>{s.online ? "online, any time" : s.when}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="flex" style={{ height }}>
         <div className="relative w-12 shrink-0 text-[10px] text-slate-400">
           {hours.map((h, i) => (
@@ -67,11 +85,6 @@ export function WeekGrid({ sections }: { sections: ScheduleSection[] }) {
           </div>
         ))}
       </div>
-      {grid.unplaced.length > 0 && (
-        <p className="mt-2 text-xs text-slate-600">
-          No set time: {grid.unplaced.map((s) => `${s.id} (${s.when})`).join(", ")}
-        </p>
-      )}
     </div>
   );
 }
