@@ -2,7 +2,8 @@
 
 planner build-term --term 202701         raw SOC scrape -> committed data/uvm/202701/
 planner prereqs --term 202701 [--sample N]   parse new prerequisite notes (LLM), saved
-planner solve --audit A.pdf --spec S.json [--fail CS 3240 ...]
+planner solve --audit A.pdf --spec S.json [--term 2027SP] [--fail CS 3240 ...] [--standing senior]
+planner chat --audit A.pdf [--term 2027SP] [--standing senior] [--script messages.txt]
 """
 
 from __future__ import annotations
@@ -12,14 +13,26 @@ import json
 import sys
 from pathlib import Path
 
+from planner_chat.session import ChatSession
+from planner_chat.translator import PURPOSE as TRANSLATE
+from planner_chat.translator import TranslatorContext
 from planner_ingest.bridge import student_term
+from planner_ingest.extraction import ExtractedAudit
 from planner_ingest.pipeline import PURPOSE, extract_audit
 from planner_ingest.state import Assumptions, derive_state
-from planner_ingest.uvm.parse import default_credit_range, load_capabilities
+from planner_ingest.uvm.parse import default_credit_range, load_capabilities, preferred_credit_range
 from planner_ingest.uvm.prereqs import PURPOSE as PREREQ_PURPOSE
 from planner_ingest.uvm.prereqs import parse_prereqs
-from planner_ingest.uvm.store import build_term, load_answers, load_notes, load_term, save_prereqs
+from planner_ingest.uvm.store import (
+    build_term,
+    load_answers,
+    load_notes,
+    load_term,
+    save_prereqs,
+    soc_term,
+)
 from planner_llm import LLMGateway
+from planner_solver.domain import StudentTerm, TermData
 from planner_solver.present import render_result
 from planner_solver.term import solve_term
 from planner_solver.validation import SchoolCapabilities, ValidationContext, validate_spec
@@ -47,26 +60,78 @@ def cmd_prereqs(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_solve(args: argparse.Namespace) -> int:
+OUT_OF_SCOPE_LOG = Path(".planner/out_of_scope.jsonl")
+
+
+def _student(args: argparse.Namespace) -> tuple[ExtractedAudit, StudentTerm]:
     gateway = LLMGateway.from_env(PURPOSE)
     extraction = extract_audit(args.audit, gateway)
     if gateway.usage["live_calls"]:
         print(gateway.usage_summary(), file=sys.stderr)
     policy = "per_course" if args.fail else "assume_pass"
-    state = derive_state(
-        extraction.audit, Assumptions(in_progress_policy=policy, failed_courses=tuple(args.fail))
-    )
-    student = student_term(extraction.audit, state)
+    assumptions = Assumptions(in_progress_policy=policy, failed_courses=tuple(args.fail))
+    student = student_term(extraction.audit, derive_state(extraction.audit, assumptions))
     if args.standing:  # the student's own statement for the target term overrides the audit
         student = student.model_copy(update={"standing": args.standing})
-    term = load_term(args.term)
-    context = ValidationContext(
+    return extraction.audit, student
+
+
+def _validation(term: TermData, audit: ExtractedAudit, student: StudentTerm) -> ValidationContext:
+    return ValidationContext(
         course_codes=frozenset(term.courses),
-        requirement_ids=frozenset(r.req_id for r in extraction.audit.requirements),
+        requirement_ids=frozenset(r.req_id for r in audit.requirements),
         unplannable_courses=student.unplannable_courses,
         capabilities=SchoolCapabilities(unavailable=load_capabilities()),
         default_credit_range=default_credit_range(),
+        preferred_credit_range=preferred_credit_range(),
     )
+
+
+def cmd_chat(args: argparse.Namespace) -> int:
+    audit, student = _student(args)
+    term = load_term(soc_term(args.term))
+    blocks = {r.req_id: r.title for r in audit.requirements if "." not in r.req_id}
+    context = TranslatorContext(
+        target_term=args.term,
+        open_requirements=[
+            (rid, f"{blocks.get(rid.split('.')[0], '')} › {t.title}")
+            for rid, t in student.open_requirements.items()
+        ],
+        catalog=sorted((c.code, c.title) for c in term.courses.values()),
+    )
+    chat = ChatSession(
+        context,
+        term,
+        student,
+        _validation(term, audit, student),
+        LLMGateway.from_env(TRANSLATE),
+        OUT_OF_SCOPE_LOG,
+    )
+    messages = args.script.read_text().splitlines() if args.script else None
+    print(f"Planning {args.term}. Tell me what you want; /spec shows your requests, /quit exits.")
+    while True:
+        if messages is not None:
+            if not messages:
+                break
+            message = messages.pop(0)
+            print(f"\nyou> {message}")
+        else:
+            try:
+                message = input("\nyou> ")
+            except EOFError:
+                break
+        if message.strip() in ("/quit", "/exit"):
+            break
+        if message.strip():
+            print(chat.handle(message))
+    print(chat.gateway.usage_summary(), file=sys.stderr)
+    return 0
+
+
+def cmd_solve(args: argparse.Namespace) -> int:
+    audit, student = _student(args)
+    term = load_term(soc_term(args.term))
+    context = _validation(term, audit, student)
     checked = validate_spec(json.loads(args.spec.read_text()), context)
     for note in checked.notes:
         print(f"note: {note}")
@@ -94,15 +159,28 @@ def main(argv: list[str] | None = None) -> int:
     solve = sub.add_parser("solve", help="solve one term for an audit and a constraint spec")
     solve.add_argument("--audit", type=Path, required=True)
     solve.add_argument("--spec", type=Path, required=True)
-    solve.add_argument("--term", default="202701")
+    solve.add_argument("--term", default="2027SP")
     solve.add_argument("--fail", nargs="*", default=[], help="in-progress courses to assume failed")
     solve.add_argument(
         "--standing",
         choices=["freshman", "sophomore", "junior", "senior", "graduate"],
         help="your class standing for the target term (default: the audit's)",
     )
+    chat = sub.add_parser("chat", help="chat about one term's schedule for an audit")
+    chat.add_argument("--audit", type=Path, required=True)
+    chat.add_argument("--term", default="2027SP")
+    chat.add_argument("--fail", nargs="*", default=[], help="in-progress courses to assume failed")
+    chat.add_argument(
+        "--standing", choices=["freshman", "sophomore", "junior", "senior", "graduate"]
+    )
+    chat.add_argument("--script", type=Path, help="read messages from a file (one per line)")
     args = parser.parse_args(argv)
-    commands = {"build-term": cmd_build_term, "prereqs": cmd_prereqs, "solve": cmd_solve}
+    commands = {
+        "build-term": cmd_build_term,
+        "prereqs": cmd_prereqs,
+        "solve": cmd_solve,
+        "chat": cmd_chat,
+    }
     return commands[args.command](args)
 
 

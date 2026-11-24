@@ -227,3 +227,22 @@ def test_build_term_saves_prerequisite_note_text(tmp_path: Path) -> None:
     )
     build_term("202701", raw=tmp_path, data=tmp_path / "data")
     assert load_notes("202701", tmp_path / "data") == {"CS 3200": "Prerequisite: CS 2240"}
+
+
+def test_term_codes_map_to_soc_codes() -> None:
+    from planner_ingest.uvm.store import soc_term
+
+    assert soc_term("2027SP") == "202701"
+    assert soc_term("2026FA") == "202609"
+    assert soc_term("2027SU") == "202706"
+
+
+def test_cli_offers_every_command() -> None:
+    import pytest
+
+    from planner_ingest.cli import main
+
+    for command in ("build-term", "prereqs", "solve", "chat"):
+        with pytest.raises(SystemExit) as exit_info:
+            main([command, "--help"])
+        assert exit_info.value.code == 0

@@ -11,6 +11,9 @@ uploads/
 # LLM record/replay cache for private data (committed cassettes live under */tests/cassettes)
 .llm-cache/
 
+# Local run logs (may contain users' words)
+.planner/
+
 # Scraper raw cache
 data/raw/
 

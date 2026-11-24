@@ -496,3 +496,40 @@ def test_verifiable_course_preferred_over_an_unverifiable_equal() -> None:
     )
     schedule = solve_term(spec(c("c1", "credit_range", min=3, max=3)), term, student).schedules[0]
     assert schedule.courses == ["SOC 1000"]
+
+
+def test_in_person_section_without_meeting_times_is_not_auto_scheduled() -> None:
+    from term_fixtures import sec
+
+    from planner_solver.domain import Course, RequirementTarget, Section
+
+    thesis = Course(code="CS 4996", title="Undergraduate Honors Thesis", credits=3)
+    online = Course(code="CS 4100", title="Online Elective", credits=3)
+    term = TERM.model_copy(
+        update={
+            "courses": {**TERM.courses, thesis.code: thesis, online.code: online},
+            "sections": (
+                *TERM.sections,
+                Section(section_id="CS 4996 A", course="CS 4996", modality="in_person"),
+                Section(section_id="CS 4100 OL1", course="CS 4100", modality="online"),
+            ),
+        }
+    )
+    student = STUDENT.model_copy(
+        update={
+            "open_requirements": {
+                "ELEC": RequirementTarget(
+                    title="CS electives", selectors=("CS 4996", "CS 4100"), needed=3, unit="credits"
+                )
+            }
+        }
+    )
+    schedule = solve_term(spec(c("c1", "credit_range", min=3, max=3)), term, student).schedules[0]
+    assert schedule.courses == ["CS 4100"]  # online/asynchronous is fine; arranged in-person isn't
+    asked = solve_term(
+        spec(c("c1", "include_course", course="CS 4996"), c("c2", "credit_range", min=3, max=3)),
+        term,
+        student,
+    )
+    assert asked.schedules[0].courses == ["CS 4996"]  # unless the student names it
+    del sec

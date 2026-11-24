@@ -186,3 +186,8 @@ def load_capabilities() -> dict[str, str]:
 def default_credit_range() -> tuple[float, float]:
     band = _school_config()["default_credit_range"]
     return band["min"], band["max"]
+
+
+def preferred_credit_range() -> tuple[float, float]:
+    band = _school_config()["preferred_credit_range"]
+    return band["min"], band["max"]

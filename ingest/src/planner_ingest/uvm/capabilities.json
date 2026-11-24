@@ -9,5 +9,10 @@
     "min": 12,
     "max": 19,
     "_note": "owner 2026-11-18: at least 12 (full time), up to 19"
+  },
+  "preferred_credit_range": {
+    "min": 12,
+    "max": 16,
+    "_note": "soft default inside the hard band; overridden by any stated load"
   }
 }

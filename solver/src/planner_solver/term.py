@@ -508,9 +508,9 @@ def _eligible_sections(
                 courses |= resolved
         requirement_courses[req_id] = courses - set(target.excluded)
     wanted = set().union(*requirement_courses.values()) if requirement_courses else set()
+    requested = {c.params.get("course", "") for c in spec.constraints if c.type == "include_course"}
+    wanted |= requested
     for c in spec.constraints:
-        if c.type == "include_course":
-            wanted.add(c.params.get("course", ""))
         if c.type == "instructor_preference" and c.params.get("course"):
             wanted.add(c.params["course"])
     sections = []
@@ -524,7 +524,12 @@ def _eligible_sections(
             continue
         if met == "unknown":
             unchecked[code] = unknown_reasons(course.prereq, student)
-        sections.extend(s for s in data.sections if s.course == code)
+        named = code in requested
+        sections.extend(
+            s
+            for s in data.sections
+            if s.course == code and (named or s.meetings or s.modality == "online")
+        )  # in person with no set time = arranged (thesis, TBA): only when asked for by name
     return sections, requirement_courses, warnings, unchecked, blocked
 
 

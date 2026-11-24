@@ -242,3 +242,18 @@ def test_stated_credit_range_is_kept() -> None:
     )
     result = validate_spec(raw(stated), ctx)
     assert [x.params for x in result.spec.constraints] == [{"min": 9, "max": 10}]
+
+
+def test_default_load_preference_is_soft_and_separate() -> None:
+    ctx = ValidationContext(
+        **{**CTX.__dict__, "default_credit_range": (12, 19), "preferred_credit_range": (12, 16)}
+    )
+    result = validate_spec(raw(c("c1", "free_day", params={"day": "F"})), ctx)
+    loads = {x.id: x for x in result.spec.constraints if x.type == "credit_range"}
+    assert (
+        loads["default_credits"].params == {"min": 12, "max": 19}
+        and loads["default_credits"].enforcement == "hard"
+    )
+    preferred = loads["default_load_preference"]
+    assert preferred.params == {"min": 12, "max": 16} and preferred.enforcement == "soft"
+    assert preferred.weight_source == "default"
