@@ -1,0 +1,37 @@
+# --- Real student data: NEVER commit ---
+fixtures/private/
+*.audit.pdf
+uploads/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# LLM record/replay cache for private data (committed cassettes live under */tests/cassettes)
+.llm-cache/
+
+# Scraper raw cache
+data/raw/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+
+# Node / Next
+node_modules/
+web/.next/
+web/out/
+web/next-env.d.ts
+*.tsbuildinfo
+coverage/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
