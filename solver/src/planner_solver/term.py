@@ -61,6 +61,8 @@ BACK_TO_BACK_MINUTES = 15  # gap at or under this counts as consecutive
 MAX_SCHEDULES = 5
 SOFT_SCALE = 1000  # soft-constraint rewards dominate the coverage tie-break
 TIME_LIMIT_SECONDS = 10.0
+SCARCE_COURSES = 2  # a requirement with at most this many eligible courses this term...
+SCARCE_BONUS = 3  # ...gets its progress weighted this much more
 Lit = cp_model.IntVar
 
 
@@ -582,7 +584,9 @@ def _build(
             amount, cap, per_unit = sum(ctx.y[c] for c in available), 1, 6
         progress = model.NewIntVar(0, cap, f"progress[{req_id}]")
         model.Add(progress <= amount)
-        ctx.objective_terms.append((per_unit, progress))
+        # bottlenecks first: a requirement only one or two courses can serve this term
+        scarcity = SCARCE_BONUS if len(available) <= SCARCE_COURSES else 1
+        ctx.objective_terms.append((per_unit * scarcity, progress))
     model.Maximize(sum(weight * lit for weight, lit in ctx.objective_terms))
     return ctx, holds
 

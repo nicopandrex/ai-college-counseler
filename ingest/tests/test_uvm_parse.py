@@ -188,3 +188,21 @@ def test_owner_rule_senior_seminar_requires_senior_standing(tmp_path: Path) -> N
     assert courses["HST 4990"].prereq == AllPrereq(
         kind="and", items=[CoursePrereq(kind="course", code="HST 2000"), senior]
     )
+
+
+def test_single_attribute_given_as_plain_text() -> None:
+    from planner_ingest.uvm.parse import _attributes
+
+    assert _attributes("Social Sciences (S1)") == frozenset({"S1"})
+    assert _attributes("<ul><li>Arts (AH1)</li><li>Humanities (AH3)</li></ul>") == frozenset(
+        {"AH1", "AH3"}
+    )
+    assert _attributes("Humanities (AH3)<br/>Diversity (D2)") == frozenset({"AH3", "D2"})
+    assert _attributes("") == frozenset()
+
+
+def test_placeholder_instructor_names_are_cleaned(tmp_path: Path) -> None:
+    rows = [row("CS 3990", "1", "A", "L", [], instr=".. Staff")]
+    write(tmp_path, rows, [details("CS 3990", "1", "Lecture")])  # no section meta: row name used
+    term, _ = parse_term(tmp_path, "202701")
+    assert term.sections[0].instructors == ("Staff",)
