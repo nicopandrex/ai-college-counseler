@@ -123,3 +123,10 @@ def test_a_lost_bottleneck_gets_a_heads_up_naming_the_rule() -> None:
     text = render_result(solve_term(s, TERM, STUDENT), s, TERM, STUDENT)
     assert text.splitlines()[-1].startswith("Heads up: done by 10:00am rules out ")
     assert "ECON 2020 (the only option for Macroeconomics)" in text
+
+
+def test_without_the_listing_only_a_pointer_and_the_warnings_remain() -> None:
+    s = spec({**c("c1", "no_later_than", time="10:00"), "source_text": "done by 10"})
+    text = render_result(solve_term(s, TERM, STUDENT), s, TERM, STUDENT, listing=False)
+    assert "Found 3 schedules: see the calendar." in text and "Schedule 1" not in text
+    assert "Heads up:" in text

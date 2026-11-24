@@ -22,15 +22,23 @@ def label(
 
 
 def render_result(
-    result: TermResult, spec: ConstraintSpec, term: TermData, student: StudentTerm
+    result: TermResult,
+    spec: ConstraintSpec,
+    term: TermData,
+    student: StudentTerm,
+    listing: bool = True,  # False: the schedules are drawn elsewhere (the web canvas)
 ) -> str:
     by_id = {c.id: c for c in spec.constraints}
     lines: list[str] = [f"note: {w}" for w in result.warnings]
     if result.status == "infeasible":
         return "\n".join(lines + _conflict(result, by_id, term, student))
 
-    for n, schedule in enumerate(result.schedules[:SHOWN], start=1):
-        lines += _schedule(n, schedule, result, spec, term, student)
+    if listing:
+        for n, schedule in enumerate(result.schedules[:SHOWN], start=1):
+            lines += _schedule(n, schedule, result, spec, term, student)
+    else:
+        shown = min(len(result.schedules), SHOWN)
+        lines.append(f"Found {shown} schedule{'s' if shown != 1 else ''}: see the calendar.")
     grouped: dict[tuple[str, ...], list[str]] = {}
     for missed in result.missed:  # one line per rule that causes it
         target = student.open_requirements[missed.req_id]

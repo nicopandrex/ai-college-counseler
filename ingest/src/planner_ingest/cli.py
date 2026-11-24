@@ -10,18 +10,12 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 from pathlib import Path
 
-from planner_chat.session import ChatSession, StudentFacts
-from planner_chat.translator import PURPOSE as TRANSLATE
-from planner_chat.translator import TranslatorContext
-from planner_ingest.bridge import student_term
+from planner_ingest.chat_setup import derive, open_chat, read_audit, validation_context
 from planner_ingest.extraction import ExtractedAudit
-from planner_ingest.pipeline import PURPOSE, extract_audit
-from planner_ingest.state import Assumptions, derive_state
-from planner_ingest.uvm.parse import default_credit_range, load_capabilities, preferred_credit_range
+from planner_ingest.pipeline import PURPOSE
 from planner_ingest.uvm.prereqs import PURPOSE as PREREQ_PURPOSE
 from planner_ingest.uvm.prereqs import parse_prereqs
 from planner_ingest.uvm.store import (
@@ -33,10 +27,10 @@ from planner_ingest.uvm.store import (
     soc_term,
 )
 from planner_llm import LLMGateway
-from planner_solver.domain import StudentTerm, TermData
+from planner_solver.domain import StudentTerm
 from planner_solver.present import render_result
 from planner_solver.term import solve_term
-from planner_solver.validation import SchoolCapabilities, ValidationContext, validate_spec
+from planner_solver.validation import validate_spec
 
 
 def cmd_build_term(args: argparse.Namespace) -> int:
@@ -61,84 +55,17 @@ def cmd_prereqs(args: argparse.Namespace) -> int:
     return 0
 
 
-OUT_OF_SCOPE_LOG = Path(".planner/out_of_scope.jsonl")
-
-
 def _student(args: argparse.Namespace) -> tuple[ExtractedAudit, StudentTerm]:
     gateway = LLMGateway.from_env(PURPOSE)
-    extraction = extract_audit(args.audit, gateway)
+    audit = read_audit(args.audit, gateway)
     if gateway.usage["live_calls"]:
         print(gateway.usage_summary(), file=sys.stderr)
-    return extraction.audit, _derive(extraction.audit, tuple(args.fail), args.standing)
-
-
-def _derive(audit: ExtractedAudit, failed: tuple[str, ...], standing: str | None) -> StudentTerm:
-    policy = "per_course" if failed else "assume_pass"
-    assumptions = Assumptions(in_progress_policy=policy, failed_courses=failed)
-    student = student_term(audit, derive_state(audit, assumptions))
-    if standing:  # the student's own statement for the target term overrides the audit
-        student = student.model_copy(update={"standing": standing})
-    return student
-
-
-def _validation(term: TermData, audit: ExtractedAudit, student: StudentTerm) -> ValidationContext:
-    instructors: dict[str, set[str]] = {}
-    for section in term.sections:
-        instructors.setdefault(section.course, set()).update(section.instructors)
-    return ValidationContext(
-        course_codes=frozenset(term.courses),
-        requirement_ids=frozenset(r.req_id for r in audit.requirements),
-        unplannable_courses=student.unplannable_courses,
-        capabilities=SchoolCapabilities(unavailable=load_capabilities()),
-        default_credit_range=default_credit_range(),
-        preferred_credit_range=preferred_credit_range(),
-        course_status={c.code: c.status for c in audit.courses_taken},
-        instructors={code: frozenset(names) for code, names in instructors.items()},
-    )
-
-
-def _facts(audit: ExtractedAudit) -> StudentFacts:
-    s = audit.student
-    return StudentFacts(
-        credits_earned=s.overall_credits_earned,
-        credits_in_progress=s.overall_credits_in_progress,
-        standing=re.sub(r"^\d+\s*-\s*", "", s.class_standing or "") or None,  # "03 - Junior"
-        in_progress=tuple(
-            sorted({c.code for c in audit.courses_taken if c.status == "in_progress"})
-        ),
-    )
+    return audit, derive(audit, tuple(args.fail), args.standing)
 
 
 def cmd_chat(args: argparse.Namespace) -> int:
-    audit, student = _student(args)
-    term = load_term(soc_term(args.term))
-    blocks = {r.req_id: r.title for r in audit.requirements if "." not in r.req_id}
-    context = TranslatorContext(
-        target_term=args.term,
-        open_requirements=[
-            (rid, f"{blocks.get(rid.split('.')[0], '')} › {t.title}")
-            for rid, t in student.open_requirements.items()
-        ],
-        catalog=sorted((c.code, c.title) for c in term.courses.values()),
-        in_progress=sorted(
-            {(c.code, c.title or c.code) for c in audit.courses_taken if c.status == "in_progress"}
-        ),
-    )
-
-    def what_if(failed: tuple[str, ...]) -> tuple[StudentTerm, ValidationContext]:
-        changed = _derive(audit, tuple(sorted({*args.fail, *failed})), args.standing)
-        return changed, _validation(term, audit, changed)
-
-    chat = ChatSession(
-        context,
-        term,
-        student,
-        _validation(term, audit, student),
-        LLMGateway.from_env(TRANSLATE),
-        OUT_OF_SCOPE_LOG,
-        facts=_facts(audit),
-        what_if=what_if,
-    )
+    audit, _ = _student(args)
+    chat = open_chat(audit, args.term, args.standing, tuple(args.fail))
     messages = args.script.read_text().splitlines() if args.script else None
     print(f"Planning {args.term}. Tell me what you want; /spec shows your requests, /quit exits.")
     while True:
@@ -163,7 +90,7 @@ def cmd_chat(args: argparse.Namespace) -> int:
 def cmd_solve(args: argparse.Namespace) -> int:
     audit, student = _student(args)
     term = load_term(soc_term(args.term))
-    context = _validation(term, audit, student)
+    context = validation_context(term, audit, student)
     checked = validate_spec(json.loads(args.spec.read_text()), context)
     for note in checked.notes:
         print(f"note: {note}")

@@ -74,6 +74,8 @@ def _describe(con: Constraint, term: TermData | None, targets: dict[str, Require
         return f"a {p['target']} workload"
     if kind == "credit_range":
         low, high = p["min"], p["max"]
+        if con.id == "default_load_preference":
+            return f"a typical load ({low:g}–{high:g} credits)"
         if con.id == "default_credits":
             return f"a full-time load ({low:g}–{high:g} credits)"
         return _n(low, "credit") if low == high else f"{low:g}–{high:g} credits"
