@@ -167,3 +167,24 @@ def test_load_term_marks_review_queue_courses_unknown_not_free(tmp_path: Path) -
     (term_dir / "prereq_review.json").write_text(json.dumps(queued))
     prereq = load_term("202701", tmp_path).courses["CS 3200"].prereq
     assert prereq == UnparsedPrereq(kind="unparsed", text="Prereq: CS 2240 & 2250 ?")
+
+
+def test_owner_rule_senior_seminar_requires_senior_standing(tmp_path: Path) -> None:
+    from planner_ingest.cli import load_term
+    from planner_solver.domain import AllPrereq, CoursePrereq, StandingPrereq
+
+    rows = [row("CS 3920", "1", "A", "L", []), row("HST 4990", "2", "A", "L", [])]
+    dets = [details("CS 3920", "1", "Lecture"), details("HST 4990", "2", "Lecture")]
+    term_dir = write(tmp_path / "202701", rows, dets)
+    raw = json.loads((term_dir / "search_all.json").read_text())
+    raw["results"][0]["title"] = "Senior Seminar"
+    raw["results"][1]["title"] = "History Senior Seminar"
+    (term_dir / "search_all.json").write_text(json.dumps(raw))
+    tree = {"kind": "course", "code": "HST 2000", "min_grade": None, "concurrent_ok": False}
+    (term_dir / "prereqs.json").write_text(json.dumps({"HST 4990": tree}))
+    courses = load_term("202701", tmp_path).courses
+    senior = StandingPrereq(kind="standing", minimum="senior")
+    assert courses["CS 3920"].prereq == senior
+    assert courses["HST 4990"].prereq == AllPrereq(
+        kind="and", items=[CoursePrereq(kind="course", code="HST 2000"), senior]
+    )
