@@ -46,7 +46,11 @@ Test data: `fixtures/private/` (the owner's real audit; never committed).
   CLI: `uv run python -m planner_ingest {layout,extract,draft-golden} <pdf>`.
 - `/llm` (Python, `planner_llm`): the ONE LLM gateway. Env: `LLM_PROVIDER`, `LLM_MODEL[_<PURPOSE>]`,
   `LLM_API_KEY`, `LLM_CACHE_MODE` (replay|record|live; default replay), `LLM_CACHE_DIR`.
-  Real-audit cassettes live in `fixtures/private/llm-cache` (gitignored).
+  Real-audit cassettes live in `fixtures/private/llm-cache` (gitignored). Defaults: Flash for
+  everything except prerequisite parsing (Pro); `LLM_MAX_LIVE_CALLS` caps every run (default
+  30). Sample-run any bulk LLM job and report its token cost before running it in full.
+- `data/uvm/` (committed): derived UVM term data + prerequisite answer store. Never re-scrape or
+  re-parse what's there; `data/raw/` (gitignored) is only the raw scrape cache.
 - `/solver` (Python, `planner_solver`, FastAPI, OR-Tools CP-SAT): validation, term + plan solving.
 - `/web` (Next.js 14 + TypeScript + Tailwind).
 - `/docs`, `/evals`, `/fixtures` (`fixtures/private/` is gitignored).
