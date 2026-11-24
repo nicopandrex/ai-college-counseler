@@ -1,6 +1,7 @@
 """`planner` CLI.
 
-planner prereqs --term 202701            parse SOC prerequisite notes once (LLM), cached
+planner build-term --term 202701         raw SOC scrape -> committed data/uvm/202701/
+planner prereqs --term 202701 [--sample N]   parse new prerequisite notes (LLM), saved
 planner solve --audit A.pdf --spec S.json [--fail CS 3240 ...]
 """
 
@@ -11,62 +12,39 @@ import json
 import sys
 from pathlib import Path
 
-from pydantic import TypeAdapter
-
 from planner_ingest.bridge import student_term
 from planner_ingest.pipeline import PURPOSE, extract_audit
 from planner_ingest.state import Assumptions, derive_state
-from planner_ingest.uvm.owner_rules import apply_owner_rules
-from planner_ingest.uvm.parse import default_credit_range, load_capabilities, parse_term
+from planner_ingest.uvm.parse import default_credit_range, load_capabilities
 from planner_ingest.uvm.prereqs import PURPOSE as PREREQ_PURPOSE
-from planner_ingest.uvm.prereqs import has_prereq_text, parse_prereqs, prereq_notes
+from planner_ingest.uvm.prereqs import parse_prereqs
+from planner_ingest.uvm.store import build_term, load_answers, load_notes, load_term, save_prereqs
 from planner_llm import LLMGateway
-from planner_solver.domain import Prereq, TermData, UnparsedPrereq
 from planner_solver.present import render_result
 from planner_solver.term import solve_term
 from planner_solver.validation import SchoolCapabilities, ValidationContext, validate_spec
 
-RAW = Path("data/raw/uvm")
-_TREES = TypeAdapter(dict[str, Prereq | None])
 
-
-def load_term(srcdb: str, raw: Path = RAW) -> TermData:
-    term, _ = parse_term(raw / srcdb, srcdb)
-    term = term.model_copy(update={"courses": apply_owner_rules(term.courses)})
-    trees_path = raw / srcdb / "prereqs.json"
-    if not trees_path.exists():
-        return term
-    trees = _TREES.validate_json(trees_path.read_text())
-    review_path = raw / srcdb / "prereq_review.json"
-    review = json.loads(review_path.read_text()) if review_path.exists() else []
-    for item in review:  # doubtful and not usable: unknown, never "no prerequisite"
-        trees.setdefault(item["code"], UnparsedPrereq(kind="unparsed", text=item["notes"]))
-    courses = apply_owner_rules(
-        {
-            code: course.model_copy(update={"prereq": trees.get(code)})
-            for code, course in term.courses.items()
-        }
+def cmd_build_term(args: argparse.Namespace) -> int:
+    term = build_term(args.term)
+    print(
+        f"saved {len(term.courses)} courses, {len(term.sections)} sections to data/uvm/{args.term}/"
     )
-    return term.model_copy(update={"courses": courses, "prereqs_loaded": True})
+    return 0
 
 
 def cmd_prereqs(args: argparse.Namespace) -> int:
-    cache = RAW / args.term
-    notes = {}
-    for path in sorted((cache / "details").glob("*.json")):
-        details = json.loads(path.read_text())
-        text = prereq_notes(details)
-        if has_prereq_text(text):
-            notes[details["code"]] = text
+    notes = load_notes(args.term)
     if args.sample:  # check cost and quality on a few courses before a bulk run
         notes = dict(sorted(notes.items())[: args.sample])
     gateway = LLMGateway.from_env(PREREQ_PURPOSE)
-    trees, review = parse_prereqs(notes, gateway)
+    trees, review, answers = parse_prereqs(notes, gateway, known=load_answers())
     print(gateway.usage_summary(), file=sys.stderr)
-    (cache / "prereqs.json").write_text(_TREES.dump_json(trees, indent=1).decode())
-    (cache / "prereq_review.json").write_text(json.dumps(review, indent=1))
-    summary = f"{len(trees)} parsed, {len(review)} to review"
-    print(f"{len(notes)} courses with prerequisite notes: {summary}")
+    if not args.sample:
+        save_prereqs(args.term, trees, review, answers)
+    print(
+        f"{len(notes)} courses with prerequisite notes: {len(trees)} parsed, {len(review)} to review"
+    )
     return 0
 
 
@@ -109,6 +87,8 @@ def cmd_solve(args: argparse.Namespace) -> int:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="planner")
     sub = parser.add_subparsers(dest="command", required=True)
+    build = sub.add_parser("build-term", help="raw SOC scrape -> committed data/uvm/<term>/")
+    build.add_argument("--term", default="202701")
     pre = sub.add_parser("prereqs", help="parse SOC prerequisite notes (LLM, cached)")
     pre.add_argument("--term", default="202701")
     pre.add_argument("--sample", type=int, help="parse only the first N courses (cost check)")
@@ -123,7 +103,8 @@ def main(argv: list[str] | None = None) -> int:
         help="your class standing for the target term (default: the audit's)",
     )
     args = parser.parse_args(argv)
-    return cmd_prereqs(args) if args.command == "prereqs" else cmd_solve(args)
+    commands = {"build-term": cmd_build_term, "prereqs": cmd_prereqs, "solve": cmd_solve}
+    return commands[args.command](args)
 
 
 if __name__ == "__main__":

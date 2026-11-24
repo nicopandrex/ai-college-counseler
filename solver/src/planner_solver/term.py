@@ -63,6 +63,7 @@ SOFT_SCALE = 1000  # soft-constraint rewards dominate the coverage tie-break
 TIME_LIMIT_SECONDS = 10.0
 SCARCE_COURSES = 2  # a requirement with at most this many eligible courses this term...
 SCARCE_BONUS = 3  # ...gets its progress weighted this much more
+UNVERIFIED_PENALTY = 3  # half a course's progress: breaks ties, never outweighs real progress
 Lit = cp_model.IntVar
 
 
@@ -142,6 +143,7 @@ class _Ctx:
         self.student = student
         self.requirement_courses = requirement_courses
         self.blocked = blocked  # course -> why its prerequisite isn't met
+        self.unchecked: set[str] = set()  # courses whose prerequisite couldn't be verified
         self.model = cp_model.CpModel()
         self.sections = sections
         self.x = {s.section_id: self.model.NewBoolVar(f"x[{s.section_id}]") for s in sections}
@@ -533,8 +535,10 @@ def _build(
     sections: list[Section],
     requirement_courses: dict[str, set[str]],
     blocked: dict[str, list[str]],
+    unchecked: dict[str, list[str]],
 ) -> tuple[_Ctx, dict[str, Lit]]:
     ctx = _Ctx(data, student, sections, requirement_courses, blocked)
+    ctx.unchecked = set(unchecked)
     model = ctx.model
     # physical rules
     for code, course_sections in ctx.by_course.items():
@@ -569,6 +573,10 @@ def _build(
         if constraint.enforcement == "soft":
             ctx.objective_terms.append((scale, h))
     _distinct_assignments(ctx)
+    # tie-break: between equally good schedules, prefer courses whose prerequisites are verified
+    for code in ctx.unchecked:
+        if code in ctx.y:
+            ctx.objective_terms.append((-UNVERIFIED_PENALTY, ctx.y[code]))
     # tie-break: progress toward each open requirement, capped at what it still needs
     for req_id, courses in requirement_courses.items():
         available = [c for c in courses if c in ctx.y]
@@ -676,7 +684,7 @@ def solve_term(
     )
     if not data.prereqs_loaded:
         warnings.insert(0, "prerequisites were not checked: catalog prerequisite data isn't loaded")
-    ctx, holds = _build(spec, data, student, sections, requirement_courses, blocked)
+    ctx, holds = _build(spec, data, student, sections, requirement_courses, blocked, unchecked)
     warnings += ctx.warnings
     hard = _hard(spec, holds)
 
@@ -690,7 +698,9 @@ def solve_term(
         weights = {c.id: c.weight for c in spec.constraints}
         relaxations = []
         for cid in sorted(core, key=lambda c: (weights[c], c)):
-            ctx_r, holds_r = _build(spec, data, student, sections, requirement_courses, blocked)
+            ctx_r, holds_r = _build(
+                spec, data, student, sections, requirement_courses, blocked, unchecked
+            )
             hard_r = [lit for c, lit in _hard(spec, holds_r).items() if c != cid]
             unlocked = len(_schedules(ctx_r, spec, holds_r, hard_r, requirement_courses, limit))
             relaxations.append(Relaxation(cid, weights[cid], unlocked))

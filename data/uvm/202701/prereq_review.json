@@ -1,0 +1,2157 @@
+[
+ {
+  "code": "ALE 2010",
+  "notes": "Prereqs enforced by the system: BIOL 1400 and BIOL 1450 or BCOR 1400 and BCOR 1450 or BCOR 1425 Asynchronous online; Open to degree and PACE students",
+  "reason": "Unclear grouping of AND and OR conditions."
+ },
+ {
+  "code": "ALE 2210",
+  "notes": "Prerequisites enforced by the system: ALE/ PSS 1100 or 1210 ; or one semester of Biology; Contact Leonard.Perry@uvm.edu for override; Asynchronous online course; Open to degree and PACE students",
+  "reason": "unparsed: one semester of Biology"
+ },
+ {
+  "code": "ALE 2230",
+  "notes": "Prerequisites enforced by the system: ALE/ PSS 1100 or 1210 ; or one semester of Biology; Contact Leonard.Perry@uvm.edu for override; Asynchronous online course; Open to degree and PACE students",
+  "reason": "unparsed: one semester of Biology"
+ },
+ {
+  "code": "ALE 2380",
+  "notes": "Must register for lab ALE 2380 A01 or A02; Prerequisites enforced by the system: ALE/ PSS 1100 or 1210 or PBIO 1040 or ALE/ PSS 1370 or BIOL 1400 or BIOL 1450 , or BCOR 1400 or BCOR 1450 or FOR 1210 ; Also acceptable: One semester Bio, or instructor permission; Contact the instructor for override: mark.starrett@uvm.edu Open to Degree and PACE students",
+  "reason": "unparsed: One semester Bio"
+ },
+ {
+  "code": "ALE 2810",
+  "notes": "Sophomore, Junior, or Senior standing; ALD, AGR, ELPD majors or instructor permission Open to Degree and PACE Students",
+  "reason": "Interpreted semicolon as an AND grouping standing with major requirements or permission.; unparsed: ALD, AGR, ELPD majors"
+ },
+ {
+  "code": "ALE 2991",
+  "notes": "Junior or Senior AGR, ALD majors, or instructor permission PACE students by permission and override",
+  "reason": "Junior/Senior standing grouped with major into unparsed block.; unparsed: Junior or Senior AGR, ALD majors"
+ },
+ {
+  "code": "ALE 3030",
+  "notes": "Instructor Permission Required Open to Degree and PACE Students; Prereqs enforced by the system: ALE/ PSS 2370 and ALE 2371 and ALE 2230 and ALE 2250",
+  "reason": "Assumption that instructor permission is required along with prerequisites."
+ },
+ {
+  "code": "ALE 3090",
+  "notes": "Prerequisite enforced by the system: ALE/ PSS 1210 ; Also Acceptable: one 2000-level ALE/PSS course, or equivalent experience, or instructor permission Open to Degree and PACE students",
+  "reason": "unparsed: one 2000-level ALE/PSS course, or equivalent experience"
+ },
+ {
+  "code": "ALE 3380",
+  "notes": "Prereqs enforced by the system: ALE/ PSS 2370 and ALE/ PSS 2371 ; Also acceptable: One course in Ecology plus one course in design or drawing; Minimum Junior standing; For instructor permission contact Stephanie.Hurley@uvm.edu for an override; You must send the instructor a list of prerequisites taken, and specify your standing as a junior, senior, or grad student, as well as your 95#. PACE students by permission and override.",
+  "reason": "Assumed standing applies on top of courses.; unparsed: One course in Ecology plus one course in design or drawing"
+ },
+ {
+  "code": "ALE 3990",
+  "notes": "Open to degree and PACE students Prerequisites: ALE 1210 plus one ALE 2XXX course or instructor permission. Special Topics courses cannot carry CC designations",
+  "reason": "unparsed: one ALE 2XXX course"
+ },
+ {
+  "code": "ALE 6150",
+  "notes": "Prerequisites enforced by the system: PSS/ ALE 6110 & 6120 & 6130 & 6140 ; Online Asynchronous Course; Open to degree and PACE students",
+  "reason": "Assumed cross-listed subjects apply to all four course numbers."
+ },
+ {
+  "code": "ANTH 3070",
+  "notes": "Prereqs enforced by the system: ANTH 1100 or ANTH 1800 ; one 2000-level Anthropology course. System waitlisting enabled for this section.",
+  "reason": "unparsed: one 2000-level Anthropology course"
+ },
+ {
+  "code": "ANTH 3115",
+  "notes": "Prerequisites: Three credits in Anthropology at 2000-level; Anthropology majors or minors only; minimum Sophomore standing. System waitlisting enabled for this section.",
+  "reason": "unparsed: Three credits in Anthropology at 2000-level; unparsed: Anthropology majors or minors only"
+ },
+ {
+  "code": "ANTH 3192",
+  "notes": "Prereqs enforced by the system: ANTH 1100 or ANTH 1400 , OR ANTH 1190 OR HSOC 1700 and ANTH 2191 or ANTH 2170 or ANTH 2181 System waitlisting enabled for this section.",
+  "reason": "Interpreted 'and' as combining one course from the 1000-level group and one course from the 2000-level group."
+ },
+ {
+  "code": "ANTH 3990",
+  "notes": "Prerequisites: ANTH 1100 , one 2000 -level course. Special Topics courses cannot carry CC designations System waitlisting enabled for this section.",
+  "reason": "unparsed: one 2000 -level course"
+ },
+ {
+  "code": "ARTH 3000",
+  "notes": "Prereqs: 6 hrs. of 2000-level Art History including 3 hours in the area of the seminar, minimum Jr. standing; PACE students by permission and override. System waitlisting enabled for this section.",
+  "reason": "unparsed: 6 hrs. of 2000-level Art History including 3 hours in the area of the seminar"
+ },
+ {
+  "code": "ARTH 3901",
+  "notes": "Prereqs: 6 hrs. of 2000-level Art History or Studio Arts; minimum Junior standing; Instructor permission required.",
+  "reason": "unparsed: 6 hrs. of 2000-level Art History or Studio Arts"
+ },
+ {
+  "code": "ARTH 3991",
+  "notes": "Prereqs: 6 hrs. of 2000-level Art History; Junior standing; departmental permission",
+  "reason": "unparsed: 6 hrs. of 2000-level Art History"
+ },
+ {
+  "code": "ARTH 4994",
+  "notes": "Prereq: Six hours 2000-level ARTS; minimum Junior Standing; faculty sponsor, contract and permission required. See www.uvm.edu/cas/art/student-forms-and-contracts.",
+  "reason": "unparsed: Six hours 2000-level ARTS"
+ },
+ {
+  "code": "ARTS 3700",
+  "notes": "Prereqs enforced by the system: ARTS 2720 , ARTS 2710 , or ARTS 2750 ; SART, AHST and ARTE majors only until after the third day of registration; then ARTS and AHST minors only. Minimum junior standing; PACE students by permission and override. System waitlisting enabled for this section. Fee: $55.00",
+  "reason": "unparsed: SART, AHST and ARTE majors only until after the third day of registration; then ARTS and AHST minors only."
+ },
+ {
+  "code": "ARTS 3910",
+  "notes": "Instructor permission required, Art Education students only, except by permission, space permitting, Prereqs enforced by the system ARTS 1100 , or 1400",
+  "reason": "unparsed: Art Education students only, except by permission, space permitting"
+ },
+ {
+  "code": "ARTS 4870",
+  "notes": "Prerequisite: Senior standing or Instructor permission; Art Education Majors only. Course fee: $25.00",
+  "reason": "unparsed: Art Education Majors only."
+ },
+ {
+  "code": "ARTS 4881",
+  "notes": "This 12 credit section is intended for Art Ed students; Prerequisites: Senior standing in Art Education major, PRAXIS Core, completion of all course requirements, GPA of at least 3; Co-requisites: ARTS 4885 ; Internships meet off campus; individual site placements",
+  "reason": "unparsed: Senior standing in Art Education major; unparsed: PRAXIS Core; unparsed: completion of all course requirements; unparsed: GPA of at least 3"
+ },
+ {
+  "code": "ARTS 4885",
+  "notes": "Prereqs enforced by the system: ARTS 2881 & ARTS 4870 ; Co-requisite: ARTS 4881 ; ARTE majors only; Senior standing",
+  "reason": "unparsed: ARTE majors only"
+ },
+ {
+  "code": "ASCI 1000",
+  "notes": "ASCI majors or minors or instructor permission; must sign up for a lab section L01, L02, or L03 one mandatory Wednesday night session during the semester date and time TBD Course fee: $51.00 Open to degree and PACE students; Colocated with ASCI 1000 B",
+  "reason": "unparsed: ASCI majors or minors"
+ },
+ {
+  "code": "ASCI 1450",
+  "notes": "Current Horse Barn Coop member, or Dressage Team member, or enrollment in ASCI 2400 , or instructor permission required Open to Degree and PACE students",
+  "reason": "unparsed: Current Horse Barn Coop member; unparsed: Dressage Team member"
+ },
+ {
+  "code": "ASCI 2130",
+  "notes": "Sophomore standing or above; or instructor permission, ASCI and ANIM majors and ASCI minors. Prereqs enforced by system: ASCI 1000 or ASCI 1400 or ASCI 1500 Open to Degree and PACE students",
+  "reason": "unparsed: ASCI and ANIM majors and ASCI minors."
+ },
+ {
+  "code": "ASCI 3150",
+  "notes": "Prereqs enforced by the system: ( ASCI 2110 and 2120 ) ; or ASCI 2105 or equivalent with instructor permission Open to Degree and PACE students",
+  "reason": "Unclear if instructor permission applies to ASCI 2105 or just the equivalent option; unparsed: equivalent with instructor permission"
+ },
+ {
+  "code": "ASL 1200",
+  "notes": "Prerequisite: ASL 1100 ; or successful completion of placement interview; 1st Year & 2nd Year only; Open to degree and PACE students System waitlisting enabled for this section.",
+  "reason": "unparsed: successful completion of placement interview"
+ },
+ {
+  "code": "ASL 2100",
+  "notes": "Prerequisite enforced by the system: ASL 1200 or successful completion of placement interview; Open to Degree and PACE students System waitlisting enabled for this section.",
+  "reason": "unparsed: successful completion of placement interview"
+ },
+ {
+  "code": "ASL 2200",
+  "notes": "Prerequisite enforced by the system: ASL 2100 or successful placement interview; Open to Degree and PACE students System waitlisting enabled for this section.",
+  "reason": "unparsed: successful placement interview"
+ },
+ {
+  "code": "BCOR 2100",
+  "notes": "Prereqs enforced by the system: BIOL 1400 / 1450 or BCOR 1400 / 1450 or BIOL 1000 / 1005 and/or BCOR 1425 ; and MATH 1212 or MATH 1234 . Must register for a lab A01-A04. PACE students with permission and override. Trouble registering? Contact Laura.A.Newman@uvm.edu. System waitlisting enabled for this section.",
+  "reason": "Interpreted 'and/or BCOR 1425' as part of the primary 'or' group."
+ },
+ {
+  "code": "BCOR 2500",
+  "notes": "For majors: ASCI, BICM, BIOL, BISC, ENSC, MGEN, MICR, NEUR, PBIO, ZOOL only. Prereqs enforced by the system: BIOL 1000 / 1005 or BIOL 1400 / 1450 or BCOR 1400 / 1450 or BCOR 1425 ; and CHEM 1400 or 1410 ; Recommended: BCOR 2300 . Registration questions? Please email Laura.A.Newman@uvm.edu. Co-located with BCOR 2500 ZRA, BCOR 2505 A, BCOR 2505 ZRA; total combined = 235. Degree students only even after level restrictions removed; Post Bac Pre Meds see BCOR 2500 ZRA.",
+  "reason": "unparsed: For majors: ASCI, BICM, BIOL, BISC, ENSC, MGEN, MICR, NEUR, PBIO, ZOOL only."
+ },
+ {
+  "code": "BHSC 1340",
+  "notes": "HIPAA & OSHA is required before attending first lab session MLS, MRS, BIOM, HSCI, PHS, BMCS Students only; Degree students only, PACE students register for Or Instructor Permission; BHSC ZRA; Must register for Lab A01 - A04 Student Lab Fee: $65;",
+  "reason": "Text regarding student restrictions vs instructor permission was slightly unstructured.; unparsed: MLS, MRS, BIOM, HSCI, PHS, BMCS Students only"
+ },
+ {
+  "code": "BHSC 1980",
+  "notes": "Prereqs: ENGL 1001 ; MLS, MRS, BMCS majors",
+  "reason": "unparsed: MLS, MRS, BMCS majors"
+ },
+ {
+  "code": "BHSC 3440",
+  "notes": "Pre-co req: BHSC 3420 or MMG 3230 : One semester Biochemistry; MLS majors or Instructor permission: Lab fee: $65; Open to degree and PACE students; HIPAA & OSHA is required before attending first lab session",
+  "reason": "Interpreted 'Pre-co req: BHSC 3420 or MMG 3230 : One semester Biochemistry' as allowing concurrent enrollment for any one of these.; unparsed: One semester Biochemistry; unparsed: MLS majors"
+ },
+ {
+  "code": "BIOC 2995",
+  "notes": "Prereqs: CHEM 1400 , 1450 or 1405 , 1455 ; Some programs may require additional courses in Chemistry; Instructor permission required",
+  "reason": "Interpreted commas as 'and' and grouped by 'or'"
+ },
+ {
+  "code": "BIOL 4070",
+  "notes": "Prerequisites: General Biology concentration or Ecology and Evolution concentration; Senior standing. System waitlisting enabled for this section",
+  "reason": "unparsed: General Biology concentration or Ecology and Evolution concentration"
+ },
+ {
+  "code": "BIOL 4080",
+  "notes": "Senior standing required; Majors: Cell and Developmental Biology concentration; Or by instructor permission; System waitlisting enabled for this section",
+  "reason": "Interpreted grouping of major requirements and permission; unparsed: Majors: Cell and Developmental Biology concentration"
+ },
+ {
+  "code": "BIOL 6015",
+  "notes": "Course will meet in Biology Conference Room ML SCI 226 Prerequisite: Life sciences Graduate student. System waitlisting enabled for this section",
+  "reason": "unparsed: Life sciences Graduate student"
+ },
+ {
+  "code": "BME 3410",
+  "notes": "Prereqs enforced by the system: ME 2110 , BME 3600 , or BME 3605 ; Cross listed with ME 3410 ; Total combined enrollment = 45 System waitlisting enabled for this section",
+  "reason": "Assumed 'ME 2110, BME 3600, or BME 3605' meant any one of the three."
+ },
+ {
+  "code": "BUS 2130",
+  "notes": "BSAD major and minor, 2BUS Co-Major, CSIS, and EMGT majors; Open to degree and PACE students; Prereqs enforced by the system: MATH 1212 or MATH 1234 with a minimum grade of C-; STAT 1410 or STAT 2430 with a minimum grade of C-, or PSYS 2002 and PSYS 2010 with minimum grades of C-. System waitlisting enabled for this section",
+  "reason": "Assumed semi-colon groups MATH options apart from STAT/PSYS options."
+ },
+ {
+  "code": "BUS 2500",
+  "notes": "BSAD, CSIS, EMGT majors, 2BUS co-majors, or BSAD minors only. Open to degree and PACE students; SMGT minors by permission, email gsbcss@uvm.edu. Prereqs enforced by the system: ECON 1450 with a minimum grade of C-; STAT 1410 or STAT 2430 with a minimum grade of C-, or PSYS 2002 and PSYS 2010 both with a minimum grade of C-. Cannot earn credit for both CDAE 2680 and BUS 2500 System waitlisting enabled for this section",
+  "reason": "unparsed: BSAD, CSIS, EMGT majors, 2BUS co-majors, or BSAD minors only."
+ },
+ {
+  "code": "BUS 2620",
+  "notes": "BSAD, CSIS, EMGT and DNFS majors, 2BUS Co-Major, ACCT and BSAD minors. Open to degree and PACE students. Prereqs enforced by the system: BUS 1610 and ECON 1450 with a minimum grade of C-. System waitlisting enabled for this section",
+  "reason": "Assumed C- grade applies to both BUS 1610 and ECON 1450; unparsed: BSAD, CSIS, EMGT and DNFS majors, 2BUS Co-Major, ACCT and BSAD minors."
+ },
+ {
+  "code": "BUS 2700",
+  "notes": "BSAD, CSIS, EMGT majors, 2BUS Co-Major, and BSAD minors. Open to degree and PACE students. Prereqs enforced by the system: BUS 1610 and BUS 2130 both with a minimum grade of C-. System waitlisting enabled for this section",
+  "reason": "unparsed: BSAD, CSIS, EMGT majors, 2BUS Co-Major, and BSAD minors."
+ },
+ {
+  "code": "BUS 2800",
+  "notes": "BSAD, CSIS, EMGT majors, 2BUS Co-Major, and BSAD minors. Open to degree and PACE students. Prereq enforced by the system: BUS 1610 with a minimum grade of C-. Cannot earn credit for both CDAE 2670 and BUS 2800. System waitlisting enabled for this section",
+  "reason": "unparsed: BSAD, CSIS, EMGT majors, 2BUS Co-Major, and BSAD minors."
+ },
+ {
+  "code": "BUS 2810",
+  "notes": "BSAD major and minor, and 2BUS Co-Major. Open to degree and PACE students. Prereq enforced by the system: BUS 2800 with a minimum grade of C. System waitlisting enabled for this section",
+  "reason": "unparsed: BSAD major and minor, and 2BUS Co-Major."
+ },
+ {
+  "code": "BUS 2990",
+  "notes": "BSAD majors, 2BUS co-majors and BSAD minors only. Prereq: BUS 2300 . Special Topics courses cannot carry CC designations System waitlisting enabled for this section",
+  "reason": "unparsed: BSAD majors, 2BUS co-majors and BSAD minors only."
+ },
+ {
+  "code": "BUS 2991",
+  "notes": "BSAD majors and minors only. Instructor permission required. Application and concurrent internship required. Variable credits 1-3 Asynchronous online",
+  "reason": "unparsed: BSAD majors and minors only.; unparsed: Application and concurrent internship required."
+ },
+ {
+  "code": "BUS 2993",
+  "notes": "BSAD majors only. Instructor permission required.",
+  "reason": "unparsed: BSAD majors only."
+ },
+ {
+  "code": "BUS 3099",
+  "notes": "Restricted to GSB co-op students. Instructor permission required.",
+  "reason": "unparsed: Restricted to GSB co-op students."
+ },
+ {
+  "code": "BUS 3102",
+  "notes": "BSAD majors only. Prereq enforced by the system: BUS 2102 . Though most of the instruction will be synchronous online, students are expected to attend in-person Career Readiness and Grossman School of Business events throughout semester.",
+  "reason": "unparsed: BSAD majors only."
+ },
+ {
+  "code": "BUS 3310",
+  "notes": "BSAD majors, 2BUS co-majors, BSAD minors, and ACTG grad students. Prereq enforced by the system: BUS 2300 . System waitlisting enabled for this section",
+  "reason": "unparsed: BSAD majors, 2BUS co-majors, BSAD minors, and ACTG grad students."
+ },
+ {
+  "code": "BUS 3442",
+  "notes": "BSAD major and minor, 2BUS Co-Major. Open to degree and PACE students. Prereq enforced by the system: BUS 2300 . System waitlisting enabled for this section",
+  "reason": "unparsed: BSAD major and minor, 2BUS Co-Major."
+ },
+ {
+  "code": "BUS 3510",
+  "notes": "BSAD major and minor, 2BUS Co-Major. Prereq enforced by the system: BUS 2500 . System waitlisting enabled for this section",
+  "reason": "unparsed: BSAD major and minor, 2BUS Co-Major."
+ },
+ {
+  "code": "BUS 3530",
+  "notes": "BSAD major and minor, 2BUS Co-Major. Prereq enforced by the system: BUS 2500 . System waitlisting enabled for this section",
+  "reason": "unparsed: BSAD major and minor, 2BUS Co-Major."
+ },
+ {
+  "code": "BUS 3550",
+  "notes": "BSAD major and minor, 2BUS Co-Major. Prereq enforced by the system: BUS 2500 . System waitlisting enabled for this section",
+  "reason": "unparsed: BSAD major and minor, 2BUS Co-Major."
+ },
+ {
+  "code": "BUS 3565",
+  "notes": "Instructor permission required. For permission email gsbcss@uvm.edu. BSAD major and minor, 2BUS Co-Major. Prereq enforced by the system: BUS 3560 .",
+  "reason": "unparsed: BSAD major and minor, 2BUS Co-Major."
+ },
+ {
+  "code": "BUS 3610",
+  "notes": "BSAD major, 2BUS Co-Major, BSAD and ACCT minors only. CSIS majors by instructor permission; email gsbcss@uvm.edu. Open to degree and PACE students. Prereqs enforced by the system: BUS 1610 and BUS 2620 both with a minimum grade of C-. System waitlisting enabled for this section",
+  "reason": "unparsed: BSAD major, 2BUS Co-Major, BSAD and ACCT minors only."
+ },
+ {
+  "code": "BUS 3611",
+  "notes": "BSAD major, 2BUS Co-Major, BSAD and ACCT minors only. CSIS majors by instructor permission; email gsbcss@uvm.edu. Open to degree and PACE students. Prereq enforced by the system: BUS 3610 . System waitlisting enabled for this section",
+  "reason": "unparsed: BSAD major, 2BUS Co-Major, BSAD and ACCT minors only."
+ },
+ {
+  "code": "BUS 3660",
+  "notes": "BSAD Major, 2BUS Co-Major, BSAD or ACCT minors, ACTG graduate students in co-located BUS 5660 . Prereq enforced by the system: BUS 3610 . System waitlisting enabled for this section",
+  "reason": "unparsed: BSAD Major, 2BUS Co-Major, BSAD or ACCT minors, ACTG graduate students in co-located BUS 5660."
+ },
+ {
+  "code": "BUS 3730",
+  "notes": "BSAD major and minor, 2BUS Co-Major, EMGT major, and ACTG graduate students. Graduates must have permission from Grad College. Open to degree and PACE students. Prereq enforced by the system: BUS 2700 . System waitlisting enabled for this section",
+  "reason": "unparsed: BSAD major and minor, 2BUS Co-Major, EMGT major, and ACTG graduate students."
+ },
+ {
+  "code": "BUS 3800",
+  "notes": "BSAD major or minor, 2BUS Co-Major. Open to degree and PACE students. Prereq enforced by the system: BUS 2800 with a minimum grade of C. May be repeated with instructor permission. Only counts toward BSAD major/minor/co-major once. System waitlisting enabled for this section.",
+  "reason": "unparsed: BSAD major or minor, 2BUS Co-Major."
+ },
+ {
+  "code": "BUS 3820",
+  "notes": "BSAD major and minor, and 2BUS Co-Majors. Open to degree and PACE students. Prereqs enforced by the system: BUS 2800 with a minimum grade of C; STAT 1410 , STAT 2430 , or PSYS 2002 and PSYS 2010 with a minimum grade of C-. System waitlisting enabled for this section.",
+  "reason": "unparsed: BSAD major and minor, and 2BUS Co-Majors."
+ },
+ {
+  "code": "BUS 3830",
+  "notes": "BSAD major and minor, 2BUS Co-Major only. Open to degree and PACE students. Prereq enforced by the system: ECON 1400 with a minimum grade of C-. System waitlisting enabled for this section.",
+  "reason": "unparsed: BSAD major and minor, 2BUS Co-Major only."
+ },
+ {
+  "code": "BUS 3860",
+  "notes": "BSAD Major or Minor, and 2BUS Co-major only. Prereqs enforced by the system: BUS 2130 with a minimum grade of C-; BUS 2800 with a minimum grade of C. System waitlisting enabled for this section.",
+  "reason": "unparsed: BSAD Major or Minor, and 2BUS Co-major only."
+ },
+ {
+  "code": "BUS 3890",
+  "notes": "BSAD major and minor, 2BUS Co-Major only. Open to degree and PACE students. Prereq enforced by the system: BUS 2800 with a minimum grade of C. System waitlisting enabled for this section.",
+  "reason": "unparsed: BSAD major and minor, 2BUS Co-Major only."
+ },
+ {
+  "code": "BUS 3990",
+  "notes": "Instructor Permission required; email gsbcss@uvm.edu. BSAD majors and minors, 2BUS co-majors only. Special Topics courses cannot carry CC designations",
+  "reason": "unparsed: BSAD majors and minors, 2BUS co-majors only"
+ },
+ {
+  "code": "BUS 4910",
+  "notes": "BSAD majors only. Prereqs enforced by the system: BUS 2150 with a minimum grade of C-; BUS 2300 , BUS 2500 , BUS 2700 , and BUS 2800 .",
+  "reason": "unparsed: BSAD majors only"
+ },
+ {
+  "code": "BUS 4920",
+  "notes": "BSAD majors only. Prereqs enforced by the system: BUS 2150 with a minimum grade of C-; BUS 2300 , BUS 2500 , BUS 2700 and BUS 2800 .",
+  "reason": "unparsed: BSAD majors only"
+ },
+ {
+  "code": "BUS 4930",
+  "notes": "BSAD majors only. Prereqs enforced by the system: BUS 2150 with a minimum grade of C-; BUS 2300 , BUS 2500 , BUS 2700 and BUS 2800 .",
+  "reason": "unparsed: BSAD majors only"
+ },
+ {
+  "code": "BUS 4996",
+  "notes": "Asynchronous online; BSAD HCOL Students only; Instructor Permission Required. Prereq enforced by the system: BUS 2996",
+  "reason": "unparsed: BSAD HCOL Students only"
+ },
+ {
+  "code": "BUS 5635",
+  "notes": "MAcc students only; Prerequisite: BUS 3611 ; Undergrads by permission; For permission email gsbcss@uvm.edu.",
+  "reason": "Assuming undergrads by permission acts as an alternative to MAcc students only.; unparsed: MAcc students only"
+ },
+ {
+  "code": "BUS 5641",
+  "notes": "BSAD majors, BSAD and ACCT minors and MAcc students; Minimum senior standing or graduate standing; Prerequisite: BUS 3610 .",
+  "reason": "unparsed: BSAD majors, BSAD and ACCT minors and MAcc students"
+ },
+ {
+  "code": "CDAE 2200",
+  "notes": "Prereqs enforced by the system: CDAE 1240 or ENGL 1001 or ENGL 1740 ; COM majors and minors only; Open to Degree and PACE students. System waitlisting enabled for this section.",
+  "reason": "unparsed: COM majors and minors only"
+ },
+ {
+  "code": "CDAE 2460",
+  "notes": "Prereqs: CDAE 1160 required, CDAE 1170 and CDAE 2160 recommended; Open to PCOM Majors and Applied Design Minors only, or instructor permission; Open to Degree and PACE students. System waitlisting enabled for this section.",
+  "reason": "CDAE 1160 is required but instructor permission could override everything including the major restriction, or just the major restriction.; unparsed: Open to PCOM Majors and Applied Design Minors only"
+ },
+ {
+  "code": "CDAE 3070",
+  "notes": "Prerequisite: CDAE 1610 or equivalent; Open to Degree and PACE students. System waitlisting enabled for this section.",
+  "reason": "unparsed: equivalent"
+ },
+ {
+  "code": "CDAE 3080",
+  "notes": "Cross listed with ALE 3080 A; Prereq: CDAE 2020 or equivalent; Total combined enrollment = 48. Open to Degree and PACE Students System waitlisting enabled for this section.",
+  "reason": "unparsed: equivalent"
+ },
+ {
+  "code": "CDAE 3500",
+  "notes": "Prereqs enforced by the system: STAT 1110 or STAT 1410 or equivalent course; Must register for CDAE 3500 Lab OL1, OL2, or OL3; Open to Degree and PACE students. System waitlisting enabled for this section.",
+  "reason": "unparsed: equivalent course"
+ },
+ {
+  "code": "CDAE 3510",
+  "notes": "Prerequisites: One of the following: CDAE 2020 , CDAE 2710 , CDAE 2860 , or equivalent course; Open to Degree and PACE students. System waitlisting enabled for this section.",
+  "reason": "unparsed: equivalent course"
+ },
+ {
+  "code": "CDAE 3530",
+  "notes": "Prereq: CDAE 2020 or equivalent; Open to Degree and PACE students. System waitlisting enabled for this section.",
+  "reason": "unparsed: equivalent"
+ },
+ {
+  "code": "CDAE 3660",
+  "notes": "Prereqs enforced by the system: CDAE 2660 and MATH 1212 and CALS 1850 or CALS 1020 ; Open to Degree and PACE students. System waitlisting enabled for this section.",
+  "reason": "Assumed 'and' separates parts, and CALS 1850 or CALS 1020 is a single group."
+ },
+ {
+  "code": "CDAE 3670",
+  "notes": "Prereqs enforced by the system: CDAE 2660 or 2670 or 2680 ; CENT majors & minors with Senior standing and PACE students; Open to Degree and PACE students. System waitlisting enabled for this section.",
+  "reason": "Combined prereqs and standing requirements from separated phrases.; unparsed: CENT majors & minors"
+ },
+ {
+  "code": "CDAE 3760",
+  "notes": "Prereqs: CDAE 1150 , CDAE 1010 , or equivalent; Open to Degree and PACE Students. System waitlisting enabled for this section.",
+  "reason": "unparsed: equivalent"
+ },
+ {
+  "code": "CDAE 4240",
+  "notes": "Pre-req/corequisites: CDAE 1240 , 1150 , and CDAE 2210 or 2200 COM majors or instructor permission; Junior or Senior standing; Open to Degree and PACE students System waitlisting enabled for this section.",
+  "reason": "Assuming 'COM majors or instructor permission' allows taking the class with instructor permission as an alternative to the prereqs or major, but standing is still required."
+ },
+ {
+  "code": "CEE 1000",
+  "notes": "Must register for a lab, L01-L04 Limit to CE, EENV, ENGR, EMGT majors, or instructor permission; PACE students by permission and override",
+  "reason": "unparsed: Limit to CE, EENV, ENGR, EMGT majors"
+ },
+ {
+  "code": "CEE 4950",
+  "notes": "Coreq: CEE 2130 ; CE, EENV, EMGT, ENGR Major; Minimum Senior standing",
+  "reason": "unparsed: CE, EENV, EMGT, ENGR Major"
+ },
+ {
+  "code": "CEE 5620",
+  "notes": "Graduate students only or Instructor permission; Content knowledge of hydrology (such as CEE 4600 ) assumed; Design Elective (CE, EENV), Elective (CE, EENV) System waitlisting enabled for this section.",
+  "reason": "Assuming assumed knowledge is a prerequisite condition.; unparsed: Content knowledge of hydrology (such as CEE 4600 ) assumed"
+ },
+ {
+  "code": "CEMS 2020",
+  "notes": "Enrollment limited to HCOL students in CEMS; Prereqs enforced by the system: CEMS 2010 or Instructor permission; Asynchronous online",
+  "reason": "unparsed: Enrollment limited to HCOL students in CEMS"
+ },
+ {
+  "code": "CEMS 3899",
+  "notes": "College of Engineering and Mathematical Sciences undergraduate student, sophomore or junior standing only, GPA requirement Instructor permission",
+  "reason": "unparsed: College of Engineering and Mathematical Sciences undergraduate student; unparsed: sophomore or junior standing only; unparsed: GPA requirement"
+ },
+ {
+  "code": "CHEM 1460",
+  "notes": "Prereqs enforced by the system: CHEM 1500 & 1410 ; Co-req: CHEM 1550 ; BICM majors only; $85 Fee: Chem Lab Supplies PACE students with permission and override",
+  "reason": "unparsed: BICM majors only"
+ },
+ {
+  "code": "CHEM 1550",
+  "notes": "Prereqs enforced by the system: CHEM 1500 ; Must register for a CHEM 1550 lab, L01-L05; CHEM or BICM majors only; $85 fee: Chem Lab Supplies PACE students with permission and override",
+  "reason": "unparsed: CHEM or BICM majors only"
+ },
+ {
+  "code": "CLAS 2360",
+  "notes": "Open to degree and PACE students Co-located & crosslist with CLAS 1360 , HST 1705 and HST 2705 Prerequisite: Three hours in Classics or History Total combined enrollment = 100 System waitlisting enabled for this section",
+  "reason": "unparsed: Three hours in Classics or History"
+ },
+ {
+  "code": "CLAS 2581",
+  "notes": "Crosslisted with ENVS 2210 , total combined enrollment: 119 PACE students with permission and override Prerequisites: Three hours in Classics, Environmental Studie or a related discipline. System waitlisting enabled for this section",
+  "reason": "unparsed: Three hours in Classics, Environmental Studie or a related discipline."
+ },
+ {
+  "code": "CLAS 3540",
+  "notes": "Prerequisite: Three hours in Classics, GSWS 1010 , or GSWS 1500 Cross listed with GSWS 3660 A System waitlisting enabled for this section",
+  "reason": "unparsed: Three hours in Classics"
+ },
+ {
+  "code": "CNSL 6630",
+  "notes": "CNSL Majors Only. Enforced prereqs: CNSL 6750 .",
+  "reason": "unparsed: CNSL Majors Only"
+ },
+ {
+  "code": "CNSL 6760",
+  "notes": "Prereqs: CNSL 6200 , 6500 , 6740 , 6750 , 6920 ; CNSL Majors.",
+  "reason": "unparsed: CNSL Majors"
+ },
+ {
+  "code": "CNSL 6810",
+  "notes": "CNSL Majors Only. Enforced Prereqs: CNSL 6750 or 6630 . Non-majors email cslgprog@uvm.edu to be put on waitlist; Online learning modules asynchronously each week.",
+  "reason": "unparsed: CNSL Majors Only"
+ },
+ {
+  "code": "CNSL 6991",
+  "notes": "CNSL Majors Only. Enforced Prereqs: CNSL 6630 & CNSL 6750 .",
+  "reason": "unparsed: CNSL Majors Only"
+ },
+ {
+  "code": "CRES 2827",
+  "notes": "PACE students with permission and override Minimum sophomore standing Prerequisite: Three hours in English numbered 1010 to 1990; Crosslisted with ENGL 2216 A Total combined enrollment = 25",
+  "reason": "unparsed: Three hours in English numbered 1010 to 1990"
+ },
+ {
+  "code": "CS 3060",
+  "notes": "Prereq: Junior standing and programming experience or instructor permission; Co-located with CS 5060 A; Total combined enrollment: 60; Open to Degree and PACE students",
+  "reason": "Unclear whether instructor permission bypasses just programming experience or also junior standing.; unparsed: programming experience"
+ },
+ {
+  "code": "CS 3870",
+  "notes": "CS 2100 and MATH 2544 recommended; Cross-listed with STAT 3870 A; Open to Degree and PACE students Prereqs enforced by the system: CS 1210 & STAT 3880 or CS 3540 & STAT 2870 or CS 2870 ; Total combined enrollment: 40; System waitlisting enabled for this section.",
+  "reason": "Assuming '&' binds tighter than 'or'"
+ },
+ {
+  "code": "CS 5220",
+  "notes": "Familiarity with topics of computer organization as would come from the equivalent of CS 2210 ; Graduate student standing; Cross-listed with CMPE 5220 A; Co-located with CS 3220 A and CMPE 3220 A; Total combined enrollment: 35 System waitlisting enabled for this section.",
+  "reason": "unparsed: Familiarity with topics of computer organization as would come from the equivalent of CS 2210"
+ },
+ {
+  "code": "CS 5870",
+  "notes": "Graduate student or Instructor permission; Knowledge of CS 1210 and either STAT 1410 or STAT 2430 ; Knowledge of CS 2100 and MATH 2522 or MATH 2544 strongly recommended; Cross-listed with STAT 5870 A and CSYS 5870 A; Total combined enrollment: 40; PACE students with permission and override System waitlisting enabled for this section.",
+  "reason": "Assuming 'Knowledge of CS 1210 and either STAT 1410 or STAT 2430' implies course requirements and binds 'CS 1210' with the 'or' expression."
+ },
+ {
+  "code": "CS 5990",
+  "notes": "Prereqs: Knowledge of linear algebra ( MATH 2522 , MATH 2544 ) or equivalent System waitlisting enabled for this section.",
+  "reason": "unparsed: Knowledge of linear algebra ( MATH 2522 , MATH 2544 ) or equivalent"
+ },
+ {
+  "code": "CS 6550",
+  "notes": "Prereqs: Knowledge of STAT 1410 or equivalent",
+  "reason": "unparsed: Knowledge of STAT 1410 or equivalent"
+ },
+ {
+  "code": "CSD 1220",
+  "notes": "Online Asynchronous; PACE SLP, SLPA certificate students only or instructor permission",
+  "reason": "unparsed: PACE SLP, SLPA certificate students only"
+ },
+ {
+  "code": "CSD 2210",
+  "notes": "Hybrid course; Prereqs enforced by the system: CSD 1210 ; CSD majors only; Minimum sophomore standing; Course meets in person on Tuesdays (2 credits); Weekly clinical observations (1 credit);",
+  "reason": "unparsed: CSD majors only"
+ },
+ {
+  "code": "CSD 3260",
+  "notes": "Prereqs: CSD 3250 ; PACE SLP, SLPA, and UG SLP cert students only; Approved CSD majors with permission; Online Asynchronous",
+  "reason": "Combined unparsed student type restrictions with AND; unparsed: PACE SLP, SLPA, and UG SLP cert students only; unparsed: Approved CSD majors with permission"
+ },
+ {
+  "code": "CSD 3720",
+  "notes": "Prereqs enforced by the system: CSD 3710 ; CSD undergraduate students only",
+  "reason": "unparsed: CSD undergraduate students only"
+ },
+ {
+  "code": "CSD 6290",
+  "notes": "Prereqs enforced by the system: CSD 6200 ; First year CSD Graduate students only",
+  "reason": "unparsed: First year CSD Graduate students only"
+ },
+ {
+  "code": "CSD 6385",
+  "notes": "Second year CSD graduate students only; Prerequisite CSD 6381 ; Post work required to complete the term. This course meets on alternating weeks with CSD 6250 5:30-7:30 - 1/21, 2/4, 2/18, 3/4, 3/18, 4/1, 4/15, 4/29, 5/6",
+  "reason": "unparsed: Second year CSD graduate students only"
+ },
+ {
+  "code": "CSYS 5870",
+  "notes": "Graduate student or instructor permission; Knowledge of CS 1210 and either STAT 1410 or STAT 2430 ; CS 2100 and MATH 2522 or MATH 2544 recommended; Cross-listed with CS 5870 A and STAT 5870 A; Total combined enrollment: 40; PACE students with permission and override",
+  "reason": "Parsed 'Knowledge of CS 1210 and either STAT 1410 or 2430' as direct course prerequisites."
+ },
+ {
+  "code": "DNCE 2710",
+  "notes": "Prereq: Audition or instructor permission; Time/location scheduled individually with students; 1-3 variable credits",
+  "reason": "unparsed: Audition"
+ },
+ {
+  "code": "DNCE 3710",
+  "notes": "Prerequisites: Dance majors only; Instructor permission.",
+  "reason": "unparsed: Dance majors only"
+ },
+ {
+  "code": "ECLD 3040",
+  "notes": "Prereqs enforced by the system: EDSP 1050 or ECLD 1560 . Students will meet at off campus locations. There will be asynchronous modules in Brightspace. ECLD (ECL1, ECL2) minors only or by instructor permission. Cross listed with EDSP 3040 . Total Combined Enrollment: 30",
+  "reason": "unparsed: ECLD (ECL1, ECL2) minors only"
+ },
+ {
+  "code": "ECSP 2100",
+  "notes": "ECP Majors, Special Education Majors, Special Education Minors only or instructor permission. Has asynchronous online and in-person components, dates TBD.",
+  "reason": "unparsed: ECP Majors, Special Education Majors, Special Education Minors only"
+ },
+ {
+  "code": "EDCI 5002",
+  "notes": "Only students in the Graduate Certificate in Computer Science or with instructor permission can register. Synchronous online. Prereqs enforced by the system: EDCI 5001",
+  "reason": "unparsed: Only students in the Graduate Certificate in Computer Science"
+ },
+ {
+  "code": "EDEC 2220",
+  "notes": "EDEC majors or Instructor permission only.",
+  "reason": "unparsed: EDEC majors"
+ },
+ {
+  "code": "EDEC 2450",
+  "notes": "Prereqs enforced by the system: EDEC 1010 and EDEC 1630 . Must take concurrently with EDEC 2490 . ECP and ECSP majors or Instructor permission only. Emphasizes the development of relevant, integrated, authentic, individual, developmentally appropriate curriculum on formative assessments and interpretations of children's work in inclusive Pre-Kindergarten classrooms, serving children ages 3-5. Praxis core requirement fulfilled",
+  "reason": "unparsed: ECP and ECSP majors"
+ },
+ {
+  "code": "EDEC 2490",
+  "notes": "Prereqs enforced by the system: EDEC 1010 and EDEC 1630 ; ECP and ECSP majors only or Instructor permission; Must take concurrently with EDEC 2450 ; Praxis core requirement fulfilled; Placement is TBD Course Fee: $40.00",
+  "reason": "unparsed: ECP and ECSP majors only"
+ },
+ {
+  "code": "EDEL 2550",
+  "notes": "Prereqs enforced by the system: EDSP 1050 & EDFS 1020 or EDFS 3030 & EDEC 1630 or HDF 1050 or PSYS 2400 ; Prereq or coreq: EDEL 1240 , ECLD 1560 , EDFS 1020 ; Prereq: EDEL 2570 ; 2nd or 3rd Year Elementary Education (ELK6), Taken concurrently with EDEL 2550 and EDEL 3760 ; Meets Tuesdays 8:30am-9:45am in Waterman 539; Thursdays 8:00-11:00 in Location in VT or out of state. $40 lab fee.",
+  "reason": "The grouping of 'EDSP 1050 & EDFS 1020 or EDFS 3030 & EDEC 1630 or HDF 1050 or PSYS 2400' is ambiguous.; unparsed: 2nd or 3rd Year Elementary Education (ELK6)"
+ },
+ {
+  "code": "EDEL 2570",
+  "notes": "2nd or 3rd Year Elementary Education (ELK6); Taken concurrently with EDEL 2550 and EDEL 3760 . Prereqs enforced by the system: EDSP 1050 , and EDFS 1020 or EDFS 3030 , and EDEC 1630 or HDF 1050 or PSYS 2400",
+  "reason": "unparsed: 2nd or 3rd Year Elementary Education (ELK6)"
+ },
+ {
+  "code": "EDEL 3580",
+  "notes": "Prereq: EDEL 2550 ; Concurrent w / EDEL 3550 and 3570 or permission; ELK6 3rd yr, 4th yr; Admit to Tchr Ed; 2.75 overall GPA requirement.",
+  "reason": "Interpreted 'Concurrent w / EDEL 3550 and 3570 or permission' as (3550 and 3570) or permission; unparsed: ELK6 3rd yr, 4th yr; unparsed: Admit to Tchr Ed; unparsed: 2.75 overall GPA requirement."
+ },
+ {
+  "code": "EDEL 3750",
+  "notes": "Prereq: EDEL 2550 ; Concurrent w / EDEL 3780 , 3760 and 3770 ; ELK6 3rd yr, 4th yr; Admit to Tchr Ed; 2.75 overall GPA requirement; $40 lab fee. Course includes field work. Dates and times TBD.",
+  "reason": "unparsed: ELK6 3rd yr, 4th yr; unparsed: Admit to Tchr Ed; unparsed: 2.75 overall GPA requirement"
+ },
+ {
+  "code": "EDEL 3770",
+  "notes": "Concurrent with EDEL 3780 , 3750 and 3760 or instructor permission; ELK6 3rd yr, 4th yr; Admit to Tchr Ed; 2.75 overall GPA requirement",
+  "reason": "Interpreted 'Concurrent with EDEL 3780, 3750 and 3760 or instructor permission' as (3780 and 3750 and 3760) or instructor permission.; unparsed: ELK6 3rd yr, 4th yr; unparsed: Admit to Tchr Ed; unparsed: 2.75 overall GPA requirement"
+ },
+ {
+  "code": "EDEL 3780",
+  "notes": "Prereq: EDEL 2550 ; ELK6 3rd yr, 4th yr; Admit to Teacher Ed; 2.75 overall GPA requirement",
+  "reason": "unparsed: ELK6 3rd yr, 4th yr; unparsed: Admit to Teacher Ed; unparsed: 2.75 overall GPA requirement"
+ },
+ {
+  "code": "EDEL 4880",
+  "notes": "Concurrent with EDEL 4991 ; 4th yr ELK6; Admit to Student Teaching; Prereq enforced by system: EDEL 4760",
+  "reason": "unparsed: 4th yr ELK6; unparsed: Admit to Student Teaching"
+ },
+ {
+  "code": "EDEL 4991",
+  "notes": "Prereq: EDEL 4760 ; Concurrent with EDEL 4880 ; 4th yr ELK6 students; Admit to Student Teaching; 3.0 overall GPA requirement; 3.0 GPA professional courses (EDEL, EDSP, EDTE, EDML)",
+  "reason": "unparsed: 4th yr ELK6 students; unparsed: Admit to Student Teaching; unparsed: 3.0 overall GPA requirement; unparsed: 3.0 GPA professional courses (EDEL, EDSP, EDTE, EDML)"
+ },
+ {
+  "code": "EDML 2890",
+  "notes": "EDML & EDSC Majors only or Instructor permission. We'll walk to Edmunds Middle School during class for five weeks of the semester. Additional fees for fingerprinting & background check.",
+  "reason": "unparsed: EDML & EDSC Majors only"
+ },
+ {
+  "code": "EDML 6991",
+  "notes": "EDML MAT Students Only; Prereqs enforced by the system: EDML 6070 & EDML 5890 ; Location: Off site at various schools; Take concurrently with Student Teaching Seminar EDML 5860",
+  "reason": "unparsed: EDML MAT Students Only"
+ },
+ {
+  "code": "EDRM 6110",
+  "notes": "Course meets synchronously online certain weeks, dates TBD. Prereq enforced by the system: EDRM 6300 or equivalent, or instructor permission. PACE students by permission and override",
+  "reason": "unparsed: or equivalent"
+ },
+ {
+  "code": "EDRM 6210",
+  "notes": "Online Synchronous Course Prereq enforced by the system: EDRM 6300 or equivalent, or instructor permission PACE students by permission and override",
+  "reason": "unparsed: or equivalent"
+ },
+ {
+  "code": "EDRM 6990",
+  "notes": "Course meets synchronously online. Prereqs EDRM 6110 and EDRM 6210 or equivalents.",
+  "reason": "Interpreted 'or equivalents' as applying to both EDRM 6110 and EDRM 6210 as a group.; unparsed: or equivalents"
+ },
+ {
+  "code": "EDSC 2090",
+  "notes": "1st 2 weeks T/R 9:00-11:00am on campus (Marsh Life 107); All other T/R 7:30-12pm off campus. R 1:00-2:00 on campus; Additional anticipated fees: gas, background check, fingerprinting, parking; Prereq enforced by system: EDSC 2070 ; Additional prereq: EDSC 5207 and Coreq: EDSC 2160 ; Minimum Junior standing; Sec Ed Students (SE, SEE, SEL, SEM, SES, SESS) only; Lab Fee $40",
+  "reason": "unparsed: Sec Ed Students (SE, SEE, SEL, SEM, SES, SESS) only"
+ },
+ {
+  "code": "EDSC 2150",
+  "notes": "Secondary Ed students only - SE, SEE, SEL, SEM, SES, SESS; Minimum Junior standing only; Synchronous online; Prereqs: EDSC 2070 , 2090 , and 2160 ; Coreq EDSC 2160 Must have been accepted in Teacher Education; Service learning requirement in addition to in-class time. System waitlisting enabled for this section.",
+  "reason": "EDSC 2160 is listed as both a prerequisite and a corequisite.; unparsed: Secondary Ed students only - SE, SEE, SEL, SEM, SES, SESS; unparsed: Must have been accepted in Teacher Education"
+ },
+ {
+  "code": "EDSC 3240",
+  "notes": "Secondary MAT and Undergrad students; Minimum Jr standing; Prereq for MATs: EDSC 5207 , 5209 , 5215 , 5216 ; Coreq/prereq for UG: EDSC 1110 , 2070 , 2090 , 2150 , 2160 ; Synchronous online and In-Person components Specific dates TBA.",
+  "reason": "Kept the population-specific prerequisites as unparsed text as they apply differently to MAT and UG students.; unparsed: Secondary MAT and Undergrad students; unparsed: Prereq for MATs: EDSC 5207, 5209, 5215, 5216; unparsed: Coreq/prereq for UG: EDSC 1110, 2070, 2090, 2150, 2160"
+ },
+ {
+  "code": "EDSC 3250",
+  "notes": "Secondary MAT and Undergrad students; Minimum Jr standing; Prereq for MATs: EDSC 5207 , 5209 , 5215 , 5216 ; Prereqs enforced by the system: EDSC 1110 , 2070 , 2090 , 2150 , 2160 ; Synchronous online and In-Person components; Specific dates TBA; Open to Degree and PACE students",
+  "reason": "Kept MAT specific prerequisites as unparsed string.; unparsed: Secondary MAT and Undergrad students; unparsed: Prereq for MATs: EDSC 5207, 5209, 5215, 5216"
+ },
+ {
+  "code": "EDSC 3270",
+  "notes": "Secondary MAT and Undergrad students; Minimum Jr standing; Prereq for MATs: EDSC 5207 , 5209 , 5215 , 5216 ; Prereqs enforced by the system: EDSC 1110 , 2070 , 2090 , 2150 , 2160 ; Synchronous online/In-Person components, specific dates TBA Open to Degree and PACE Students",
+  "reason": "Combines undergrad prereqs and MAT prereqs via an overall AND node.; unparsed: Secondary MAT and Undergrad students; unparsed: Prereq for MATs: EDSC 5207 , 5209 , 5215 , 5216"
+ },
+ {
+  "code": "EDSC 3370",
+  "notes": "Secondary MAT and Undergrad students; Minimum Jr standing; Prereq for MATs: EDSC 5207 , 5209 , 5215 , 5216 ; Coreq/ Prereq enforced by the system: EDSC 1110 , 2070 , 2090 , 2150 , and 2160 ; Synchronous online and In-Person components: Dates TBD; Open to Degree and PACE students.",
+  "reason": "Combines various track prereqs via AND node. Coreq/Prereq applied to enforced courses.; unparsed: Secondary MAT and Undergrad students; unparsed: Prereq for MATs: EDSC 5207 , 5209 , 5215 , 5216"
+ },
+ {
+  "code": "EDSC 3570",
+  "notes": "Secondary MAT and Undergrad students; Minimum Jr standing; Prereq for MATs: EDSC 5207 , 5209 , 5215 , 5216 ; Coreq/prereq for UG: EDSC 1110 , 2070 , 2090 , 2150 , 2160 , 2570 Asynchronous online and In-Person components: Dates TBD; Open to Degree and PACE students.",
+  "reason": "Combines various track prereqs via AND node.; unparsed: Secondary MAT and Undergrad students; unparsed: Prereq for MATs: EDSC 5207 , 5209 , 5215 , 5216"
+ },
+ {
+  "code": "EDSC 4300",
+  "notes": "In a student teaching placement; Undergraduates or part-time LM only; Senior standing",
+  "reason": "unparsed: In a student teaching placement; unparsed: Undergraduates or part-time LM only"
+ },
+ {
+  "code": "EDSC 4991",
+  "notes": "This 12 credit section is intended for undergraduates; Formal acceptance into EDSC; Successful interview; Senior standing; 3.0 GPA; Passed Praxis I/Praxis Core; Off campus location: Field placement",
+  "reason": "unparsed: Formal acceptance into EDSC; unparsed: Successful interview; unparsed: 3.0 GPA; unparsed: Passed Praxis I/Praxis Core"
+ },
+ {
+  "code": "EDSC 5230",
+  "notes": "Praxis I; Senior standing; Internships meet off campus; individual site placements",
+  "reason": "unparsed: Praxis I"
+ },
+ {
+  "code": "EDSC 6991",
+  "notes": "For secondary MAT students in good standing; Prereq: 5207, 5209, 5215, 5216. Internships meet off campus; individual site placements.",
+  "reason": "Unparsed courses because no subject code was given.; unparsed: For secondary MAT students in good standing; unparsed: Prereq: 5207, 5209, 5215, 5216."
+ },
+ {
+  "code": "EDSP 1000",
+  "notes": "CESS Students Only, or Instructor Permission. Hybrid course; Prereqs enforced by the system: EDSP 1050",
+  "reason": "unparsed: CESS Students Only"
+ },
+ {
+  "code": "EDSP 2160",
+  "notes": "Special Education Majors or Minors; Prereqs enforced by the system: EDSP 1050",
+  "reason": "unparsed: Special Education Majors or Minors"
+ },
+ {
+  "code": "EDSP 2170",
+  "notes": "Section for Special Ed Minors & Majors only; Prereq enforced by the system: EDSP 1050 ; Mondays asynchronous online, Wednesdays meet in person.",
+  "reason": "unparsed: Section for Special Ed Minors & Majors only"
+ },
+ {
+  "code": "EDSP 3040",
+  "notes": "Prereqs enforced by the system: EDSP 1050 or ECLD 1560 . Students will meet at off campus locations. Asynchronous modules through BrightSpace. EDSP (SPE2, SPED) minors only or instructor permission. Cross listed with ECLD 3040 . Total Combined Enrollment: 30",
+  "reason": "unparsed: EDSP (SPE2, SPED) minors only"
+ },
+ {
+  "code": "EDSP 3230",
+  "notes": "Open to Special Ed Majors or Minors; Hybrid with asynchronous online component TBA; Prereqs enforced by the system: EDSP 1050",
+  "reason": "unparsed: Open to Special Ed Majors or Minors"
+ },
+ {
+  "code": "EDSP 4992",
+  "notes": "Prereqs enforced by the system: EDSP 3980 . Special Education Majors only. Class meets asynchronously on selected weeks.",
+  "reason": "unparsed: Special Education Majors only."
+ },
+ {
+  "code": "EDSP 5100",
+  "notes": "SPED, CI, or CNSL Master's students only, or Instructor Permission. Meets asynchronously online. Open to degree and PACE students",
+  "reason": "unparsed: SPED, CI, or CNSL Master's students only"
+ },
+ {
+  "code": "EDSP 5110",
+  "notes": "Special Ed graduate students only or instructor permission Online synchronous course.",
+  "reason": "unparsed: Special Ed graduate students only"
+ },
+ {
+  "code": "EDSP 5130",
+  "notes": "Sp.Ed. Graduate students only or instructor permission; Synchronous online",
+  "reason": "unparsed: Sp.Ed. Graduate students only"
+ },
+ {
+  "code": "EDSP 5300",
+  "notes": "Winter Session Dec 28- Jan 15; online asynchronous; Graduate standing and seniors; Crosslisted with CNSL 5300 WQ1, total cap 35. Open to Degree and PACE students.",
+  "reason": "Graduate standing and seniors combined into an AND."
+ },
+ {
+  "code": "EDSP 7150",
+  "notes": "Class meets asynchronously on selected weeks TBD; Special Education Doctoral Course; SHIE PhD or EDLP PhD Students only or instructor permission",
+  "reason": "unparsed: SHIE PhD or EDLP PhD Students only"
+ },
+ {
+  "code": "EE 2175",
+  "notes": "Must sign up for EE 2175 A01-A03; No credit for more than one: EE 2125 , EE 2175, or EE 2145 For CEE, EENV, ENGR, EMGT; Open to Degree and PACE students; Prereqs enforced by the system: MATH 1248 or 1242 , & CS 1210",
+  "reason": "unparsed: For CEE, EENV, ENGR, EMGT"
+ },
+ {
+  "code": "EE 3415",
+  "notes": "Must register for lab EE 3415 A01, A02; Prereqs enforced by the system: EE 3115 , EE 3110 ; Prereq: WIL1 course",
+  "reason": "unparsed: WIL1 course"
+ },
+ {
+  "code": "EE 5310",
+  "notes": "EE graduate student or instructor permission;",
+  "reason": "unparsed: EE graduate student"
+ },
+ {
+  "code": "EE 5440",
+  "notes": "Co-located with EE 3440 A, PHYS 3675 A; Cross-listed with PHYS 5675 A; Total combined enrollment: 20; EE Graduate student or instructor permission; Must register for EE 5440 A01 or A02 lab; Core Course for Undergraduate Semiconductor Certificate",
+  "reason": "unparsed: EE Graduate student"
+ },
+ {
+  "code": "EE 5990",
+  "notes": "EE graduate student or instructor permission",
+  "reason": "unparsed: EE graduate student"
+ },
+ {
+  "code": "EMED 3000",
+  "notes": "First Year Students need instructor override approval; Minimum sophomore standing and instructor permission; Open to Degree and PACE students; For overrides, please email Roz King and Lila Johnson at Roz.King@uvmhealth.org and Lila.Johnson@uvmhealth.org",
+  "reason": "Note regarding First Year Students overrides was omitted in favor of the explicit Minimum sophomore standing"
+ },
+ {
+  "code": "EMED 3994",
+  "notes": "Prereqs: EMED 3000 or SURG 200 ; Instructor permission required to enroll Available credits: 1-3",
+  "reason": "malformed course code 'SURG 200'"
+ },
+ {
+  "code": "ENGL 2100",
+  "notes": "Prerequisites: Three hours in English numbered 1010 to 1990; minimum Sophomore standing. System waitlisting enabled for this section",
+  "reason": "unparsed: Three hours in English numbered 1010 to 1990"
+ },
+ {
+  "code": "ENGL 2152",
+  "notes": "Three hours in English numbered 1010 to 1990; minimum Sophomore standing. PACE students with permission and override System waitlisting enabled for this section",
+  "reason": "unparsed: Three hours in English numbered 1010 to 1990"
+ },
+ {
+  "code": "ENGL 2312",
+  "notes": "Prerequisites: Three hours in English numbered 1010 to 1990 minimum Sophomore standing. System waitlisting enabled for this section",
+  "reason": "unparsed: Three hours in English numbered 1010 to 1990"
+ },
+ {
+  "code": "ENGL 2322",
+  "notes": "Prerequisites: Three hours in English numbered 1010 to 1990; minimum Sophomore standing. System waitlisting enabled for this section",
+  "reason": "unparsed: Three hours in English numbered 1010 to 1990"
+ },
+ {
+  "code": "ENGL 2348",
+  "notes": "Prerequisites: Three hours in English numbered 1010 to 1990; minimum Sophomore standing. System waitlisting enabled for this section",
+  "reason": "unparsed: Three hours in English numbered 1010 to 1990"
+ },
+ {
+  "code": "ENGL 2480",
+  "notes": "Prerequisites: Three hours in English numbered 1010 to 1990; minimum Sophomore standing. System waitlisting enabled for this section",
+  "reason": "unparsed: Three hours in English numbered 1010 to 1990"
+ },
+ {
+  "code": "ENGL 2795",
+  "notes": "Prereqs: 3 hrs ENGS between 1010-1990; Instructor permission required",
+  "reason": "unparsed: 3 hrs ENGS between 1010-1990"
+ },
+ {
+  "code": "ENGL 3350",
+  "notes": "Prereqs enforced by the system: ENGL 1500 , ENGL 2000 ; English major, Secondary Education major with a concentration in English, or English minor; minimum Junior standing. Crosslisted with GSWS 3990 Total combined enrollment = 20 System waitlisting enabled for this section",
+  "reason": "unparsed: English major, Secondary Education major with a concentration in English, or English minor"
+ },
+ {
+  "code": "ENGL 3400",
+  "notes": "Prerequisites: ENGL 1500 , ENGL 2000 ; English major, Secondary Education major with a concentration in English, or English minor; minimum Junior standing. System waitlisting enabled for this section",
+  "reason": "unparsed: English major, Secondary Education major with a concentration in English, or English minor"
+ },
+ {
+  "code": "ENVS 2210",
+  "notes": "Prerequisites: Three hours in Environmental Studies, Classics, or a related discipline. Crosslisted with CLAS 2581 , total combined enrollment: 119 PACE students with permission and override",
+  "reason": "unparsed: Three hours in Environmental Studies, Classics, or a related discipline."
+ },
+ {
+  "code": "ENVS 2270",
+  "notes": "Pre reqs: 3 hours in Religion or ENVS; Cross listed with REL 2700 A; total combined enrollment = 40 PACE students with permission and override",
+  "reason": "unparsed: 3 hours in Religion or ENVS"
+ },
+ {
+  "code": "ENVS 2470",
+  "notes": "Prereqs: CDAE 1020 , ENVS 1510 or instructor permission; Cross listed with CDAE 2020 Monday's class will be online aynschronous; Open to Degree and PACE students Total combined enrollment: 150",
+  "reason": "CDAE 1020, ENVS 1510 or instructor permission could mean (CDAE 1020 AND ENVS 1510) OR permission, or CDAE 1020 AND (ENVS 1510 OR permission)"
+ },
+ {
+  "code": "EXSC 3640",
+  "notes": "Prereqs enforced by the system: EXSC 3450 & 3500 ; EXSC majors only",
+  "reason": "unparsed: EXSC majors only"
+ },
+ {
+  "code": "EXSC 3960",
+  "notes": "Prereqs enforced by the system: EXSC 2750 & EXSC 3500 ; Instructor permission only; OSS to process overrides EXSC seniors only;",
+  "reason": "Combined EXSC senior standing into a standing node"
+ },
+ {
+  "code": "EXSC 3993",
+  "notes": "EXSC majors only; Instructor permission required; Credits: 1-4",
+  "reason": "unparsed: EXSC majors only"
+ },
+ {
+  "code": "EXSC 3995",
+  "notes": "EXSC Majors only; Instructor permission required; Offered for 1 - 18 variable credits",
+  "reason": "unparsed: EXSC Majors only"
+ },
+ {
+  "code": "FOR 3995",
+  "notes": "Instructor permission requried and completion of an Experiential Learning Plan.",
+  "reason": "unparsed: completion of an Experiential Learning Plan"
+ },
+ {
+  "code": "FREN 1200",
+  "notes": "Prereq: FREN 1100 or equivalent; Open to degree and PACE students System waitlisting enabled for this section",
+  "reason": "unparsed: or equivalent"
+ },
+ {
+  "code": "FREN 2200",
+  "notes": "Prereq: FREN 2100 or equivalent; PACE students with permission and override System waitlisting enabled for this section",
+  "reason": "unparsed: or equivalent"
+ },
+ {
+  "code": "FREN 3110",
+  "notes": "Prereq: FREN 2200 or equivalent PACE students with permission and override System waitlisting enabled for this section",
+  "reason": "unparsed: or equivalent"
+ },
+ {
+  "code": "FTS 2605",
+  "notes": "Prereqs enforced by the system: FTS 1420 or 1300 or FTS 1320 , or FTS 1400 or 1430 ;; FTS majors, minors, and RDS minors only for the first week of registration or instructor permission; PACE students with permission and override System waitlisting enabled for this section",
+  "reason": "Ignored first week of registration logistics; unparsed: FTS majors, minors, and RDS minors only"
+ },
+ {
+  "code": "FTS 2655",
+  "notes": "Prereqs enforced by the system: FTS 1420 or 1300 or FTS 1320 , or FTS 1400 or 1430 ;; FTS majors and minors; RDS minors only during the week of registration; PACE students with permission and override System waitlisting enabled for this section",
+  "reason": "Combined unparsed sections and omitted logistical statements about week of registration; unparsed: FTS majors and minors; RDS minors only"
+ },
+ {
+  "code": "GEOG 2510",
+  "notes": "Credit not awarded for both GEOG 2510 and ANTH 2825 or NR 2430 . Prerequisite: A Catamount Core WIL1 course Must also register for lab section GEOG 2510 A01 or A02 PACE students with permission and override",
+  "reason": "unparsed: A Catamount Core WIL1 course"
+ },
+ {
+  "code": "GEOG 3780",
+  "notes": "Pre-reqs: GEOG 1760 or GEOG 1780 or ENVS 1500 ; Six hours in Geography. GEOG majors only for first week of registration; Minimum Junior standing; PACE students with permission and override System waitlisting enabled for this section.",
+  "reason": "unparsed: Six hours in Geography"
+ },
+ {
+  "code": "GEOL 2410",
+  "notes": "Crosslisted with ENVS 2630 , total combined enrollment: 40 PACE students with permission and override; A Catamount Core N1 or N2 course ENVS 1500 , HSCI 1100 , or HSOC 1700 System waitlisting enabled for this section.",
+  "reason": "Text missing an 'or' conjunction before ENVS 1500, grouped as an OR.; unparsed: A Catamount Core N1 or N2 course"
+ },
+ {
+  "code": "GRK 1200",
+  "notes": "Prerequisite: GRK 1100 or equivalent.",
+  "reason": "unparsed: or equivalent"
+ },
+ {
+  "code": "GRK 4650",
+  "notes": "Prerequisite: GRK 2200 or equivalent",
+  "reason": "unparsed: or equivalent"
+ },
+ {
+  "code": "GRNS 6040",
+  "notes": "DEPN Students, Mon-Fri, Time 0645-1915; Dates: 1/6, 1/7,1/8 & 1/11, 1/12, 1/13; Location: CVMC; prerequisites enforced by the system: GRNS 6000 , GRNS 6020 , GRNS 6030 ; Intersession only;",
+  "reason": "unparsed: DEPN Students"
+ },
+ {
+  "code": "GRNS 6050",
+  "notes": "MEPN students, UVMMC Mondays 07:00-1530 Tuesdays 1400-2200 Dates: 1/19, 1/25, 1/26, 2/1, 2/2 2/8, 2/9, 2/16, 2/22 2/23, 3/1, 3/15, 3/16, 3/22, 3/23, 3/29, 3/30, 4/5 Prereq enforced by system: GRNS 6020 , GRNS 6030 , GRNS 5130 , and GRNS 5280 ;",
+  "reason": "unparsed: MEPN students"
+ },
+ {
+  "code": "GRNS 6060",
+  "notes": "Hybrid Course; DEPN & MEPN students; Meets in person 1/19 - 4/6, Meets online 4/7-5/7 Prerequisite: GRNS 6020 , GRNS 6030 , GRNS 5130 , and GRNS 5280 ;",
+  "reason": "unparsed: DEPN & MEPN students"
+ },
+ {
+  "code": "GRNS 6080",
+  "notes": "DEPN or MEPN students; 1/20/27-3/3/27 Meets Wednesdays 0830-1130; 3/17/27-5/5/27 Meets Wednesdays 1200-1500; Prerequs enforced by the system; GRNS 6020 , GRNS 6030 , GRNS 5130 , and GRNS 5280",
+  "reason": "unparsed: DEPN or MEPN students"
+ },
+ {
+  "code": "GRNS 6090",
+  "notes": "DEPN or MEPN students; UVMMC Th, Fri 4/6 - 5/7; 1430-2330; Sim lab Tue 4/6 & Thurs 4/29: 0830-1530 Prerequisite: GRNS 6040 ; Orientation: TBA",
+  "reason": "unparsed: DEPN or MEPN students"
+ },
+ {
+  "code": "GRNS 6120",
+  "notes": "Hybrid course; DEPN or MEPN students; On Campus: 1/19 - 4/5, Online asynchronous 4/6 - 5/7; Prerequisites enforced by system: GRNS 6020 , GRNS 6030 , GRNS 5130 , and GRNS 5280 ; ATI Fee: $805.00",
+  "reason": "unparsed: DEPN or MEPN students"
+ },
+ {
+  "code": "GRNS 6130",
+  "notes": "DEPN students; Fri. -Tues; Varied times; Varied location; Dates: 1/19-4/5; Prerequisite: GRNS 6040 . Co-requisite: GRNS 6120 .",
+  "reason": "unparsed: DEPN students"
+ },
+ {
+  "code": "GRNS 6301",
+  "notes": "DNP or MS Students; Co-reqs enforced by the system: STAT 5000",
+  "reason": "unparsed: DNP or MS Students"
+ },
+ {
+  "code": "GRNS 6302",
+  "notes": "MS Students; Prereqs enforced by the system: STAT 5000",
+  "reason": "unparsed: MS Students"
+ },
+ {
+  "code": "GRNS 6305",
+  "notes": "MS students, Asynchronous online. Pre/co-requisite: GRNS 6306 .",
+  "reason": "unparsed: MS students"
+ },
+ {
+  "code": "GRNS 6391",
+  "notes": "MS students; Asynchronous online; Permission only",
+  "reason": "unparsed: MS students"
+ },
+ {
+  "code": "GRNS 7050",
+  "notes": "DNP Students; Hybrid course; Meets on Thurs 1/21, 2/4, 2/18, 3/4, 3/25, 4/8, 4/22, 5/6 Alternate weeks online asynchronous; Prereqs enforced by the system: GRNS 6350 & GRNS 7040 ;",
+  "reason": "unparsed: DNP Students"
+ },
+ {
+  "code": "GRNS 7070",
+  "notes": "DNP students or instructor permission. Hybrid course; Meets on campus Thursdays 1/21, 2/4, 2/18.3/4, 3/25, 4/8, 4/22, 5/6; Alternate weeks online; Program fee: $107; Prerequisites: GRNS 6350 , GRNS 7040 , GRNS 7060 . Co-requisite: GRNS 7050 & GRNS 7080 ;",
+  "reason": "unparsed: DNP students"
+ },
+ {
+  "code": "GRNS 7080",
+  "notes": "DNP students or instructor permission; Meets on campus: Thurs 1/21, 2/4, 2/18, 3/4, 3/25, 4/8, 4/22, 5/6; Alternate weeks online; Must also sign up for GRNS 7070 ; Lab Fee: $93; Breakout rooms: R244, R201B, R231, R026",
+  "reason": "unparsed: DNP students"
+ },
+ {
+  "code": "GRNS 7090",
+  "notes": "DNP students FNP Track or instructor permission; Meets on campus:1/28, 2/11, 2/25, 3/18, 4/1, 4/15, 4/29; Alternate weeks online;",
+  "reason": "unparsed: DNP students FNP Track"
+ },
+ {
+  "code": "GRNS 7170",
+  "notes": "DNP Students; Hybrid course; Thursdays; 1/28, 2/11, 2/25, 3/18, 4/1, 4/15, 4/29; Alternate weeks online; Program fee: $107 Prerecs enforced by the system: GRNS 7070 , 7080 & 7120 ; Co-req: GRNS 7180 ;",
+  "reason": "unparsed: DNP Students"
+ },
+ {
+  "code": "GRNS 7180",
+  "notes": "DNP students; Meets Thurs. on campus 1/28, 2/11, 2/25, 3/18, 4/1, 4/15, 4/29; Alternate weeks online; Prereqs enforced by the system: GRNS 7070 and GRNS 7080 ; Pre/Co-requisites: GRNS 7170 ;",
+  "reason": "unparsed: DNP students"
+ },
+ {
+  "code": "GRNS 7220",
+  "notes": "DNP or Post MS DNP students, or instructor permission; Prereqs enforced by the system: GRNS 6210 , 6240 , 6260 , 6270 ; Coreq: GRNS 6280",
+  "reason": "unparsed: DNP or Post MS DNP students"
+ },
+ {
+  "code": "GRNS 7260",
+  "notes": "DNP or Post MS DNP students or instructor permission; Asynchronous online",
+  "reason": "unparsed: DNP or Post MS DNP students"
+ },
+ {
+  "code": "GRS 4500",
+  "notes": "Prerequisites: Global Studies majors only minimum junior standing PACE students with permission and override. System waitlisting enabled for this section. Co-located with POLS 3600A, total combined enrollment = 20.",
+  "reason": "unparsed: Global Studies majors only"
+ },
+ {
+  "code": "GSWS 2785",
+  "notes": "Prerequisites: Three hours of Sociology, GSWS 1500 , GSWS 1010 , or Health & Society major or minor. Cross-listed with: SOC 2335 A Total combined enrollment = 40 System waitlisting enabled for this section",
+  "reason": "unparsed: Three hours of Sociology; unparsed: Health & Society major or minor"
+ },
+ {
+  "code": "GSWS 3990",
+  "notes": "Crosslisted with ENGL 3350 A; Total combined enrollment= 20. Special Topics courses cannot carry CC designations. System waitlisting enabled for this section Prerequisites: GSWS 1010 or GSWS 1500 ; and six additional hours in GSWS.",
+  "reason": "unparsed: six additional hours in GSWS"
+ },
+ {
+  "code": "GU 1100",
+  "notes": "SGA Reps and Officers only. Instructor permission required.",
+  "reason": "unparsed: SGA Reps and Officers only."
+ },
+ {
+  "code": "HDF 3990",
+  "notes": "Prereqs: HDF 2009 , HDF 2610 , HDF 2890 , and a research methods course minimum Junior standing; Instructor permission required Special Topics courses cannot carry CC designations",
+  "reason": "unparsed: a research methods course"
+ },
+ {
+  "code": "HDF 4991",
+  "notes": "Prereqs enforced by system: HDF (1650 and 2009 and 2205 HDF 2410 and 2610 and 2890 ) and ( HDF 2010 or CNSL 2010 ) Suggested Prereq's: PSYS 2002 or EDFS 3090 or SOC 2500 or POLS 2800 or SWSS 3670 ; Senior standing; Instructor permission.",
+  "reason": "Combined multiple prereq blocks including system prereqs, suggested prereqs, standing, and permission; unparsed: Suggested Prereq's: PSYS 2002 or EDFS 3090 or SOC 2500 or POLS 2800 or SWSS 3670"
+ },
+ {
+  "code": "HEBR 1200",
+  "notes": "Prereq: HEBR 1100 or equivalent; Open to Degree and PACE students Course will meet in Hillel Center 439 College Street",
+  "reason": "unparsed: or equivalent"
+ },
+ {
+  "code": "HEBR 2200",
+  "notes": "Prereq: HEBR 2100 or equivalent; Colocated with HEBR 3150 Total combined enrollment: 30; PACE students with permission and override Course will meet in Hillel Center 439 College Street",
+  "reason": "unparsed: or equivalent"
+ },
+ {
+  "code": "HEBR 3150",
+  "notes": "Prereq: HEBR 2100 or equivalent; Colocated with HEBR 2200 Total combined enrollment: 30; PACE students with permission and override Course will meet in Hillel Center 439 College Street",
+  "reason": "unparsed: or equivalent"
+ },
+ {
+  "code": "HLTH 3570",
+  "notes": "Must hold licensure as an EMT; Affiliation with VT EMS Open to degree and non-degree students. organization required; Course Fee: $593; Prereqs enforced by the system: HLTH 2530 ; Three 8-hour Saturday simulation labs required: dates TBD; Contact instructor to ensure eligibility to register for this course. Instructor permission required;",
+  "reason": "unparsed: Must hold licensure as an EMT; unparsed: Affiliation with VT EMS organization required"
+ },
+ {
+  "code": "HP 5252",
+  "notes": "Prereq: HP Graduate students only or instructor permission; Practicum for HP 5202 ; Students must be enrolled concurrently in HP 5202 to register; Students required to attend two day-long on-campus session; Instructor will provide dates of the on-campus session.",
+  "reason": "unparsed: HP Graduate students only"
+ },
+ {
+  "code": "HP 6301",
+  "notes": "Prereq: HP Graduate students only or instructor permission; Online synchronous and on campus meetings (Hybrid); Both on-campus and remote students should be able to register for this course",
+  "reason": "unparsed: HP Graduate students only"
+ },
+ {
+  "code": "HP 6305",
+  "notes": "Prerequisites enforced by the system: HP 5200 ; Prerequisite: HP 5205 ; HP Graduate students only or instructor permission; Online synchronous and on campus meetings (Hybrid); Both on-campus and remote students should be able to register for this course",
+  "reason": "unparsed: HP Graduate students only"
+ },
+ {
+  "code": "HP 6306",
+  "notes": "Prereq enforced by the system: HP 5206 , or HP 5256 with prereq override; 2nd semester HP grads only or instructor permission Online synchronous and on campus meetings (Hybrid); Both on-campus and remote students should be able to register for this course",
+  "reason": "unparsed: 2nd semester HP grads only"
+ },
+ {
+  "code": "HP 6351",
+  "notes": "Prereq: 2nd semester HP grad only or instructor permission Practicum for HP 6301 ; Students must be enrolled concurrently in HP 6301 to register; Students are required to attend two day-long on-campus session; Instructor will provide dates of the on-campus session",
+  "reason": "unparsed: 2nd semester HP grad only"
+ },
+ {
+  "code": "HP 6355",
+  "notes": "Prereqs: 2nd Semester HP grad only or instructor permission Practicum for HP 6305 ; Students must be enrolled concurrently in HP 6305 to register; Students are required to attend two day-long on-campus session; Instructor will provide dates of the on-campus session",
+  "reason": "unparsed: 2nd Semester HP grad only"
+ },
+ {
+  "code": "HP 6356",
+  "notes": "2nd semester HP grads only or instructor permission Practicum for HP 6306 ; Students must be registered concurrently in HP 6306 to register; Students are required to attend two day-long on-campus session; Instructor will provide dates of the on-campus session",
+  "reason": "unparsed: 2nd semester HP grads only"
+ },
+ {
+  "code": "HSCI 1980",
+  "notes": "PACE students by permission and override Prereqs: ENGL 1001 or equivalent Or Instructor Permission",
+  "reason": "unparsed: or equivalent"
+ },
+ {
+  "code": "HSCI 3300",
+  "notes": "Prereq enforced by the system: HSCI 2300 , HSCI 2200 , HSCI 2400 , and HSCI 2500 ; 4th year HSCI or PHS students or instructor permission",
+  "reason": "Combined unparsed student type restriction and permission as an 'or' node with the other required courses.; unparsed: 4th year HSCI or PHS students"
+ },
+ {
+  "code": "HSCI 3400",
+  "notes": "Prereqs enforced by the system: HSCI 2500 and HSCI 1980 ; 4th year HSCI and PHS majors only PACE students by permission and override",
+  "reason": "unparsed: 4th year HSCI and PHS majors only"
+ },
+ {
+  "code": "HSCI 3500",
+  "notes": "HSCI and PHS Graduating Seniors only; Prereqs enforced by the system: HSCI 3300 and HSCI 2200 and HSCI 2400 and HSCI 3100 and HSCI 2500 and HSCI 2300 and ( HSCI 2100 or ANTH 2191 )",
+  "reason": "unparsed: HSCI and PHS Graduating Seniors only"
+ },
+ {
+  "code": "HST 2050",
+  "notes": "Prereq: 3 hours History; HST majors only; Minimum sophomore standing PACE students with permission and override System waitlisting enabled for this section.",
+  "reason": "unparsed: 3 hours History; unparsed: HST majors only"
+ },
+ {
+  "code": "HST 2410",
+  "notes": "Prereq: 3 hours History PACE students with permission and override System waitlisting enabled for this section.",
+  "reason": "unparsed: 3 hours History"
+ },
+ {
+  "code": "HST 2640",
+  "notes": "Prereq: three hours History; PACE students by permission and override System waitlisting enabled for this section.",
+  "reason": "unparsed: three hours History"
+ },
+ {
+  "code": "HST 2644",
+  "notes": "Prereq: three hours History; PACE students with permission and override System waitlisting enabled for this section.",
+  "reason": "unparsed: three hours History"
+ },
+ {
+  "code": "HST 2646",
+  "notes": "Prerequisites: Three hours of History or Jewish Studies PACE students by permission and override Colocated with JS 2990 A Total combined enrollment=40 System waitlisting enabled for this section.",
+  "reason": "unparsed: Three hours of History or Jewish Studies"
+ },
+ {
+  "code": "HST 2698",
+  "notes": "Prereq: three hours History; Cross listed with JS 2990 ; total combined enrollment = 40; PACE students by permission and override System waitlisting enabled for this section.",
+  "reason": "unparsed: three hours History"
+ },
+ {
+  "code": "HST 2700",
+  "notes": "Prereq: three hours History; PACE students by permission and override System waitlisting enabled for this section.",
+  "reason": "unparsed: three hours History"
+ },
+ {
+  "code": "HST 4447",
+  "notes": "5 seats for grad section; Preq: 12 hours History; Minimum Jr. Standing; Co-located with Hst 5300A; Total combined enrollment 20 ; Graduate students register for Hst 5300A System waitlisting enabled for this section.",
+  "reason": "unparsed: 12 hours History"
+ },
+ {
+  "code": "HST 4600",
+  "notes": "5 seats for grad section; Preq: 12 hours History; Minimum Jr. Standing; Co-located with Hst 5500A; Total combined enrollment 20 ; Graduate students register for Hst 5500A System waitlisting enabled for this section.",
+  "reason": "unparsed: 12 hours History"
+ },
+ {
+  "code": "HST 4710",
+  "notes": "Prereq: 12 hours History; Minimum Junior standing System waitlisting enabled for this section.",
+  "reason": "unparsed: 12 hours History"
+ },
+ {
+  "code": "HST 4750",
+  "notes": "5 seats for grad section; Preq: 12 hours History; Minimum Jr. Standing; Co-located with Hst 5700A; Total combined enrollment 20; Graduate students register for Hst 5700A System waitlisting enabled for this section.",
+  "reason": "unparsed: 12 hours History"
+ },
+ {
+  "code": "HST 6991",
+  "notes": "History Graduate students only; Instructor permission required",
+  "reason": "unparsed: History Graduate students only"
+ },
+ {
+  "code": "IHS 7300",
+  "notes": "For IHS Doctoral Students & others by instructor permission Meets in Pomeroy 300 (Not 304)",
+  "reason": "Interpreted 'others by instructor permission' as an OR condition; unparsed: For IHS Doctoral Students"
+ },
+ {
+  "code": "ITAL 1200",
+  "notes": "Prereq: ITAL 1100 or equivalent; Open to Degree and PACE students",
+  "reason": "unparsed: equivalent"
+ },
+ {
+  "code": "ITAL 2200",
+  "notes": "Prereq: ITAL 2100 or equivalent; PACE students with permission and override",
+  "reason": "unparsed: equivalent"
+ },
+ {
+  "code": "LING 4400",
+  "notes": "Prereqs enforced by the system: LING 1500 & 2400 ; Pre/co-req: LING 2320 ; Students must be enrolled in TESOL certificate program; Senior standing or instructor permission PACE students with permission and override",
+  "reason": "Combined multiple prereqs, coreqs, and restrictions into a single AND node; unparsed: Students must be enrolled in TESOL certificate program"
+ },
+ {
+  "code": "LING 4500",
+  "notes": "LING majors only; minimum senior standing",
+  "reason": "unparsed: LING majors only"
+ },
+ {
+  "code": "MATH 1077",
+  "notes": "Open to Degree and PACE students; Prereqs: Two years of secondary school algebra, MATH 1012 , or MATH 1034 System waitlisting enabled for this section.",
+  "reason": "unparsed: Two years of secondary school algebra"
+ },
+ {
+  "code": "MATH 1122",
+  "notes": "ECP, ECSP, EDML and ELK6 majors only; Prereqs: Three years of secondary school math; Open to Degree and PACE students System waitlisting enabled for this section.",
+  "reason": "unparsed: ECP, ECSP, EDML and ELK6 majors only; unparsed: Three years of secondary school math"
+ },
+ {
+  "code": "MATH 1212",
+  "notes": "Prereqs enforced by the system: C- or better in MATH 1012 or C- or better in MATH 1034 or Math Placement Assessment score of at least 61; Open to Degree and PACE Students System waitlisting enabled for this section.",
+  "reason": "unparsed: Math Placement Assessment score of at least 61"
+ },
+ {
+  "code": "MATH 1234",
+  "notes": "Prereqs enforced by the system: MATH 1034 or Math Placement Assessment of at least 76; Open to Degree and PACE students System waitlisting enabled for this section.",
+  "reason": "unparsed: Math Placement Assessment of at least 76"
+ },
+ {
+  "code": "MATH 1242",
+  "notes": "Prereqs enforced by the system: B or better in MATH 1212 or MATH 1224 ; Open to Degree and PACE students System waitlisting enabled for this section.",
+  "reason": "Assuming 'B or better' applies to both MATH 1212 and MATH 1224."
+ },
+ {
+  "code": "MATH 2001",
+  "notes": "Prereqs: Nine hours of college mathematics; Open to Degree and PACE students System waitlisting enabled for this section.",
+  "reason": "unparsed: Nine hours of college mathematics"
+ },
+ {
+  "code": "MATH 2111",
+  "notes": "ECP, ECSP, EDML and ELK6 majors only; Prereqs: 3 credits of Math numbered MATH 1111 or above; Open to Degree and PACE students System waitlisting enabled for this section.",
+  "reason": "unparsed: ECP, ECSP, EDML and ELK6 majors only; unparsed: 3 credits of Math numbered MATH 1111 or above"
+ },
+ {
+  "code": "MATH 2248",
+  "notes": "Prereqs enforced by the system: C- or better in MATH 1248 or MATH 1242 ; Open to Degree and PACE students System waitlisting enabled for this section.",
+  "reason": "Assuming 'C- or better' applies to both MATH 1248 and MATH 1242."
+ },
+ {
+  "code": "MATH 3559",
+  "notes": "Prereqs enforced by the system: MATH 2055 or CS 1640 ; MATH 2248 or MATH 2522 or MATH 2544 . Crosslisted with CS 3559 ; total combined enrollment 40; Open to degree and PACE students System waitlisting enabled for this section.",
+  "reason": "Assuming the semicolon separates two groups that are both required (AND)."
+ },
+ {
+  "code": "MATH 6441",
+  "notes": "Prereqs: Two semesters of Real Analysis; Open to Degree and PACE students",
+  "reason": "unparsed: Two semesters of Real Analysis"
+ },
+ {
+  "code": "MATS 5185",
+  "notes": "Prereqs: PHYS 3500 ; Cross-listed with PHYS 5185 ; Total combined enrollment=12; Graduate student in Physics, Material Science, or related program, or Instructor permission",
+  "reason": "Interpreted graduate standing in specific fields as a single unparsed requirement logically ORed with instructor permission.; unparsed: Graduate student in Physics, Material Science, or related program"
+ },
+ {
+  "code": "ME 2112",
+  "notes": "Prereqs enforced by the system: ME 2231 Other prereqs: CC WIL1 Course; Must register for lab ME 2112 A01-A06",
+  "reason": "unparsed: CC WIL1 Course"
+ },
+ {
+  "code": "ME 2232",
+  "notes": "Prereqs enforced by the system: ME 2111 , CC WIL1 course; Must register for lab ME 2232 A01-A06",
+  "reason": "unparsed: CC WIL1 course"
+ },
+ {
+  "code": "ME 3530",
+  "notes": "Prereqs enforced by the system: ME 2230 or equivalent; Open to Degree and PACE students System waitlisting enabled for this section.",
+  "reason": "unparsed: or equivalent"
+ },
+ {
+  "code": "ME 5520",
+  "notes": "Prereqs: ME 1140 , MATH 2544 , and MATH 3201 , or equivalent. System waitlisting enabled for this section.",
+  "reason": "Interpreted 'or equivalent' to apply to the entire AND group of courses rather than just MATH 3201.; unparsed: or equivalent"
+ },
+ {
+  "code": "ME 5980",
+  "notes": "Cross-listed with CEE 5980 A (13445). Total combined enrollment: 35. Graduate student or Instructor permission; content knowledge of calculus through differential equations (such as MATH 3201 ) and linear algebra (such as MATH 2522 or MATH 2544 ) assumed. System waitlisting enabled for this section.",
+  "reason": "Interpreted assumed content knowledge as an unparsed requirement combined via AND with the Graduate/Instructor OR condition.; unparsed: content knowledge of calculus through differential equations (such as MATH 3201 ) and linear algebra (such as MATH 2522 or MATH 2544 ) assumed."
+ },
+ {
+  "code": "MLS 3110",
+  "notes": "Prereqs enforced by the system: MLS 3100 & PATH 2010 ; UG MLS, and MLS PBC students only;",
+  "reason": "unparsed: UG MLS, and MLS PBC students only"
+ },
+ {
+  "code": "MMG 1030",
+  "notes": "First-year MGEN and/or MICR majors or instructor permission Lab fee: $31.00 Must register for lab MMG 1030 L01 or L02; PACE students by permission and override",
+  "reason": "unparsed: First-year MGEN and/or MICR majors"
+ },
+ {
+  "code": "MMG 2040",
+  "notes": "Prereqs enforced: BCOR 2300 , BCOR 2500 , or BCOR 2505 ; MICR and MGEN majors & minors only; Others by instructor permission; Must enroll in lab MMG 2040 L01-L04; Course lab fee: $100.00; PACE students by permission and override System waitlisting enabled for this section.",
+  "reason": "unparsed: MICR and MGEN majors & minors only"
+ },
+ {
+  "code": "MMG 3220",
+  "notes": "Prereq enforced by the system: MMG 2010 ; MLS, MGEN and MICR majors only; Must enroll in lab MMG 3220 L01. Course fee: $120; Degree students only even after level restrictions removed; PACE students register for MMG 3220 ZRA; Colocated with MMG 3220 ZRA , MMG 3210 A, MMG 5220 and MMG 5210 ; Total combined enrollment: 78 System waitlisting enabled for this section.",
+  "reason": "unparsed: MLS, MGEN and MICR majors only"
+ },
+ {
+  "code": "MMG 3993",
+  "notes": "Prerequisite: MMG 2993 or equivalent; Instructor permission required; Credits: 1-6; Contact instructor for meeting location and time PACE students by permission and override",
+  "reason": "unparsed: or equivalent"
+ },
+ {
+  "code": "MMG 3994",
+  "notes": "Prerequisite: MMG 2994 or equivalent; Instructor permission required; Credits: 1-3; Contact instructor for meeting location and time",
+  "reason": "unparsed: or equivalent"
+ },
+ {
+  "code": "MS 1220",
+  "notes": "Army#: 202; Prereq: MS 1120 or equivalent; UVM students only; students from affiliate school register for MS 1220 B",
+  "reason": "unparsed: or equivalent"
+ },
+ {
+  "code": "MS 3242",
+  "notes": "Army# 402; Prereq: MS 2132 & CLC; Seniors only; UVM students only; students from affiliate school register for MS 3242 B",
+  "reason": "unparsed: CLC"
+ },
+ {
+  "code": "MU 1775",
+  "notes": "Music majors with a concentration in Music Technology and Business and Music Technology and Business minors only during the week of registration; PACE students by permission and override System waitlisting enabled for this section.",
+  "reason": "unparsed: Music majors with a concentration in Music Technology and Business and Music Technology and Business minors only during the week of registration"
+ },
+ {
+  "code": "MU 2313",
+  "notes": "Music majors take MU 2314 concurrently; Prereqs enforced by the system: MU 2320 or MU 2310 or instructor permission PACE students with permission and override System waitlisting enabled for this section.",
+  "reason": "unparsed: Music majors take MU 2314 concurrently"
+ },
+ {
+  "code": "MU 4552",
+  "notes": "Concurrent with MU 4551 Teaching Internship Seminar Prereq enforced by the system: MUL 4550",
+  "reason": "unparsed: Concurrent with MU 4551 Teaching Internship Seminar"
+ },
+ {
+  "code": "MUE 2111",
+  "notes": "Performs at home hockey and basketball games; Meets in the bleachers at Gutterson Ice Rink Audition required before enrollment confirmed PACE students by permission and override",
+  "reason": "unparsed: Audition required before enrollment confirmed"
+ },
+ {
+  "code": "MUE 2125",
+  "notes": "Audition required before enrollment confirmed PACE students by permission and override",
+  "reason": "unparsed: Audition required before enrollment confirmed"
+ },
+ {
+  "code": "MUE 2200",
+  "notes": "Placement audition required PACE students with permission and override",
+  "reason": "unparsed: Placement audition required"
+ },
+ {
+  "code": "MUE 2400",
+  "notes": "Placement audition required. PACE students with permission and override System waitlisting enabled for this section.",
+  "reason": "unparsed: Placement audition required."
+ },
+ {
+  "code": "MUE 2500",
+  "notes": "Audition required before enrollment confirmed PACE students with permission and override",
+  "reason": "unparsed: Audition required before enrollment confirmed"
+ },
+ {
+  "code": "MUE 3111",
+  "notes": "Audition required before enrollment confirmed Meets in room Music A326 PACE students by permission and override",
+  "reason": "unparsed: Audition required before enrollment confirmed"
+ },
+ {
+  "code": "MUE 3200",
+  "notes": "Audition required before enrollment confirmed Preq: Concurrent enrollment in MUE 2200 PACE students by permission and override",
+  "reason": "unparsed: Audition required before enrollment confirmed"
+ },
+ {
+  "code": "MUE 3300",
+  "notes": "Placement audition required PACE students by permission and override",
+  "reason": "unparsed: Placement audition required"
+ },
+ {
+  "code": "MUL 1111",
+  "notes": "Music majors (all concentrations of BA Music, plus BS Music Ed) during the week of registration PACE students by permission and override. System waitlisting enabled for this section.",
+  "reason": "unparsed: Music majors (all concentrations of BA Music, plus BS Music Ed) during the week of registration"
+ },
+ {
+  "code": "MUL 1300",
+  "notes": "No MUS, MUSE majors or MUS minors; May be repeated for credit; Lab fee $555 per credit; code: FL12 Students should contact instructor for schedule information PACE students with permission and override",
+  "reason": "unparsed: No MUS, MUSE majors or MUS minors"
+ },
+ {
+  "code": "MUL 2112",
+  "notes": "Prereqs: MUL 2111 or equivalent determined by placement test; Music or Music Education majors or instructor permission only",
+  "reason": "unparsed: equivalent determined by placement test; unparsed: Music or Music Education majors"
+ },
+ {
+  "code": "MUL 2121",
+  "notes": "Prereq: MUL 1111 or basic keyboard knowledge and instructor permission",
+  "reason": "Grouping of 'or' and 'and' conditions is unclear without explicit punctuation.; unparsed: basic keyboard knowledge"
+ },
+ {
+  "code": "MUL 2500",
+  "notes": "MUS, MUSE majors only; Prereq: Must pass Entrance Audition/Basic Perf. Assessment; May be repeated for credit; Lab fee $260 per credit; Code: FL16",
+  "reason": "unparsed: MUS, MUSE majors only; unparsed: Must pass Entrance Audition/Basic Perf. Assessment"
+ },
+ {
+  "code": "MUL 4500",
+  "notes": "Prereqs enforced by the system: MUL 2500 ; MUS, MUSE majors only; Prereq: Must pass Intermediate Perf. Assessment; May be repeated for credit; Lab fee $260 per credit; Code: FL21",
+  "reason": "unparsed: MUS, MUSE majors only; unparsed: Must pass Intermediate Perf. Assessment"
+ },
+ {
+  "code": "MUL 4550",
+  "notes": "Prereqs: MUS or MUSE major only; Co/Prereq: enrolled in MUL 4500 concurrently; Lab fee $260 per credit; Code: FL22",
+  "reason": "unparsed: MUS or MUSE major only"
+ },
+ {
+  "code": "NFS 1043",
+  "notes": "Prereq: HS chemistry or biology; Open to Degree and PACE students",
+  "reason": "unparsed: HS chemistry or biology"
+ },
+ {
+  "code": "NFS 1072",
+  "notes": "Nutrition and Food Sciences major or instructor permission Open to Degree and PACE students",
+  "reason": "unparsed: Nutrition and Food Sciences major"
+ },
+ {
+  "code": "NFS 2154",
+  "notes": "Prereqs: NFS 2153 or concurrent; NFS majors and minors only Open to Degree and PACE students",
+  "reason": "unparsed: NFS majors and minors only"
+ },
+ {
+  "code": "NFS 3262",
+  "notes": "Senior NFS majors only PACE students by permission and override",
+  "reason": "unparsed: NFS majors only"
+ },
+ {
+  "code": "NFS 3890",
+  "notes": "Open to NFS majors; Instructor permission required",
+  "reason": "unparsed: Open to NFS majors"
+ },
+ {
+  "code": "NFS 3991",
+  "notes": "NFS students only; Instructor permission required PACE students by permission and override",
+  "reason": "unparsed: NFS students only"
+ },
+ {
+  "code": "NFS 3994",
+  "notes": "For NFS 1043 TA's; Instructor permission required; Contact department for location and time",
+  "reason": "unparsed: For NFS 1043 TA's"
+ },
+ {
+  "code": "NR 1060",
+  "notes": "RSENR Students only Must register for a discussion section, NR 1060 A01-A15; NR 1050 Critical Reflection & Dialogue is a prerequisite for this course. Prereqs enforced by the system: NR 1050 or NR 1090",
+  "reason": "unparsed: RSENR Students only"
+ },
+ {
+  "code": "NR 2030",
+  "notes": "Prerequisites RSENR Students or Agroecology or Landscape Design or Environmental Studies majors; Minimum Sophomore standing Open to Degree and PACE students. System waitlisting enabled for this section.",
+  "reason": "unparsed: RSENR Students or Agroecology or Landscape Design or Environmental Studies majors"
+ },
+ {
+  "code": "NR 2040",
+  "notes": "Prereqs enforced by the system: NR 1020 or NR 1090 ; Minimum Sophomore standing; RSENR students only System waitlisting enabled for this section.",
+  "reason": "unparsed: RSENR students only"
+ },
+ {
+  "code": "NR 2740",
+  "notes": "Costa Rica semester abroad students only; Travel dates: February 8-May 6, 2027; Instructor permission required. Pre and Post work required Program fee $9,863 less $450 deposit; Airfare is additional; Out of Pocket Expenses (approx. $400) are additional. Tuition is not included in program fee.",
+  "reason": "unparsed: Costa Rica semester abroad students only"
+ },
+ {
+  "code": "NR 2750",
+  "notes": "Costa Rica Semester abroad students only; Instructor permission required; Pre & Post work requirements",
+  "reason": "unparsed: Costa Rica Semester abroad students only"
+ },
+ {
+  "code": "NR 2760",
+  "notes": "Costa Rica semester abroad students only Instructor permission required; Pre & Post work requirements",
+  "reason": "unparsed: Costa Rica semester abroad students only"
+ },
+ {
+  "code": "NR 3050",
+  "notes": "Prereqs enforced by the system: NR 2030 and 2040 ; Minimum junior standing; RSENR students only System waitlisting enabled for this section.",
+  "reason": "unparsed: RSENR students only"
+ },
+ {
+  "code": "NR 4060",
+  "notes": "Prereqs enforced by the system: NR 3050 ; Must register for one NR 4060 Lab A01 - A02; Senior standing only; RSENR students only; Course fee: $25 System waitlisting enabled for this section.",
+  "reason": "unparsed: RSENR students only"
+ },
+ {
+  "code": "NSCI 2100",
+  "notes": "Prereqs enforced by the system: PSYS 1400 ; and BCOR 1400 / 1450 or BIOL 1400 / 1450 or ANPS 1190 / 1200 or BIOL 1000 / BCOR 1425 or BIOL 1000 / 1005 ; Colocated with NSCI 2105 A ; Combined total enrollment: 65; PACE students with permission and override Pre/Co-requisite: CHEM 1400 ; Neuroscience majors and minors. Must register for a lab: NSCI 2100 A01-A03. For lecture only course, see NSCI 2105 .",
+  "reason": "Interpreted '/' as indicating pairs based on similar wording in NSCI 2105"
+ },
+ {
+  "code": "NSCI 2105",
+  "notes": "Prereqs enforced by the system: PSYS 1400 ; and one of the following pairs of courses: BIOL 1400 / 1450 , BCOR 1400 / 1450 , or ANPS 1190 / 1200 , or BIOL 1000 / BCOR 1425 or BIOL 1000 - 1005 ;. Pre/Co-requisite: CHEM 1400 ; Neuroscience majors and minors. Co-located w/ NSCI 2100 . Combined total enrollment: 65 Lecture only; those wishing to take the lab version see NSCI 2100 . PACE students with permission and override System waitlisting enabled for this section.",
+  "reason": "Interpreting slashes and hyphens as pairs of courses that must be taken together"
+ },
+ {
+  "code": "NSCI 6020",
+  "notes": "OT & PT majors only. Others with instructor permission.",
+  "reason": "unparsed: OT & PT majors only."
+ },
+ {
+  "code": "NSCI 6071",
+  "notes": "Term B; 8 weeks; Neuroscience Graduate Students only; Instructor permission required",
+  "reason": "unparsed: Neuroscience Graduate Students only"
+ },
+ {
+  "code": "OT 7200",
+  "notes": "Prereqs enforced by the system: OT 7100 ; OT students only; Course fee: $55.00; Course meets in the anatomy lab and L/L C113/C120",
+  "reason": "unparsed: OT students only"
+ },
+ {
+  "code": "OT 7240",
+  "notes": "Prereqs enforced by the system: OT 7100 ; OT students only; OT SmartApt, L/LC140",
+  "reason": "unparsed: OT students only"
+ },
+ {
+  "code": "OT 7250",
+  "notes": "Prereqs enforced by the system: OT 7100 ; OT Students only; OT SmartApt, L/LC140",
+  "reason": "unparsed: OT Students only"
+ },
+ {
+  "code": "OT 7490",
+  "notes": "OT students only; Prereqs enforced by the system: OT 7350 Meet in L/L",
+  "reason": "unparsed: OT students only"
+ },
+ {
+  "code": "OT 7631",
+  "notes": "Prereqs enforced by the system: OT 7720 ; This is clinical time OT students only",
+  "reason": "unparsed: OT students only"
+ },
+ {
+  "code": "PBIO 5990",
+  "notes": "Winter Travel Course Full-day field sessions in northern Vermont, January 11 -14, 2027. Open to Graduate students and upper-level undergraduates, PACE students by permission and override.",
+  "reason": "unparsed: Open to Graduate students and upper-level undergraduates"
+ },
+ {
+  "code": "PEAC 1113",
+  "notes": "For students registered in the First See the Good 200-Hour Yoga Teacher Training Program; Instructor Permission Required",
+  "reason": "unparsed: For students registered in the First See the Good 200-Hour Yoga Teacher Training Program"
+ },
+ {
+  "code": "PH 6070",
+  "notes": "Prereqs enforced by the system: PH 6020 and PH 6030 ; Open to Graduate-level Public Health students only; All other students require instructor permission; Must submit the request at: http://go.uvm.edu/phcourses Students will be notified if permission is granted before classes begin; Contact student Advisor, Pallas Ziporyn at pallas.ziporyn@uvm.edu with any questions; Asynchronous online",
+  "reason": "unparsed: Open to Graduate-level Public Health students only"
+ },
+ {
+  "code": "PH 6501",
+  "notes": "Open to DrPH students only; all other students require instructor permission; must requiest permission at http://go.uvm.edu/phcourses ; students will be notified if permission is granted prior to the course starting; Reach out to Program Advisor Pallas.Ziporyn@uvm.edu for questions; asynchronous, online",
+  "reason": "unparsed: DrPH students only"
+ },
+ {
+  "code": "PH 6506",
+  "notes": "Open to doctoral-level students; all other students require instructor permission; must request permission at http://go.uvm.edu/phcourses ; students will be notified if permission is granted prior to the course starting; Reach out to Program Advisor Pallas.Ziporyn@uvm.edu for questions; asynchronous, online",
+  "reason": "unparsed: doctoral-level students"
+ },
+ {
+  "code": "PH 6514",
+  "notes": "Open to doctoral-level students; all other students require instructor permission; must request permission at http://go.uvm.edu/phcourses ; students will be notified if permission is granted prior to the course started; Reach out to Program Advisor Pallas.Ziporyn@uvm.edu for questions; asynchronous, online",
+  "reason": "unparsed: doctoral-level students"
+ },
+ {
+  "code": "PHIL 2220",
+  "notes": "Prerequisite: One course in Philosophy. System waitlisting enabled for this section",
+  "reason": "unparsed: One course in Philosophy"
+ },
+ {
+  "code": "PHIL 2240",
+  "notes": "Prerequisite: One course in Philosophy. System waitlisting enabled for this section",
+  "reason": "unparsed: One course in Philosophy"
+ },
+ {
+  "code": "PHIL 2670",
+  "notes": "Prerequisite: one course in Philosophy System waitlisting enabled for this section",
+  "reason": "unparsed: one course in Philosophy"
+ },
+ {
+  "code": "PHIL 2705",
+  "notes": "Prerequisite: One course in Philosophy; PACE students with permission and override System waitlisting enabled for this section",
+  "reason": "unparsed: One course in Philosophy"
+ },
+ {
+  "code": "PHIL 2994",
+  "notes": "PHIL majors/minors only; Instructor permission required",
+  "reason": "unparsed: PHIL majors/minors only"
+ },
+ {
+  "code": "PHIL 3990",
+  "notes": "Prerequisite: one 2000-level PHIL course; Special Topics courses cannot carry CC designations. System waitlisting enabled for this section",
+  "reason": "unparsed: one 2000-level PHIL course"
+ },
+ {
+  "code": "PHRM 3000",
+  "notes": "Prereqs: BCOR 2500 or NSCI 2100 or NSCI 2105 or PHRM 3010 ; Background in biology and chemistry, or permission required; Degree students only even after level restriction removed; PACE students register for PHRM 3000 ZRA; Colocated with PHRM 3000 ZRA;",
+  "reason": "unparsed: Background in biology and chemistry"
+ },
+ {
+  "code": "PHRM 6900",
+  "notes": "Prereqs enforced by the system: BIOC 6001 and MPBP 6010 ; Restricted to Medical Sciences Masters Students; Variable credits: 1-2; Feb. 25 and April 8 in HSRF 200 and April 22 in HSRF 300 ; Class begins Jan 21st in HSRF 400",
+  "reason": "unparsed: Restricted to Medical Sciences Masters Students"
+ },
+ {
+  "code": "PHYS 1450",
+  "notes": "Prereqs enforced by system: PHYS 1400 , PHYS 1500 or PHYS 1600 ; Must register for labs L01 - L03; Open to Degree and PACE Students System waitlisting enabled for this section.",
+  "reason": "Unclear grouping of 'PHYS 1400, PHYS 1500 or PHYS 1600'"
+ },
+ {
+  "code": "PHYS 5185",
+  "notes": "Cross-listed with MATS 5185 ; Total combined enrollment:12; Graduate student in Physics, Materials Science, or related program, or Instructor permission. System waitlisting enabled for this section.",
+  "reason": "unparsed: Graduate student in Physics, Materials Science, or related program"
+ },
+ {
+  "code": "PHYS 5675",
+  "notes": "Co-located with PHYS 3675 A and EE 3440 A; Must enroll in PHYS 5675 A01 or A02 Total combined enrollment: 20; Cross-listed with EE 5440 A; PHYS Graduate student or Instructor permission; Core Corse for Undergraduate Semiconductor Certificate",
+  "reason": "unparsed: PHYS Graduate student"
+ },
+ {
+  "code": "PHYS 6000",
+  "notes": "Undergraduate degree in Physics; Instructor permission.",
+  "reason": "unparsed: Undergraduate degree in Physics"
+ },
+ {
+  "code": "POLS 1025",
+  "notes": "LASP students only; Instructor permission System waitlisting enabled for this section.",
+  "reason": "unparsed: LASP students only"
+ },
+ {
+  "code": "POLS 2200",
+  "notes": "POLS Honors course; by invitation only. Prereqs enforced by the system: POLS 1200 or POLS 1012 ; Instructor permission required.",
+  "reason": "unparsed: POLS Honors course; by invitation only"
+ },
+ {
+  "code": "POLS 2800",
+  "notes": "Prereqs enforced by the system: STAT 1110 , 1410 , or 1050 ; Also acceptable: Three hours of SOC or POLS; Minimum Sophomore standing; Cross listed with SOC 2500 A ; Total enrollment= 30 PACE students with permission and override System waitlisting enabled for this section",
+  "reason": "unparsed: Three hours of SOC or POLS"
+ },
+ {
+  "code": "POLS 3200",
+  "notes": "Prereqs enforced by the system: POLS 1200 or POLS 1012 ; three hours of Political Science at 2000 level; Minimum Junior standing. PACE students with permission and override. System waitlisting enabled for this section.",
+  "reason": "unparsed: three hours of Political Science at 2000 level"
+ },
+ {
+  "code": "POLS 3430",
+  "notes": "Prereqs enforced by the system: POLS 1300 or POLS 1013 ; three hours of Political Science at 2000 level; Minimum Junior standing. PACE students with permission and override. System waitlisting enabled for this section.",
+  "reason": "unparsed: three hours of Political Science at 2000 level"
+ },
+ {
+  "code": "POLS 3515",
+  "notes": "Prereqs enforced by the system: POLS 1500 or POLS 1015 ; three hours of Political Science at 2000 level; Minimum Junior standing. PACE students with permission and override. System waitlisting enabled for this section.",
+  "reason": "unparsed: three hours of Political Science at 2000 level"
+ },
+ {
+  "code": "POLS 3600",
+  "notes": "Prerequisites: POLS 1015 , POLS 1017 , POLS 1500 or POLS 1700 ; three hours of Political Science at the 2000-level. PACE students with permission and override. System waitlisting enabled for this section. Co-located with GRS 4500A, total combined enrollment = 20.",
+  "reason": "Assumed comma-separated list with 'or' means OR for all items in the list.; unparsed: three hours of Political Science at the 2000-level"
+ },
+ {
+  "code": "POLS 3610",
+  "notes": "Prereqs enforced by the system: POLS 1015 , 1017 , 1500 , or POLS 1700 ; Three hours of Political Science at 2000 level; Minimum Junior standing. PACE students with permission and override. System waitlisting enabled for this section.",
+  "reason": "Assumed comma-separated list with 'or' means OR for all items in the list.; unparsed: Three hours of Political Science at 2000 level"
+ },
+ {
+  "code": "PRNU 2111",
+  "notes": "Prereqs enforced by the system: PRNU 2110 and STAT 1110 or 1410 ; PRNU majors only",
+  "reason": "Interpreted 'PRNU 2110 and STAT 1110 or 1410' as PRNU 2110 AND (STAT 1110 OR STAT 1410).; unparsed: PRNU majors only"
+ },
+ {
+  "code": "PRNU 2113",
+  "notes": "Prereqs enforced by the system: ANPS 1190 and HDF 1050 Co-requisites: ANPS 1200 ; Must register for Co-req: PRNU 2114 and Must register for PRNU 2113 lab; PRNU majors only; ATI fee: $66.",
+  "reason": "unparsed: PRNU majors only"
+ },
+ {
+  "code": "PRNU 2114",
+  "notes": "Must register for Coreq: PRNU 2113 & NFS 1043 Must register for a PRNU 2113 lab A01 - A05; PRNU majors only; Prereqs enforced by the system: NFS 1043 ; Lab Support Fee: $71.",
+  "reason": "NFS 1043 appears both as coreq and prereq enforced by system; mapped as enforced prereq.; unparsed: PRNU majors only"
+ },
+ {
+  "code": "PRNU 3232",
+  "notes": "Prereqs enforced by the system: PRNU 3228 and NURS 3220 ; Co-req: PRNU 3131 ; Must register for a PRNU 3232 lab A01 - A08; PRNU majors only; SIM fee: $18.00",
+  "reason": "unparsed: PRNU majors only"
+ },
+ {
+  "code": "PRNU 3235",
+  "notes": "PRNU majors only; SIM Fee: $20. Prereqs enforced by the system: PSYS 2500 and PRNU 3228 and NURS 3220 ; Coreq: PRNU 3131 ; Must register for a PRNU 3235 lab A01 - A08",
+  "reason": "unparsed: PRNU majors only"
+ },
+ {
+  "code": "PRNU 3240",
+  "notes": "Prereqs enforced by the system: PRNU 3234 ; Must register for the PRNU 3240 lab whose date range corresponds to that of clinical placement determined by instructor on individual basis; PRNU majors only;",
+  "reason": "unparsed: PRNU majors only"
+ },
+ {
+  "code": "PRT 1500",
+  "notes": "First year, sophomore, or JR standing only; Open to Degree and PACE students; Seniors by instructor permission",
+  "reason": "Combined complex standing and permission rules into unparsed text.; unparsed: First year, sophomore, or JR standing only; Seniors by instructor permission"
+ },
+ {
+  "code": "PRT 2560",
+  "notes": "Dates of course: Jan 4 - Jan 8, 2027; Course Fee $130 Jr/Sr standing, Sophomores by permission; MUST register for PRT 2570 concurrently; PRT Major, Minor, Sports Man minor, others by permission Travel to Stowe Mtn Resort: Jan 5,6,7,8th 2027 Winter Session Course: Dec 26, 2026 -Jan 10, 2027 ;",
+  "reason": "unparsed: PRT Major, Minor, Sports Man minor, others by permission"
+ },
+ {
+  "code": "PRT 2570",
+  "notes": "Jr/Sr standing, Sophomores by permission; PRT majors, minor, & Sports Manag. minors only Course Fee: $30.00 Must register for PRT 2560 concurrently",
+  "reason": "unparsed: PRT majors, minor, & Sports Manag. minors only"
+ },
+ {
+  "code": "PRT 3580",
+  "notes": "Minimum junior standing; PRT majors or PRT, SMGT minors; Others by permission",
+  "reason": "unparsed: PRT majors or PRT, SMGT minors; Others by permission"
+ },
+ {
+  "code": "PRT 3991",
+  "notes": "PRT majors only Can only be taken once for 3 credits. Instructor permission required",
+  "reason": "unparsed: PRT majors only"
+ },
+ {
+  "code": "PSYS 2000",
+  "notes": "Prereqs enforced by the system: PSYS 1400 ; PSYS and NEUR majors and minors only; Must register for a PSYS 2000 lab, A01-A08 PACE students by permission and override.",
+  "reason": "unparsed: PSYS and NEUR majors and minors only"
+ },
+ {
+  "code": "PSYS 2012",
+  "notes": "Prereqs enforced by the system: PSYS 1400 ; PSYS and NEUR majors only; PACE students by permission and override. System waitlisting enabled for this section.",
+  "reason": "unparsed: PSYS and NEUR majors only"
+ },
+ {
+  "code": "PSYS 2100",
+  "notes": "Prereqs enforced by the system: PSYS 1400 ; PSYS and NEUR majors and minors and BIOL and BISC majors only; PACE students by permission and override. System waitlisting enabled for this section.",
+  "reason": "unparsed: PSYS and NEUR majors and minors and BIOL and BISC majors only"
+ },
+ {
+  "code": "PSYS 2200",
+  "notes": "Prereqs enforced by the system: PSYS 1400 or BIOL 1400 or BIOL 1000 or BCOR 1400 or BCOR 1425 ; PSYS and NEUR majors and minors and BIOL and BISC majors only PACE students by permission and override. System waitlisting enabled for this section.",
+  "reason": "unparsed: PSYS and NEUR majors and minors and BIOL and BISC majors only"
+ },
+ {
+  "code": "PSYS 2300",
+  "notes": "Prereqs enforced by the system: PSYS 1400 ; PSYS majors and minors only; PACE students by permission and override. System waitlisting enabled for this section.",
+  "reason": "unparsed: PSYS majors and minors only"
+ },
+ {
+  "code": "PSYS 2400",
+  "notes": "Prereqs enforced by the system: PSYS 1400 ; PSYS majors and minors only; PACE students by permission and override. System waitlisting enabled for this section.",
+  "reason": "unparsed: PSYS majors and minors only"
+ },
+ {
+  "code": "PSYS 2500",
+  "notes": "Prereq enforced by the system: PSYS 1400 ; Nursing majors only during week of registration; PACE students with permission and override System waitlisting enabled for this section.",
+  "reason": "unparsed: Nursing majors only during week of registration"
+ },
+ {
+  "code": "PSYS 3105",
+  "notes": "Prereqs enforced by the system: PSYS 2100 and ( PSYS 2000 or PSYS 2002 ); Junior and Senior standing only PSYS and NEUR majors and minors only; PACE students by permission and override. System waitlisting enabled for this section.",
+  "reason": "unparsed: PSYS and NEUR majors and minors only"
+ },
+ {
+  "code": "PSYS 3110",
+  "notes": "Prereqs enforced by the system: PSYS 2000 or PSYS 2002 ; and PSYS 2100 , PSYS 2200 , NSCI 2100 , or NSCI 2105 ; Junior and Senior standing only PSYS and NEUR majors and minors only; PACE students by permission and override. System waitlisting enabled for this section.",
+  "reason": "unparsed: PSYS and NEUR majors and minors only"
+ },
+ {
+  "code": "PSYS 3115",
+  "notes": "Prereqs enforced by the system: PSYS 2100 ; Junior and Senior standing only; PSYS and NEUR majors and minors only; System waitlisting enabled for this section.",
+  "reason": "unparsed: PSYS and NEUR majors and minors only"
+ },
+ {
+  "code": "PSYS 3205",
+  "notes": "Prereqs enforced by the system: PSYS 2000 or 2002 and PSYS 2200 , NSCI 2100 , or NSCI 2105 ; Junior and Senior standing only; PSYS and NEUR majors and minors only; System waitlisting enabled for this section. PACE students by permission and override.",
+  "reason": "Assumed 'PSYS 2000 or 2002 and PSYS 2200, NSCI 2100, or NSCI 2105' groups as (2000 or 2002) AND (2200 or 2100 or 2105).; unparsed: PSYS and NEUR majors and minors only"
+ },
+ {
+  "code": "PSYS 3210",
+  "notes": "Prereqs enforced by the system: ( PSYS 2000 or PSYS 2002 ) and PSYS 2200 ; OR NSCI 2105 , BIOL 1000 , BIOL 1400 , BCOR 1400 , or BCOR 1425 ; Junior and Senior standing only PSYS and NEUR majors and minors only; PACE students by permission and override. System waitlisting enabled for this section.",
+  "reason": "unparsed: PSYS and NEUR majors and minors only"
+ },
+ {
+  "code": "PSYS 3250",
+  "notes": "Prereqs enforced by the system: PSYS 2002 or PSYS 2000 , and NSCI 2105 , NSCI 2100 , or PSYS 2200 ; minimum junior standing PSYS & NEUR majors and minors PACE students with permission and override System waitlisting enabled for this section.",
+  "reason": "unparsed: PSYS & NEUR majors and minors"
+ },
+ {
+  "code": "PSYS 3290",
+  "notes": "Prereqs enforced by the system: PSYS 1400 ; PSYS 2000 or PSYS 2002 ; PSYS 2200 , NSCI 2100 , or NSCI 2105 ; Junior and Senior class standing only; PSYS and NEUR majors and minors only PACE students by permission and override. System waitlisting enabled for this section.",
+  "reason": "unparsed: PSYS and NEUR majors and minors only"
+ },
+ {
+  "code": "PSYS 3300",
+  "notes": "Prereqs enforced by the system: PSYS 2000 or PSYS 2002 and PSYS 2300 . PSYS & NEUR majors and minors Minimum Junior standing PACE students with permission and override System waitlisting enabled for this section.",
+  "reason": "Assumed 'PSYS 2000 or PSYS 2002 and PSYS 2300' grouped as (2000 or 2002) AND 2300.; unparsed: PSYS & NEUR majors and minors"
+ },
+ {
+  "code": "PSYS 3350",
+  "notes": "Prereqs enforced by the system: PSYS 2000 or PSYS 2002 ; and PSYS 2100 , PSYS 2300 , PSYS 2400 , or PSYS 2500 . minimum junior standing PSYS majors and minors only PACE students by permission and override. System waitlisting enabled for this section.",
+  "reason": "unparsed: PSYS majors and minors only"
+ },
+ {
+  "code": "PSYS 3355",
+  "notes": "Prereqs enforced by the system: PSYS 2002 or 2000 , and PSYS 2100 , 2200 , 2300 , 2400 , or 2500 ; Junior and Senior class standing only; PSYS majors and minors only; PACE students by permission and override. System waitlisting enabled for this section.",
+  "reason": "unparsed: PSYS majors and minors only"
+ },
+ {
+  "code": "PSYS 3370",
+  "notes": "Prereqs enforced by the system: PSYS 2300 ; Junior and Senior class standing only; PSYS majors and minors only; PACE students by permission and override. System waitlisting enabled for this section.",
+  "reason": "unparsed: PSYS majors and minors only"
+ },
+ {
+  "code": "PSYS 3415",
+  "notes": "Prereqs enforced by the system: PSYS 2000 or PSYS 2002 , and PSYS 2400 ; Junior and Senior class standing only PSYS majors and minors only PACE students by permission and override. System waitlisting enabled for this section.",
+  "reason": "unparsed: PSYS majors and minors only"
+ },
+ {
+  "code": "PSYS 3420",
+  "notes": "Prereqs enforced by the system: PSYS 2300 , and PSYS 2400 or PSYS 2500 Junior and Senior standing only PSYS majors and minors only; PACE students by permission and override. System waitlisting enabled for this section.",
+  "reason": "Assuming 'PSYS 2300 , and PSYS 2400 or PSYS 2500' means '2300 and (2400 or 2500)'; unparsed: PSYS majors and minors only"
+ },
+ {
+  "code": "PSYS 3425",
+  "notes": "Prereqs enforced by the system: PSYS 2000 or PSYS 2002 , and PSYS 2400 or PSYS 2500 . Junior and Senior standing only PSYS majors and minors only; PACE students by permission and override. Synchronous online; System waitlisting enabled for this section.",
+  "reason": "unparsed: PSYS majors and minors only"
+ },
+ {
+  "code": "PSYS 3500",
+  "notes": "Prereqs enforced by the system: PSYS 2000 or PSYS 2002 , and PSYS 2500 . PSYS majors and minors only; Junior and Senior standing only PACE students by permission and override. System waitlisting enabled for this section.",
+  "reason": "unparsed: PSYS majors and minors only"
+ },
+ {
+  "code": "PSYS 3510",
+  "notes": "Prereqs enforced by the system: PSYS 2000 or PSYS 2002 , and PSYS 2500 . Junior and Senior standing only PSYS and HSOC majors and minors only Synchronous online; PACE students by permission and override. System waitlisting enabled for this section.",
+  "reason": "unparsed: PSYS and HSOC majors and minors only"
+ },
+ {
+  "code": "PSYS 3590",
+  "notes": "Prereqs enforced by the system: PSYS 2000 or PSYS 2002 , and PSYS 2500 , and PSYS 1400 . Junior and Senior standing only PSYS majors and minors only; PACE students by permission and override. System waitlisting enabled for this section.",
+  "reason": "unparsed: PSYS majors and minors only"
+ },
+ {
+  "code": "PSYS 3990",
+  "notes": "Minimum Junior standing; PSYS majors and minors only Special Topics courses cannot carry CC designations System waitlisting enabled for this section.",
+  "reason": "unparsed: PSYS majors and minors only"
+ },
+ {
+  "code": "PSYS 6005",
+  "notes": "Prereq enforced by the system: PSYS 6000 ; Psychology or Neuroscience graduate standing only, System waitlisting enabled for this section.",
+  "reason": "unparsed: Psychology or Neuroscience graduate standing only"
+ },
+ {
+  "code": "PSYS 6391",
+  "notes": "Psychology graduate standing only; course is repeatable",
+  "reason": "unparsed: Psychology graduate standing only"
+ },
+ {
+  "code": "PSYS 6600",
+  "notes": "Psychology graduate standing only System waitlisting enabled for this section.",
+  "reason": "unparsed: Psychology graduate standing only"
+ },
+ {
+  "code": "PSYS 6715",
+  "notes": "Prereqs enforced by the system,: PSYS 6705 ; Clinical psychology PhD program students only System waitlisting enabled for this section.",
+  "reason": "unparsed: Clinical psychology PhD program students only"
+ },
+ {
+  "code": "PSYS 6740",
+  "notes": "Clinical Psychology graduate standing only System waitlisting enabled for this section.",
+  "reason": "unparsed: Clinical Psychology graduate standing only"
+ },
+ {
+  "code": "PSYS 6990",
+  "notes": "Psychology graduate standing only. System waitlisting enabled for this section.",
+  "reason": "unparsed: Psychology graduate standing only."
+ },
+ {
+  "code": "PSYS 6995",
+  "notes": "Instructor permission required Experimental psychology PhD program students only",
+  "reason": "unparsed: Experimental psychology PhD program students only"
+ },
+ {
+  "code": "RADT 2520",
+  "notes": "Coreq: MLS 2400 ; RADT, MRS majors only, or instructor permission Open to Degree and PACE students",
+  "reason": "Assuming 'RADT, MRS majors only, or instructor permission' applies as an 'or' condition along with the coreq.; unparsed: RADT, MRS majors only"
+ },
+ {
+  "code": "RADT 2760",
+  "notes": "Prereqs enforced by the system: ANPS 1190 and ANPS 1200 and PATH 2010 ; Coreq: RADT 2870 ; RADT, MRS majors only",
+  "reason": "unparsed: RADT, MRS majors only"
+ },
+ {
+  "code": "RADT 3150",
+  "notes": "Prereqs enforced by the system: ANPS 1190 and ANPS 1200 and BHSC 2750 ; RADT and MRS majors only; Others by instructor permission; Open to Degree and PACE students; Asynchronous online",
+  "reason": "Assuming 'Others by instructor permission' offers an alternative to the major restriction.; unparsed: RADT and MRS majors only"
+ },
+ {
+  "code": "RADT 3440",
+  "notes": "Prereqs enforced by the system: RADT 2520 and RADT 2850 ; RADT and MRS majors only",
+  "reason": "unparsed: RADT and MRS majors only"
+ },
+ {
+  "code": "RADT 3710",
+  "notes": "Prereq enforced by the system: RADT 3700 ; Additional prereq of PHYS 1250 preferred; RADT and MRS majors only; Class will be held in Rowell 104",
+  "reason": "unparsed: Additional prereq of PHYS 1250 preferred; unparsed: RADT and MRS majors only"
+ },
+ {
+  "code": "REL 1025",
+  "notes": "LASP students only Instructor permission System waitlisting enabled for this section",
+  "reason": "unparsed: LASP students only"
+ },
+ {
+  "code": "REL 2700",
+  "notes": "Pre reqs: 3 hours in Religion or ENVS PACE students with permission and override Crosslisted with ENVS 2270 A Combined Enrollment: 40 System waitlisting enabled for this section",
+  "reason": "unparsed: 3 hours in Religion or ENVS"
+ },
+ {
+  "code": "REL 2990",
+  "notes": "Open to majors/minors only. Instructor permission required. Special Topics courses cannot carry CC designations",
+  "reason": "unparsed: Open to majors/minors only."
+ },
+ {
+  "code": "REL 3990",
+  "notes": "Pre reqs: 9 hours in Religion PACE students with permission and override. Special Topics courses cannot carry CC designations System waitlisting enabled for this section",
+  "reason": "unparsed: 9 hours in Religion"
+ },
+ {
+  "code": "RUSS 1200",
+  "notes": "Prereq: RUSS 1100 or equiv; Hybrid Course: 4th mtg Tuesday meeting online asynchronous; Open to Degree and PACE students",
+  "reason": "unparsed: equiv"
+ },
+ {
+  "code": "RUSS 2200",
+  "notes": "Prereq: RUSS 2100 or equivalent; Hybrid Course: Fourth meeting Tuesday online asynchronous; PACE students with permission and override",
+  "reason": "unparsed: equivalent"
+ },
+ {
+  "code": "SOC 2100",
+  "notes": "Prerequisites: 3 hours of Sociology Minimum Sophomore standing PACE students with permission and override System waitlisting enabled for this section",
+  "reason": "unparsed: 3 hours of Sociology"
+ },
+ {
+  "code": "SOC 2335",
+  "notes": "Prerequisites: Three hours of Sociology, GSWS 1500 , GSWS 1010 , or Health & Society major or minor. Cross-listed with: GSWS 2785A Total combined enrollment = 40 System waitlisting enabled for this section",
+  "reason": "unparsed: Three hours of Sociology; unparsed: Health & Society major or minor"
+ },
+ {
+  "code": "SOC 2355",
+  "notes": "Prerequisite: Three hours of Sociology. System waitlisting enabled for this section",
+  "reason": "unparsed: Three hours of Sociology."
+ },
+ {
+  "code": "SOC 2500",
+  "notes": "Prereqs enforced by the system: STAT 1110 , 1410 , or 1050 ; Also acceptable: Three hours of SOC or POLS; Minimum Sophomore standing; Cross listed with POLS 2800 A ; Total enrollment= 30 PACE students with permission and override System waitlisting enabled for this section",
+  "reason": "'Also acceptable' is treated as required per typical patterns; unparsed: Three hours of SOC or POLS"
+ },
+ {
+  "code": "SOC 2510",
+  "notes": "Prerequisite: Three hours of Sociology. System waitlisting enabled for this section",
+  "reason": "unparsed: Three hours of Sociology."
+ },
+ {
+  "code": "SOC 2520",
+  "notes": "Prerequisite: Three hours of Sociology. System waitlisting enabled for this section",
+  "reason": "unparsed: Three hours of Sociology."
+ },
+ {
+  "code": "SOC 2550",
+  "notes": "Prereqs enforced by the system: SOC 1500 ; Also required: 3 additional hours of SOC; Minimum Sophomore standing PACE students with permission and override System waitlisting enabled for this section",
+  "reason": "unparsed: 3 additional hours of SOC"
+ },
+ {
+  "code": "SOC 3230",
+  "notes": "Prereqs enforced by the system: SOC 1500 ; and SOC 2500 , POLS 2800 , or SOC 2550 ; minimum Junior standing. Declared Law & Society minors may substitute SOC 1210 for other prerequisite coursework in Sociology. System waitlisting enabled for this section",
+  "reason": "Substitution logic added as 'or' with unparsed.; unparsed: Declared Law & Society minors may substitute SOC 1210 for other prerequisite coursework in Sociology."
+ },
+ {
+  "code": "SOC 3420",
+  "notes": "Prereqs enforced by the system: FS 2010 , or NFS 2113 ; or SOC 1500 and ( SOC 2500 or SOC 2550 ; Minimum junior standing PACE students with permission and override System waitlisting enabled for this section",
+  "reason": "Unmatched parenthesis inferred as 'or SOC 1500 and (SOC 2500 or SOC 2550)'"
+ },
+ {
+  "code": "SOC 3995",
+  "notes": "Prereqs enforced by the system: SOC 1500 & ( SOC 2500 or 2550 or POLS 2800 ); SOC or GSWS majors only; Instructor and department permission required",
+  "reason": "unparsed: SOC or GSWS majors only"
+ },
+ {
+  "code": "SPAN 1200",
+  "notes": "Prereq: SPAN 1100 or equivalent; Open to Degree and PACE students System waitlisting enabled for this section",
+  "reason": "unparsed: or equivalent"
+ },
+ {
+  "code": "SPAN 2100",
+  "notes": "Prereq: SPAN 1200 or equivalent; PACE students with permission and override System waitlisting enabled for this section",
+  "reason": "unparsed: or equivalent"
+ },
+ {
+  "code": "SPAN 2200",
+  "notes": "Prereq: SPAN 2100 or equivalent; PACE students with permission and override System waitlisting enabled for this section",
+  "reason": "unparsed: or equivalent"
+ },
+ {
+  "code": "SPAN 3110",
+  "notes": "Prereq: SPAN 2200 or equivalent PACE students with permission and override System waitlisting enabled for this section",
+  "reason": "unparsed: or equivalent"
+ },
+ {
+  "code": "SPAN 3610",
+  "notes": "Pre/Co-req: SPAN 3110 or equivalent PACE students with permission and override",
+  "reason": "unparsed: or equivalent"
+ },
+ {
+  "code": "SPAN 3620",
+  "notes": "Prereq: SPAN 3610 or higher PACE students with permission and override",
+  "reason": "unparsed: or higher"
+ },
+ {
+  "code": "SPAN 3670",
+  "notes": "Prereq: SPAN 3610 or higher PACE students with permission and override",
+  "reason": "unparsed: or higher"
+ },
+ {
+  "code": "STAT 1110",
+  "notes": "Prereq: Two years of high school algebra; Open to Degree and PACE students System waitlisting enabled for this section",
+  "reason": "unparsed: Two years of high school algebra"
+ },
+ {
+  "code": "STAT 3880",
+  "notes": "Prereqs enforced by the system: STAT 3210 or equivalent Cross listed with CS 3880 A; total combined enrollment = 40; System waitlisting enabled for this section",
+  "reason": "unparsed: equivalent"
+ },
+ {
+  "code": "STAT 5230",
+  "notes": "Prereqs: Graduate standing or instructor permission; Content knowledge of STAT 3210 and ( MATH 2522 or MATH 2544 ) assumed. System waitlisting enabled for this section",
+  "reason": "unparsed: Content knowledge of STAT 3210 and ( MATH 2522 or MATH 2544 ) assumed."
+ },
+ {
+  "code": "STAT 5870",
+  "notes": "Cross-listed with CS 5870 and CSYS 5870 ; Total combined enrollment: 40; Prereqs: Graduate student or instructor permission; Knowledge of CS 1210 & ( STAT 1410 or STAT 2430 ) required; Knowledge of CS 2100 & ( MATH 2522 or MATH 2544 ) recommended; PACE students with permission and override. System waitlisting enabled for this section",
+  "reason": "Required knowledge mapped as unparsed; unparsed: Knowledge of CS 1210 & ( STAT 1410 or STAT 2430 ) required"
+ },
+ {
+  "code": "SWSS 3480",
+  "notes": "Prereqs enforced by the system: SWSS 1020 , SWSS 3470 , SWSS 3650 , and SWSS 3670 ; Co-requisites: SWSS 3630 and SWSS 3660 , Junior or Senior SWSS students only, or program permission",
+  "reason": "unparsed: Junior or Senior SWSS students only"
+ },
+ {
+  "code": "SWSS 3630",
+  "notes": "Prereqs enforced by the system: SWSS 1020 & 3470 & 3670 & 3650 ; Co-requesites: SWSS 3480 and 3660 ; Junior or Senior SWSS students only, or program permission.",
+  "reason": "unparsed: Junior or Senior SWSS students only"
+ },
+ {
+  "code": "SWSS 3660",
+  "notes": "Prereqs enforced by the system: SWSS 1020 and SWSS 3650 ; Co-requisites: SWSS 3480 and 3630 ; Junior or Senior SWSS students only, or program permission",
+  "reason": "unparsed: Junior or Senior SWSS students only"
+ },
+ {
+  "code": "SWSS 4690",
+  "notes": "Prereqs enforced by the system: SWSS 4680 ; Coreqs: SWSS 4720 & SWSS 4740 ; SWSS majors only",
+  "reason": "unparsed: SWSS majors only"
+ },
+ {
+  "code": "SWSS 4720",
+  "notes": "Prereqs enforced by the system: SWSS 4710 . Coreqs: SWSS 4690 & SWSS 4740 ; Senior SWSS majors only; Instructor Permission only.",
+  "reason": "unparsed: Senior SWSS majors only"
+ },
+ {
+  "code": "SWSS 5027",
+  "notes": "MSW students only, or program permission",
+  "reason": "unparsed: MSW students only"
+ },
+ {
+  "code": "SWSS 5170",
+  "notes": "Prereq enforced by the system: SWSS 5160 ; MSW students only, or program permission",
+  "reason": "unparsed: MSW students only"
+ },
+ {
+  "code": "SWSS 5210",
+  "notes": "Prereq enforced by the system: SWSS 5200 ; MSW students only, or program permission",
+  "reason": "unparsed: MSW students only"
+ },
+ {
+  "code": "SWSS 6000",
+  "notes": "Coreq: SWSS 6130 ; MSW Foundation year students only; Practicum locations/times TBD;",
+  "reason": "unparsed: MSW Foundation year students only"
+ },
+ {
+  "code": "SWSS 6130",
+  "notes": "Prereq enforced by system: SWSS 6120 ; Coreq: SWSS 6000 ; MSW Foundation year students only",
+  "reason": "unparsed: MSW Foundation year students only"
+ },
+ {
+  "code": "SWSS 6150",
+  "notes": "Prereqs enforced by the system: SWSS 6120 , SWSS 6130 , and SWSS 5160 , SWSS 5170 , SWSS 5200 , SWSS 5210 , and SWSS 5027 , SWSS 6000 , and SWSS 6140 ; MSW SPMSW year students only",
+  "reason": "unparsed: MSW SPMSW year students only"
+ },
+ {
+  "code": "SWSS 6890",
+  "notes": "Prereqs enforced by the system: SWSS 6120 & 6130 & 5160 & 5170 & 5200 & 5210 & 5027 & 6000 ; MSW SPMSW students only or Completion of the 30 credits in the Foundation year; Monthly seminars scheduled at instructor discretion;",
+  "reason": "unparsed: MSW SPMSW students only; unparsed: Completion of the 30 credits in the Foundation year"
+ },
+ {
+  "code": "THE 4500",
+  "notes": "Senior THE majors only. Instructor permission required.",
+  "reason": "unparsed: Senior THE majors only"
+ },
+ {
+  "code": "WFB 2170",
+  "notes": "Prereqs enforced by the system: BIOL 1000 or BIOL 1400 or BCOR 1400 ; WFB Majors only. Asynchronous online",
+  "reason": "unparsed: WFB Majors only"
+ },
+ {
+  "code": "WFB 2995",
+  "notes": "Instructor Permission required. Variable credits Approval of experiential learning plan and research deliverables required.",
+  "reason": "unparsed: Approval of experiential learning plan and research deliverables required"
+ },
+ {
+  "code": "WLIT 1025",
+  "notes": "LASP students only Instructor permission System waitlisting enabled for this section.",
+  "reason": "unparsed: LASP students only"
+ },
+ {
+  "code": "WLIT 2310",
+  "notes": "PACE students with permission and override Pre/Co-requisite: A Catamount Core WIL1 course",
+  "reason": "unparsed: A Catamount Core WIL1 course"
+ }
+]
