@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
@@ -51,6 +51,11 @@ NO_OPINIONS = (
     "who you'd like to take or avoid and I'll plan around it."
 )
 OTHER = "I can only help with your {term} schedule and what's on your audit."
+LOAD_STAYS = (
+    "Your credit load can't be removed, only changed: tell me the load you want, "
+    "like “12–15 credits”."
+)
+PLAN_NAMES = "ABCDEFGHIJ"
 CATALOG_LIMIT = 60  # rows per catalog search; `total` says how many matched
 
 
@@ -64,12 +69,25 @@ class StudentFacts:
     in_progress: tuple[str, ...] = ()  # course codes
 
 
+@dataclass(frozen=True)
+class Choice:
+    """One way to fit a newly asked-for course: into the plan on screen, or a rebuild."""
+
+    text: str
+    spec: dict[str, Any]  # the request once chosen (it includes the new course)
+    result: TermResult | None  # the edited plan; None: solve from scratch
+
+
 # failed in-progress courses -> the student and validation context under that assumption
 WhatIf = Callable[[tuple[str, ...]], tuple[StudentTerm, ValidationContext]]
 
 
 def _label(constraint: dict[str, Any], term: TermData | None = None) -> str:
     return f"“{label(Constraint.model_validate(constraint), term)}”"
+
+
+def _asked_courses(spec: dict[str, Any]) -> set[str]:
+    return {c["params"]["course"] for c in spec["constraints"] if c["type"] == "include_course"}
 
 
 def _said(constraint: dict[str, Any]) -> str:
@@ -97,12 +115,18 @@ class ChatSession:
     _requirement_courses: list[tuple[str, set[str]]] | None = field(default=None, repr=False)
     questions: list[dict[str, Any]] = field(default_factory=list)  # asked on the last turn
     list_schedules: bool = True  # False when the schedules are drawn elsewhere (web canvas)
+    plan: int = 0  # the schedule the student is looking at (edits apply to it)
+    choices: list[Choice] = field(default_factory=list)  # offered on the last turn
 
-    def handle(self, message: str) -> str:
+    def handle(self, message: str, plan: int = 0) -> str:
         self.questions = []
+        self.plan = plan
         text = message.strip()
         if text == "/spec":
             return self._describe()
+        if text.isdigit() and self.choices:
+            return self._apply_choice(int(text))
+        self.choices = []
         if text.isdigit() and self._result is not None and self._result.relaxations:
             return self._apply_fix(int(text))
         try:
@@ -132,10 +156,15 @@ class ChatSession:
             return "\n".join(lines + notes)
         spec["constraints"] = [c for c in spec["constraints"] if c["id"] not in self._waived]
         checked = ConstraintSpec.model_validate(spec)
-        self.spec = {**spec, "clarifications": [], "out_of_scope": []}  # said once, not carried
+        spec = {**spec, "clarifications": [], "out_of_scope": []}  # said once, not carried
         lines.insert(0, summary(checked, self.term, self.student.open_requirements))
         lines += notes
-        lines.append(self._solve())
+        added = self._added_courses(spec)
+        if added:  # only new courses: offer to fit them into the plan on screen
+            lines.append(self._offer_edits(spec, added))
+        else:
+            self.spec = spec
+            lines.append(self._solve())
         for q in checked.clarifications:
             key = q.constraint_id or q.question
             if key not in self._asked:
@@ -155,11 +184,136 @@ class ChatSession:
             return f"There's no fix {number}; pick 1–{len(fixes)}."
         return self.drop(fixes[number - 1].constraint_id)
 
+    def _offer_edits(self, spec: dict[str, Any], added: list[str]) -> str:
+        """New courses for a plan the student already has: add them to it, swap one class
+        out, or rebuild. Every option keeps their requests; nothing changes until they pick."""
+        assert self._result is not None
+        index = min(self.plan, len(self._result.schedules) - 1)
+        plan = self._result.schedules[index]
+        name = f"Plan {PLAN_NAMES[index]}"
+        new = [c for c in added if c not in plan.courses]
+        if not new:
+            kept = self._fit(spec, plan.sections, [])
+            self.spec = spec
+            self._result = kept or self._result
+            return f"{' and '.join(added)} is already in {name}, so I kept it as it is."
+        what = " and ".join(f"{c} ({self.term.courses[c].title})" for c in new)
+        by_id = {s.section_id: s for s in self.term.sections}
+        asked = _asked_courses(spec)
+        options: list[tuple[str, TermResult | None]] = [
+            (f"Add {what} to {name}", self._fit(spec, plan.sections, new))
+        ]
+        for course in plan.courses:
+            if course not in asked:  # never swap out a course they asked for
+                keep = [s for s in plan.sections if by_id[s].course != course]
+                title = self.term.courses[course].title
+                options.append((f"Swap out {course} ({title})", self._fit(spec, keep, new)))
+        self.choices = [
+            Choice(
+                f"{text} → {fit.schedules[0].credits:g} credits"
+                + self._tradeoffs(spec, plan, fit.schedules[0]),
+                spec,
+                fit,
+            )
+            for text, fit in options
+            if fit is not None
+        ]
+        if not self.choices:
+            self.spec = spec
+            return (
+                f"{what} doesn't fit into {name} with your requests, so I rebuilt the plans "
+                "around it.\n" + self._solve()
+            )
+        self.choices.append(Choice("Rebuild every plan around it", spec, None))
+        if not self.list_schedules:  # the web shows the options as buttons
+            return f"Where should {what} go? Pick one of the options below."
+        listing = "\n".join(f"{n}. {c.text}" for n, c in enumerate(self.choices, start=1))
+        return f"Where should {what} go?\n{listing}\nReply with a number."
+
+    def _fit(self, spec: dict[str, Any], keep: list[str], new: list[str]) -> TermResult | None:
+        """The plan made of exactly the `keep` sections plus the `new` courses, under every
+        request; None if it can't hold."""
+        keep_ids = set(keep)
+        kept = {s.course for s in self.term.sections if s.section_id in keep_ids}
+        allowed = tuple(
+            s for s in self.term.sections if s.section_id in keep_ids or s.course in new
+        )
+        pins = [
+            {
+                "id": f"keep_{n}",
+                "type": "include_course",
+                "params": {"course": course},
+                "enforcement": "hard",
+                "weight": 5,
+                "weight_source": "default",
+                "confidence": 1.0,
+                "source_text": "",
+            }
+            for n, course in enumerate(sorted(kept - _asked_courses(spec)))
+        ]
+        pinned = ConstraintSpec.model_validate(
+            {**spec, "constraints": [*spec["constraints"], *pins]}
+        )
+        data = self.term.model_copy(update={"sections": allowed})
+        result = solve_term(pinned, data, self.student, limit=1)
+        if result.status != "ok" or not result.schedules:
+            return None
+        return replace(result, missed=[])  # bottlenecks of a pinned plan would mislead
+
+    def _tradeoffs(self, spec: dict[str, Any], before: Schedule, after: Schedule) -> str:
+        """What an option gives up: preferences it misses, requirements it stops helping."""
+        by_id = {c["id"]: c for c in spec["constraints"]}
+        missed = [_label(by_id[c], self.term) for c in after.soft_missed if c in by_id]
+        targets = self.student.open_requirements
+        lost = [
+            targets[r].title.split(" › ")[-1]
+            for r in before.contributions
+            if r not in after.contributions and r in targets
+        ]
+        text = f" (misses {', '.join(missed)})" if missed else ""
+        return text + (f" · loses progress on {', '.join(lost)}" if lost else "")
+
+    def _apply_choice(self, number: int) -> str:
+        if not 1 <= number <= len(self.choices):
+            return f"There's no option {number}; pick 1–{len(self.choices)}."
+        choice = self.choices[number - 1]
+        self.choices = []
+        self.spec = choice.spec
+        if choice.result is None:
+            return self._solve()
+        self._result = choice.result
+        spec = ConstraintSpec.model_validate(self.spec)
+        shown = render_result(
+            self._result, spec, self.term, self.student, listing=self.list_schedules
+        )
+        return f"Done: {choice.text.split(' → ')[0]}.\n{shown}"
+
+    def _added_courses(self, spec: dict[str, Any]) -> list[str]:
+        """The courses a new request adds, when adding them is all it does and a plan exists."""
+        result = self._result
+        if self.spec is None or result is None or result.status != "ok" or not result.schedules:
+            return []
+
+        def key(c: dict[str, Any]) -> tuple[str, str, str]:
+            return (c["type"], json.dumps(c["params"], sort_keys=True), c["enforcement"])
+
+        before = {key(c) for c in self.spec["constraints"] if c["id"] not in DEFAULT_IDS}
+        after = {key(c): c for c in spec["constraints"] if c["id"] not in DEFAULT_IDS}
+        extra = [c for k, c in after.items() if k not in before]
+        if not extra or not before <= after.keys():
+            return []
+        if any(c["type"] != "include_course" or c["enforcement"] != "hard" for c in extra):
+            return []
+        return [c["params"]["course"] for c in extra]
+
     def drop(self, dropped: str) -> str:
         """Remove one request (a fix, or a chip the student closed) and re-solve. No LLM."""
         if self.spec is None or not any(c["id"] == dropped for c in self.spec["constraints"]):
             return "That request isn't active any more."
+        if dropped == "default_credits":  # the full-time band is the only cap on the load
+            return LOAD_STAYS
         self.questions = []
+        self.choices = []
         if dropped in DEFAULT_IDS:
             self._waived.add(dropped)
         constraint = next(c for c in self.spec["constraints"] if c["id"] == dropped)
@@ -176,7 +330,14 @@ class ChatSession:
             and c["params"].get("course") == course
         ]
         gone = {dropped, *(c["id"] for c in scoped)}
-        self.spec["constraints"] = [c for c in self.spec["constraints"] if c["id"] not in gone]
+        # re-validate what's left, so the full-time band returns when their own load goes
+        rest = [c for c in self.spec["constraints"] if c["id"] not in gone | DEFAULT_IDS]
+        respec, _ = self._validated({**self.spec, "constraints": rest})
+        if respec is None:
+            self.spec["constraints"] = [c for c in self.spec["constraints"] if c["id"] not in gone]
+        else:
+            kept = [c for c in respec["constraints"] if c["id"] not in self._waived]
+            self.spec = {**respec, "constraints": kept, "clarifications": [], "out_of_scope": []}
         also = (
             f" (and {', '.join(_label(c, self.term) for c in scoped)}, which only applied to it)"
             if scoped
@@ -453,6 +614,7 @@ class ChatSession:
                 "must": c.enforcement == "hard",
                 "said": c.source_text or "",
                 "default": c.id in DEFAULT_IDS,
+                "removable": c.id != "default_credits",
             }
             for c in (spec.constraints if spec else [])
         ]
@@ -481,6 +643,7 @@ class ChatSession:
                 for n, r in enumerate(result.relaxations if result else [], start=1)
             ],
             "questions": self.questions,
+            "choices": [{"number": n, "text": c.text} for n, c in enumerate(self.choices, 1)],
             "requirements": [
                 {"title": t.title, "needed": t.needed, "unit": t.unit} for t in targets.values()
             ],

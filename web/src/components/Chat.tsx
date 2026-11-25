@@ -12,11 +12,13 @@ export interface Line {
 interface Props {
   lines: Line[];
   questions: View["questions"];
+  choices: View["choices"];
   busy: boolean;
   onSend: (text: string) => void;
+  onChoose: (number: number, text: string) => void;
 }
 
-export function Chat({ lines, questions, busy, onSend }: Props) {
+export function Chat({ lines, questions, choices, busy, onSend, onChoose }: Props) {
   const [draft, setDraft] = useState("");
   const end = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -63,6 +65,28 @@ export function Chat({ lines, questions, busy, onSend }: Props) {
         )}
         <div ref={end} />
       </div>
+
+      {choices.length > 0 && (
+        <div className="border-t-2 border-dashed border-ink/40 bg-hl-yellow/40 py-3 pl-14 pr-5">
+          <p className="font-marker text-xl font-bold leading-none">Pick one:</p>
+          <div className="mt-2 space-y-2">
+            {choices.map((c) => (
+              <button
+                key={c.number}
+                type="button"
+                disabled={busy}
+                onClick={() => onChoose(c.number, c.text)}
+                className={`sketch sketch-thin flex w-full items-start gap-2 bg-paper px-3 py-1.5 text-left hover:bg-hl-green disabled:opacity-40 ${
+                  c.number % 2 ? "" : "sketch-alt"
+                }`}
+              >
+                <span className="font-marker text-lg font-bold leading-6 text-pen-red">{c.number}.</span>
+                <span className="leading-6">{c.text}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {questions.length > 0 && (
         <div className="space-y-3 border-t-2 border-dashed border-ink/40 bg-paper/80 py-3 pl-14 pr-5">

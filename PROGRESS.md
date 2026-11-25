@@ -272,6 +272,19 @@ Running log. Resume from **Current status**. Newest log entries at the top.
   (UVM publishes no caps).
 
 ## Log
+- **2026-11-24 (owner bug + edit flow).** Bug: asking for 15 credits, then closing that chip,
+  gave a 31-credit plan. A stated load replaces the full-time band, and closing it removed
+  the only credit cap (the solver then adds every course that counts toward a requirement).
+  Fix: closing a chip re-validates what's left, so the band comes back; the band itself
+  (`default_credits`) can be changed but not closed (the web shows ✎, not ✕). The old test
+  that closed the band now closes the soft preferred load instead (owner reported the old
+  behavior as the bug).
+  Owner: asking for one more class shouldn't rebuild everything. When a turn only adds
+  courses and a plan is on screen, the chat now offers numbered choices (no LLM to pick):
+  add it to that plan, swap out one class they didn't ask for, or rebuild. Each option is
+  pre-solved with the plan's other sections pinned (term data restricted + internal
+  include_course pins; no schema change) under every request, and says what it gives up
+  (missed preferences, requirements it stops helping). The web sends the plan on screen.
 - **2026-11-24 (plan feedback).** Owner: highlighted "counts toward" lines didn't show
   requirement progress, and the wish list didn't say which requests were met. The view now
   carries, per schedule, `missed_rules` (the solver's soft_missed) and `progress` (what the

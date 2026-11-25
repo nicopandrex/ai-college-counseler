@@ -33,6 +33,7 @@ export const ViewSchema = z.object({
       must: z.boolean(),
       said: z.string(),
       default: z.boolean(),
+      removable: z.boolean(), // the full-time band can be changed, not removed
     }),
   ),
   status: z.enum(["ok", "infeasible"]).nullable(),
@@ -49,6 +50,8 @@ export const ViewSchema = z.object({
   why: z.array(z.string()),
   fixes: z.array(z.object({ number: z.number(), text: z.string(), unlocks: z.number() })),
   questions: z.array(z.object({ question: z.string(), options: z.array(z.string()) })),
+  // ways to fit a newly asked-for course into the plan on screen; answered by number
+  choices: z.array(z.object({ number: z.number(), text: z.string() })),
   requirements: z.array(
     z.object({
       title: z.string(),
@@ -117,11 +120,12 @@ export function startSession(pdf: File): Promise<Started> {
   });
 }
 
-export function sendMessage(session: string, text: string): Promise<Turn> {
+/** `plan`: the schedule on screen, so "add X" edits that one. */
+export function sendMessage(session: string, text: string, plan = 0): Promise<Turn> {
   return call(TurnSchema, `/api/sessions/${session}/messages`, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ text }),
+    body: JSON.stringify({ text, plan }),
   });
 }
 

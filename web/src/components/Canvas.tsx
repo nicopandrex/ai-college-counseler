@@ -89,16 +89,22 @@ export function Canvas({ view, index, busy, onPick, onDrop, onSend }: Props) {
                       </span>
                       {note && <div className="text-sm text-pen-red">{note}</div>}
                     </div>
-                    <button
-                      type="button"
-                      disabled={busy}
-                      onClick={() => onDrop(r.id)}
-                      className="px-1 font-marker text-lg leading-none text-pencil/60 hover:text-pen-red disabled:opacity-40"
-                      aria-label={`Remove ${r.text}`}
-                      title="Remove this request"
-                    >
-                      ✕
-                    </button>
+                    {r.removable ? (
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => onDrop(r.id)}
+                        className="px-1 font-marker text-lg leading-none text-pencil/60 hover:text-pen-red disabled:opacity-40"
+                        aria-label={`Remove ${r.text}`}
+                        title="Remove this request"
+                      >
+                        ✕
+                      </button>
+                    ) : (
+                      <span className="px-1 text-sm text-pencil/70" title="Tell the assistant a different load to change it">
+                        ✎
+                      </span>
+                    )}
                   </li>
                 );
               })}

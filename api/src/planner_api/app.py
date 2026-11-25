@@ -35,6 +35,7 @@ def open_from_pdf(pdf: Path) -> ChatSession:
 
 class Message(BaseModel):
     text: str = Field(min_length=1, max_length=2000)
+    plan: int = Field(0, ge=0, le=9)  # the schedule on screen: edits apply to it
 
 
 class _Live:
@@ -92,7 +93,7 @@ def create_app(opener: Opener = open_from_pdf) -> FastAPI:
 
     @app.post("/api/sessions/{session_id}/messages")
     def message(session_id: str, body: Message) -> dict[str, Any]:
-        return turn(session_id, lambda chat: chat.handle(body.text))
+        return turn(session_id, lambda chat: chat.handle(body.text, plan=body.plan))
 
     @app.delete("/api/sessions/{session_id}/rules/{rule_id}")
     def drop(session_id: str, rule_id: str) -> dict[str, Any]:

@@ -38,8 +38,9 @@ export default function Home() {
     try {
       const turn = await work();
       if (turn.id) setSession(turn.id);
+      // stay on the plan being edited; back to the first one only when the plans changed
+      if (JSON.stringify(turn.view.schedules) !== JSON.stringify(view?.schedules)) setPicked(0);
       setView(turn.view);
-      setPicked(0);
       setLines((l) => [...l, { who: "planner", text: turn.reply }]);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -52,8 +53,9 @@ export default function Home() {
     return <Upload busy={busy} error={error} onFile={(file) => void run(() => startSession(file))} />;
   }
 
-  const send = (text: string) => void run(() => sendMessage(session, text), text);
   const index = Math.min(picked, Math.max(view.schedules.length - 1, 0));
+  // the plan on screen goes along, so "add X" edits that plan instead of starting over
+  const send = (text: string, shown = text) => void run(() => sendMessage(session, text, index), shown);
   const scheduled = new Set(view.schedules[index]?.sections.map((s) => s.course) ?? []);
   const facts = view.facts;
 
@@ -146,7 +148,14 @@ export default function Home() {
         <Spiral />
 
         <aside className="sketch sketch-alt w-[400px] shrink-0 overflow-hidden bg-paper shadow-[4px_5px_0_rgba(39,48,74,0.15)]">
-          <Chat lines={lines} questions={busy ? [] : view.questions} busy={busy} onSend={send} />
+          <Chat
+            lines={lines}
+            questions={busy ? [] : view.questions}
+            choices={busy ? [] : view.choices}
+            busy={busy}
+            onSend={send}
+            onChoose={(n, text) => send(String(n), text)}
+          />
         </aside>
       </div>
     </div>

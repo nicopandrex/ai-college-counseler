@@ -17,6 +17,7 @@ function view(over: Partial<View>): View {
     why: [],
     fixes: [],
     questions: [],
+    choices: [],
     requirements: [],
     facts: { credits_earned: null, credits_in_progress: null, standing: null, in_progress: [] },
     ...over,
