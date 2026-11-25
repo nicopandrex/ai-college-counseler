@@ -93,7 +93,9 @@ def test_upload_then_chat_then_close_a_chip(tmp_path: Path) -> None:
     sid = body["id"]
 
     turn = api.post(f"/api/sessions/{sid}/messages", json={"text": "macro, Fridays off"}).json()
-    assert turn["reply"].startswith("Working with: take ECON 2020 (Macroeconomics); Fridays free")
+    assert turn["reply"].startswith(  # the web shows every request; say what changed
+        "Got it: added “take ECON 2020 (Macroeconomics)”, “Fridays free”."
+    )
     assert "Found " in turn["reply"] and "Schedule 1" not in turn["reply"]  # drawn, not listed
     assert turn["view"]["status"] == "ok" and turn["view"]["schedules"]
     assert {r["id"] for r in turn["view"]["rules"]} >= {"c1", "c2"}

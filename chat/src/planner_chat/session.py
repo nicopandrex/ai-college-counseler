@@ -2,7 +2,8 @@
 
 The LLM is called once per message, only to translate (and to say what kind of message it
 is). Every fact in a reply comes from the validator, the solver, the catalog or the audit.
-Applying a numbered fix is deterministic (no LLM). Questions and small talk never re-solve.
+Applying a numbered fix, picking an option and undoing are deterministic (no LLM). Questions
+and small talk never re-solve. Each turn can offer follow-ups the student taps (suggestions).
 """
 
 from __future__ import annotations
@@ -13,7 +14,8 @@ from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
-from planner_chat.translator import TranslatorContext, translate
+from planner_chat.answers import Advisor, Answer, Suggestion, requirement_hint, term_name
+from planner_chat.translator import Translation, TranslatorContext, translate
 from planner_llm import LLMError, LLMGateway
 from planner_solver.describe import DEFAULT_IDS, describe, summary
 from planner_solver.domain import (
@@ -21,8 +23,6 @@ from planner_solver.domain import (
     StudentTerm,
     TermData,
     blocking_reasons,
-    prereq_met,
-    resolve_selector,
     unknown_reasons,
     when,
 )
@@ -50,7 +50,12 @@ NO_OPINIONS = (
     "I don't have reviews or ratings of instructors, only who teaches each section. Tell me "
     "who you'd like to take or avoid and I'll plan around it."
 )
-OTHER = "I can only help with your {term} schedule and what's on your audit."
+OTHER = (
+    "I can help with your {term} schedule and with what's on your audit: what you still need, "
+    "what a course counts toward, what you can take."
+)
+UNDO = Suggestion("Undo", "/undo")
+HISTORY = 12  # messages kept for the translator (it reads the last few)
 LOAD_STAYS = (
     "Your credit load can't be removed, only changed: tell me the load you want, "
     "like “12–15 credits”."
@@ -86,6 +91,11 @@ def _label(constraint: dict[str, Any], term: TermData | None = None) -> str:
     return f"“{label(Constraint.model_validate(constraint), term)}”"
 
 
+def _key(c: dict[str, Any]) -> tuple[str, str, str]:
+    """A constraint's meaning, without its id or wording."""
+    return (c["type"], json.dumps(c["params"], sort_keys=True), c["enforcement"])
+
+
 def _asked_courses(spec: dict[str, Any]) -> set[str]:
     return {c["params"]["course"] for c in spec["constraints"] if c["type"] == "include_course"}
 
@@ -112,40 +122,77 @@ class ChatSession:
     _waived: set[str] = field(
         default_factory=set, repr=False
     )  # system defaults the student removed
-    _requirement_courses: list[tuple[str, set[str]]] | None = field(default=None, repr=False)
+    _advisor: Advisor | None = field(default=None, repr=False)
+    _noted: set[str] = field(default_factory=set, repr=False)  # notes already shown
+    _undo: tuple[dict[str, Any] | None, TermResult | None, set[str]] | None = field(
+        default=None, repr=False
+    )
+    history: list[tuple[str, str]] = field(default_factory=list)  # ("student"|"planner", text)
+    suggestions: list[Suggestion] = field(default_factory=list)  # follow-ups for this turn
     questions: list[dict[str, Any]] = field(default_factory=list)  # asked on the last turn
     list_schedules: bool = True  # False when the schedules are drawn elsewhere (web canvas)
     plan: int = 0  # the schedule the student is looking at (edits apply to it)
     choices: list[Choice] = field(default_factory=list)  # offered on the last turn
 
+    @property
+    def advisor(self) -> Advisor:
+        if self._advisor is None:
+            self._advisor = Advisor(
+                self.term, self.student, self.facts.in_progress, self.context.target_term
+            )
+        return self._advisor
+
+    @property
+    def term_label(self) -> str:
+        return term_name(self.context.target_term)
+
     def handle(self, message: str, plan: int = 0) -> str:
+        """One student message -> the reply (also kept in `history` for the next turn)."""
+        earlier = list(self.history)
+        self.suggestions = []
+        reply = self._respond(message.strip(), plan, earlier)
+        self.history = [*earlier, ("student", message.strip()), ("planner", reply)][-HISTORY:]
+        return reply
+
+    def _respond(self, text: str, plan: int, earlier: list[tuple[str, str]]) -> str:
         self.questions = []
         self.plan = plan
-        text = message.strip()
         if text == "/spec":
             return self._describe()
+        if text == "/undo":
+            return self._restore()
         if text.isdigit() and self.choices:
             return self._apply_choice(int(text))
         self.choices = []
         if text.isdigit() and self._result is not None and self._result.relaxations:
             return self._apply_fix(int(text))
         try:
-            translation = translate(text, self.context, self.gateway, prior=self._prior())
+            translation = translate(
+                text, self.context, self.gateway, prior=self._prior(), history=earlier
+            )
         except LLMError as exc:
             return f"Sorry, I couldn't process that ({exc}). Your current request is unchanged."
-        term = self.context.target_term
+        term = self.term_label
         if translation.intent == "greeting":
+            self.suggestions = self._starters()
             return GREETING.format(term=term)
         if translation.intent == "thanks":
             return THANKS
         if translation.intent == "question":
             for item in translation.spec["out_of_scope"]:
                 self._log_out_of_scope(item)
-            return self._answer(translation.topic, translation.courses)
+            return self._answer(translation)
         if translation.spec["mode"] == "plan":
             self._log_out_of_scope({"request": "multi-term plan", "user_text": text})
+            self.suggestions = [Suggestion("What do I still need?", "What do I still need?")]
             return PLAN_NOT_YET.format(term=term)
         return self._schedule(translation.spec, translation.problems)
+
+    def _starters(self) -> list[Suggestion]:
+        return [
+            Suggestion("What do I still need?", "What do I still need?"),
+            Suggestion("Plan next semester", "Plan my next semester"),
+        ]
 
     # -- turns ---------------------------------------------------------------------------
 
@@ -157,25 +204,75 @@ class ChatSession:
         spec["constraints"] = [c for c in spec["constraints"] if c["id"] not in self._waived]
         checked = ConstraintSpec.model_validate(spec)
         spec = {**spec, "clarifications": [], "out_of_scope": []}  # said once, not carried
-        lines.insert(0, summary(checked, self.term, self.student.open_requirements))
+        if self.list_schedules:
+            lines.insert(0, summary(checked, self.term, self.student.open_requirements))
+        else:  # the web shows every request as a chip: say only what changed
+            lines.insert(0, self._changes(spec))
         lines += notes
         added = self._added_courses(spec)
         if added:  # only new courses: offer to fit them into the plan on screen
             lines.append(self._offer_edits(spec, added))
         else:
+            self._remember()
             self.spec = spec
             lines.append(self._solve())
+            self.suggestions = [UNDO]
         for q in checked.clarifications:
             key = q.constraint_id or q.question
             if key not in self._asked:
                 self._asked.add(key)
                 options = f" [{' / '.join(q.options)}]" if q.options else ""
-                lines.append(f"question: {q.question}{options}")
+                lines.append(
+                    f"question: {q.question}{options}" if self.list_schedules else q.question
+                )
                 self.questions.append({"question": q.question, "options": q.options or []})
         for item in checked.out_of_scope:
             lines.append(f"I can't do “{item.user_text or item.request}” yet.")
             self._log_out_of_scope(item.model_dump())
         return "\n".join(lines)
+
+    def _changes(self, spec: dict[str, Any]) -> str:
+        """What this turn changed, in the student's terms (plus the load assumption, once)."""
+        targets = self.student.open_requirements
+
+        def keyed(constraints: list[dict[str, Any]]) -> dict[tuple[str, str, str], Any]:
+            return {_key(c): c for c in constraints if c["id"] not in DEFAULT_IDS}
+
+        before = keyed(self.spec["constraints"] if self.spec else [])
+        after = keyed(spec["constraints"])
+
+        def said(c: dict[str, Any]) -> str:
+            return f"“{describe(Constraint.model_validate(c), self.term, targets)}”"
+
+        parts = []
+        if added := [said(c) for k, c in after.items() if k not in before]:
+            many = f"{len(added)} requests (listed above the calendar)"
+            parts.append("added " + (many if len(added) > 3 else ", ".join(added)))
+        if removed := [said(c) for k, c in before.items() if k not in after]:
+            parts.append("dropped " + ", ".join(removed))
+        text = f"Got it: {'; '.join(parts)}." if parts else "Your requests are the same."
+        load = next((c for c in spec["constraints"] if c["id"] == "default_credits"), None)
+        if load and "load" not in self._noted:
+            self._noted.add("load")
+            low, high = load["params"]["min"], load["params"]["max"]
+            text += (
+                f" I'm planning a full-time load ({low:g}–{high:g} credits); tell me if you "
+                "want a different one."
+            )
+        return text
+
+    def _remember(self) -> None:
+        """Keep the state before a change, so "Undo" can bring it back."""
+        spec = json.loads(json.dumps(self.spec)) if self.spec is not None else None
+        self._undo = (spec, self._result, set(self._waived))
+
+    def _restore(self) -> str:
+        if self._undo is None:
+            return "There's nothing to undo."
+        self.spec, self._result, self._waived = self._undo
+        self._undo = None
+        self.choices = []
+        return "Undone: your requests and plans are back to how they were."
 
     def _apply_fix(self, number: int) -> str:
         assert self._result is not None and self.spec is not None
@@ -278,6 +375,8 @@ class ChatSession:
             return f"There's no option {number}; pick 1–{len(self.choices)}."
         choice = self.choices[number - 1]
         self.choices = []
+        self._remember()
+        self.suggestions = [UNDO]
         self.spec = choice.spec
         if choice.result is None:
             return self._solve()
@@ -294,11 +393,8 @@ class ChatSession:
         if self.spec is None or result is None or result.status != "ok" or not result.schedules:
             return []
 
-        def key(c: dict[str, Any]) -> tuple[str, str, str]:
-            return (c["type"], json.dumps(c["params"], sort_keys=True), c["enforcement"])
-
-        before = {key(c) for c in self.spec["constraints"] if c["id"] not in DEFAULT_IDS}
-        after = {key(c): c for c in spec["constraints"] if c["id"] not in DEFAULT_IDS}
+        before = {_key(c) for c in self.spec["constraints"] if c["id"] not in DEFAULT_IDS}
+        after = {_key(c): c for c in spec["constraints"] if c["id"] not in DEFAULT_IDS}
         extra = [c for k, c in after.items() if k not in before]
         if not extra or not before <= after.keys():
             return []
@@ -314,6 +410,8 @@ class ChatSession:
             return LOAD_STAYS
         self.questions = []
         self.choices = []
+        self._remember()
+        self.suggestions = [UNDO]
         if dropped in DEFAULT_IDS:
             self._waived.add(dropped)
         constraint = next(c for c in self.spec["constraints"] if c["id"] == dropped)
@@ -345,40 +443,29 @@ class ChatSession:
         )
         return f"Dropped {_label(constraint, self.term)}{also}.\n" + self._solve()
 
-    def _answer(self, topic: str | None, courses: list[str]) -> str:
-        term = self.context.target_term
+    def _answer(self, asked: Translation) -> str:
+        topic, a = asked.topic, self.advisor
+        answer: Answer
         if topic == "remaining_requirements":
-            return self._remaining()
-        if topic == "credits_earned":
-            return self._credits()
-        if topic == "course_info":
-            return self._course_info(courses)
-        if topic == "what_if_fail":
-            return self._what_if(courses)
-        if topic == "instructor_opinion":
-            return NO_OPINIONS
-        return OTHER.format(term=term)
+            answer = a.remaining()
+        elif topic == "requirement_details":
+            answer = a.requirement_details(asked.requirements)
+        elif topic == "course_info":
+            answer = a.course_info(asked.courses)
+        elif topic == "course_options":
+            answer = a.course_options(asked.subjects, asked.courses, asked.requirements)
+        elif topic == "credits_earned":
+            answer = Answer(self._credits())
+        elif topic == "what_if_fail":
+            answer = Answer(self._what_if(asked.courses))
+        elif topic == "instructor_opinion":
+            answer = Answer(NO_OPINIONS)
+        else:
+            answer = Answer(OTHER.format(term=self.term_label), self._starters())
+        self.suggestions = answer.suggestions
+        return answer.text
 
     # -- answers from the audit and the catalog -----------------------------------------------
-
-    def _remaining(self) -> str:
-        targets = self.student.open_requirements
-        if not targets:
-            return "Your audit shows nothing left to plan for."
-        lines = ["From your audit, you still need:"]
-        for target in targets.values():
-            amount = ""
-            if target.needed and target.unit:
-                noun = target.unit if target.needed != 1 else target.unit[:-1]
-                amount = f" — {target.needed:g} {noun}"
-            lines.append(f"  • {target.title}{amount}")
-        if self.facts.in_progress:
-            lines.append(
-                "This counts your in-progress courses as passed: "
-                + ", ".join(self.facts.in_progress)
-                + "."
-            )
-        return "\n".join(lines)
 
     def _credits(self) -> str:
         f = self.facts
@@ -388,32 +475,6 @@ class ChatSession:
         if f.credits_in_progress:
             text += f", plus {f.credits_in_progress:g} in progress"
         return text + (f". Class standing: {f.standing}." if f.standing else ".")
-
-    def _course_info(self, courses: list[str]) -> str:
-        if not courses:
-            return "Which course? Give me its name or code."
-        lines: list[str] = []
-        for text in courses:
-            code = canonical_course(text)
-            course = self.term.courses.get(code or "")
-            if course is None:
-                lines.append(f"I couldn't find {text} in the {self.context.target_term} catalog.")
-                continue
-            lines.append(f"{code} {course.title} ({course.credits:g} cr):")
-            sections = [s for s in self.term.sections if s.course == code]
-            lines += [
-                f"  {s.section_id}  {when(s)}  · {', '.join(s.instructors) or 'instructor TBA'}"
-                for s in sections
-            ] or ["  no sections this term"]
-            counts = self._counts_toward(code)
-            if code in self.student.unplannable_courses:
-                lines.append("  You've already taken it or are registered.")
-            elif prereq_met(course.prereq, self.student) == "no":
-                why = "; ".join(blocking_reasons(course.prereq, self.student))
-                lines.append(f"  You can't take it yet: {why}.")
-            if counts:
-                lines.append(f"  Counts toward: {'; '.join(counts)}")
-        return "\n".join(lines)
 
     def _what_if(self, courses: list[str]) -> str:
         codes = tuple(c for c in (canonical_course(x) for x in courses) if c)
@@ -503,20 +564,7 @@ class ChatSession:
 
     def _counts_toward(self, code: str) -> list[str]:
         """Titles of the open requirements this course could count toward."""
-        if self._requirement_courses is None:  # resolved once: the catalog asks per course
-            self._requirement_courses = [
-                (
-                    t.title,
-                    {
-                        c
-                        for sel in t.selectors
-                        for c in resolve_selector(sel, self.term.courses) or set()
-                    }
-                    - set(t.excluded),
-                )
-                for t in self.student.open_requirements.values()
-            ]
-        return [title for title, codes in self._requirement_courses if code in codes]
+        return self.advisor.counts_toward(code)
 
     def _prior(self) -> dict[str, Any] | None:
         """The current spec for the translator, without the system's own defaults."""
@@ -566,9 +614,10 @@ class ChatSession:
         assert self.spec is not None
         spec = ConstraintSpec.model_validate(self.spec)
         self._result = solve_term(spec, self.term, self.student)
-        text = render_result(
-            self._result, spec, self.term, self.student, listing=self.list_schedules
-        )
+        fresh = [w for w in self._result.warnings if w not in self._noted]
+        self._noted |= set(fresh)  # a note is said once per conversation, not every turn
+        shown = replace(self._result, warnings=fresh)
+        text = render_result(shown, spec, self.term, self.student, listing=self.list_schedules)
         return text + ("\n" + FIX_HINT if self._result.status == "infeasible" else "")
 
     def _describe(self) -> str:
@@ -602,7 +651,8 @@ class ChatSession:
             if f.credits_in_progress:
                 read += f" plus {f.credits_in_progress:g} in progress"
         read += f", {left} requirement{'s' if left != 1 else ''} still open."
-        return read + " " + GREETING.format(term=self.context.target_term)
+        self.suggestions = self._starters()
+        return read + " " + GREETING.format(term=self.term_label)
 
     def view(self) -> dict[str, Any]:
         targets = self.student.open_requirements
@@ -645,8 +695,15 @@ class ChatSession:
             "questions": self.questions,
             "choices": [{"number": n, "text": c.text} for n, c in enumerate(self.choices, 1)],
             "requirements": [
-                {"title": t.title, "needed": t.needed, "unit": t.unit} for t in targets.values()
+                {
+                    "title": t.title,
+                    "needed": t.needed,
+                    "unit": t.unit,
+                    "hint": requirement_hint(self.advisor, rid, t),  # "ECON 1400 · 3 cr"
+                }
+                for rid, t in targets.items()
             ],
+            "suggestions": [{"label": x.label, "message": x.message} for x in self.suggestions],
             "facts": {
                 "credits_earned": self.facts.credits_earned,
                 "credits_in_progress": self.facts.credits_in_progress,

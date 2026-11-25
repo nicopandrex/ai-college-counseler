@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\n  \"intent\": \"schedule\",\n  \"question_topic\": null,\n  \"question_courses\": [],\n  \"question_requirements\": [],\n  \"question_subjects\": [],\n  \"spec_version\": \"0.1\",\n  \"mode\": \"term\",\n  \"target_term\": \"2027SP\",\n  \"restatement\": \"Keep Tuesday and Thursday afternoons (12:00\u201317:00) free for an internship.\",\n  \"constraints\": [\n    {\n      \"id\": \"c1\",\n      \"type\": \"free_block\",\n      \"params_json\": \"{\\\"day\\\":\\\"T\\\",\\\"end\\\":\\\"17:00\\\",\\\"label\\\":\\\"internship\\\",\\\"start\\\":\\\"12:00\\\"}\",\n      \"enforcement\": \"hard\",\n      \"weight\": 5,\n      \"weight_source\": \"stated\",\n      \"confidence\": 0.95,\n      \"source_text\": \"Tuesday and Thursday afternoons free for my internship\",\n      \"data_dependency\": \"reliable\"\n    },\n    {\n      \"id\": \"c2\",\n      \"type\": \"free_block\",\n      \"params_json\": \"{\\\"day\\\":\\\"R\\\",\\\"end\\\":\\\"17:00\\\",\\\"label\\\":\\\"internship\\\",\\\"start\\\":\\\"12:00\\\"}\",\n      \"enforcement\": \"hard\",\n      \"weight\": 5,\n      \"weight_source\": \"stated\",\n      \"confidence\": 0.95,\n      \"source_text\": \"Tuesday and Thursday afternoons free for my internship\",\n      \"data_dependency\": \"reliable\"\n    }\n  ],\n  \"clarifications\": [],\n  \"out_of_scope\": []\n}",
+ "usage": {
+  "input_tokens": 6548,
+  "output_tokens": 384,
+  "reasoning_tokens": 0
+ }
+}

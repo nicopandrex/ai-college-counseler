@@ -224,8 +224,12 @@ def test_what_do_i_still_need_is_answered_from_the_audit(tmp_path: Path) -> None
         Script(answer(intent="question", question_topic="remaining_requirements")), tmp_path
     )
     reply = chat.handle("what do I still need?")
-    assert reply.startswith("From your audit, you still need:")
+    assert reply.startswith("You have 6 requirements left:")
     assert "  • Macroeconomics" in reply and "Schedule" not in reply and chat.spec is None
+    assert chat.view()["suggestions"][-1] == {
+        "label": "Plan next semester",
+        "message": "Plan my next semester",
+    }
 
 
 def test_credits_question_quotes_the_audit(tmp_path: Path) -> None:
@@ -243,8 +247,8 @@ def test_course_questions_list_sections_from_the_catalog(tmp_path: Path) -> None
         answer(intent="question", question_topic="course_info", question_courses=["ECON 2020"])
     )
     reply = session(provider, tmp_path).handle("when is macro?")
-    assert "ECON 2020 B  TR 11:30am–12:45pm  · Ana Diaz" in reply
-    assert "Counts toward: Macroeconomics" in reply
+    assert "B TR 11:30am–12:45pm (Ana Diaz)" in reply
+    assert "It counts toward Macroeconomics." in reply
 
 
 def test_instructor_opinions_are_declined_honestly(tmp_path: Path) -> None:
@@ -257,7 +261,7 @@ def test_plan_mode_is_never_sent_to_the_term_solver(tmp_path: Path) -> None:
     plan["mode"], plan["target_term"] = "plan", None
     chat = session(Script(plan), tmp_path)
     reply = chat.handle("can I graduate by spring 2028?")
-    assert reply.startswith("I can only plan one semester (2027SP) for now")
+    assert reply.startswith("I can only plan one semester (Spring 2027) for now")
     assert "Schedule" not in reply and chat.spec is None
 
 
@@ -542,3 +546,87 @@ def test_rebuild_solves_from_scratch_with_the_new_course(tmp_path: Path) -> None
     assert "Found" in reply or "Schedule 1" in reply
     for plan in chat.view()["schedules"]:
         assert {"ECON 2020", "CS 3410"} <= {s["course"] for s in plan["sections"]}
+
+
+def test_the_translator_sees_the_recent_conversation(tmp_path: Path) -> None:
+    provider = Script(
+        answer(intent="question", question_topic="remaining_requirements"),
+        answer(
+            intent="question", question_topic="requirement_details", question_requirements=["MACRO"]
+        ),
+    )
+    chat = session(provider, tmp_path)
+    first = chat.handle("what do I still need?")
+    reply = chat.handle("how many credits is the macro one?")
+    prompt = provider.requests[1].user
+    assert "RECENT CONVERSATION:" in prompt and "student: what do I still need?" in prompt
+    assert f"planner: {first[:60]}" in prompt
+    assert reply.startswith("Macroeconomics: ") and "ECON 2020" in reply
+
+
+def test_course_options_are_answered_from_prerequisites(tmp_path: Path) -> None:
+    provider = Script(
+        answer(
+            intent="question",
+            question_topic="course_options",
+            question_subjects=["CS"],
+            question_courses=[],
+        )
+    )
+    reply = session(provider, tmp_path).handle("what CS classes can I take?")
+    assert reply.startswith("3 CS courses you haven't taken are offered in Spring 2027.")
+    assert "CS 4999" in reply and "requires CS 3999" in reply  # its prerequisite isn't met
+
+
+def test_undo_brings_back_the_requests_and_plans_before_a_change(tmp_path: Path) -> None:
+    macro = con("c1", "include_course", src="macro", course="ECON 2020")
+    fridays = con("c2", "free_day", src="Fridays off", day="F")
+    chat = session(Script(answer(macro), answer(macro, fridays)), tmp_path)
+    chat.handle("macro")
+    before = chat.view()
+    chat.handle("and Fridays off")
+    assert chat.view()["suggestions"] == [{"label": "Undo", "message": "/undo"}]
+    assert chat.handle("/undo").startswith("Undone")
+    assert (
+        chat.view()["rules"] == before["rules"] and chat.view()["schedules"] == before["schedules"]
+    )
+    assert chat.handle("/undo") == "There's nothing to undo."
+
+
+def test_the_web_hears_what_changed_and_the_load_assumption_once(tmp_path: Path) -> None:
+    macro = con("c1", "include_course", src="macro", course="ECON 2020")
+    fridays = con("c2", "free_day", src="Fridays off", day="F")
+    chat = session(Script(answer(macro), answer(macro, fridays)), tmp_path)
+    chat.list_schedules = False
+    first = chat.handle("macro")
+    assert first.startswith("Got it: added “take ECON 2020 (Macroeconomics)”.")
+    assert "I'm planning a full-time load (3–7 credits)" in first
+    second = chat.handle("and Fridays off")
+    assert second.startswith("Got it: added “Fridays free”.") and "full-time load" not in second
+
+
+def test_a_note_about_the_audit_is_said_once(tmp_path: Path) -> None:
+    from planner_solver.domain import RequirementTarget
+
+    odd = RequirementTarget(title="Macroeconomic Theory", selectors=("ECON 2020 with grade = B",))
+    macro = con("c1", "include_course", src="macro", course="ECON 2020")
+    fridays = con("c2", "free_day", src="Fridays off", day="F")
+    chat = session(Script(answer(macro), answer(macro, fridays)), tmp_path)
+    chat.student = chat.student.model_copy(
+        update={"open_requirements": {**chat.student.open_requirements, "THEORY": odd}}
+    )
+    assert "“Macroeconomic Theory” rule" in chat.handle("macro")
+    assert "Macroeconomic Theory" not in chat.handle("and Fridays off")
+
+
+def test_a_long_first_request_is_counted_not_repeated(tmp_path: Path) -> None:
+    many = [
+        con("c1", "include_course", src="macro", course="ECON 2020"),
+        con("c2", "free_day", src="Fridays off", day="F"),
+        con("c3", "include_course", src="networks", course="CS 3410"),
+        con("c4", "no_later_than", src="done by 5", time="17:00"),
+    ]
+    chat = session(Script(answer(*many)), tmp_path)
+    chat.list_schedules = False
+    reply = chat.handle("macro, networks, Fridays off, done by 5")
+    assert reply.startswith("Got it: added 4 requests (listed above the calendar).")

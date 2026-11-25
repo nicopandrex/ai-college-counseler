@@ -248,6 +248,8 @@ function Progress({ view, index, colorOf }: { view: View; index: number; colorOf
   const rows = schedule?.progress ?? [];
   const helped = rows.filter((p) => progressState(p) !== "none");
   const open = schedule ? rows.filter((p) => progressState(p) === "none") : view.requirements;
+  // credits worked out from the catalog, e.g. "ECON 1400 · 3 cr" for a "1 course" rule
+  const hints = new Map(view.requirements.map((r) => [r.title, r.hint]));
 
   return (
     <section className="sketch sketch-alt ruled max-w-5xl px-5 pb-4 pl-14 pt-3">
@@ -279,9 +281,11 @@ function Progress({ view, index, colorOf }: { view: View; index: number; colorOf
                     {name}
                     {path && <span className="text-sm text-pencil"> · {path}</span>}
                   </span>
-                  {r.needed && r.unit ? (
+                  {(r.needed && r.unit) || hints.get(r.title) ? (
                     <span className="ml-auto shrink-0 text-sm text-pencil">
-                      {r.needed} {r.needed === 1 ? r.unit.slice(0, -1) : r.unit}
+                      {r.needed && r.unit ? `${r.needed} ${r.needed === 1 ? r.unit.slice(0, -1) : r.unit}` : ""}
+                      {r.needed && r.unit && hints.get(r.title) ? " · " : ""}
+                      {hints.get(r.title)}
                     </span>
                   ) : null}
                 </li>

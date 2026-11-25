@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\n  \"intent\": \"schedule\",\n  \"question_topic\": null,\n  \"question_courses\": [],\n  \"question_requirements\": [],\n  \"question_subjects\": [],\n  \"spec_version\": \"0.1\",\n  \"mode\": \"plan\",\n  \"target_term\": null,\n  \"restatement\": \"Limit remaining semesters to a maximum of 15 credits per term.\",\n  \"constraints\": [\n    {\n      \"id\": \"c1\",\n      \"type\": \"credits_per_term\",\n      \"params_json\": \"{\\\"max\\\": 15, \\\"min\\\": 12}\",\n      \"enforcement\": \"hard\",\n      \"weight\": 5,\n      \"weight_source\": \"stated\",\n      \"confidence\": 0.95,\n      \"source_text\": \"I can't take more than 15 credits in any term\",\n      \"data_dependency\": \"reliable\"\n    }\n  ],\n  \"clarifications\": [],\n  \"out_of_scope\": []\n}",
+ "usage": {
+  "input_tokens": 6557,
+  "output_tokens": 240,
+  "reasoning_tokens": 0
+ }
+}

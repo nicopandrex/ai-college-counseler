@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\n  \"intent\": \"schedule\",\n  \"question_topic\": null,\n  \"question_courses\": [],\n  \"question_requirements\": [],\n  \"question_subjects\": [],\n  \"spec_version\": \"0.1\",\n  \"mode\": \"term\",\n  \"target_term\": \"2027SP\",\n  \"restatement\": \"Take one course that fulfills any open general education requirement for Spring 2027.\",\n  \"constraints\": [\n    {\n      \"id\": \"c1\",\n      \"type\": \"satisfy_requirement\",\n      \"params_json\": \"{\\\"count\\\":1,\\\"req_ids\\\":[\\\"GENED_S1\\\",\\\"GENED_AH3\\\",\\\"GENED_D1\\\",\\\"GENED_WIL2\\\",\\\"GENED_N2\\\"]}\",\n      \"enforcement\": \"hard\",\n      \"weight\": 5,\n      \"weight_source\": \"stated\",\n      \"confidence\": 0.95,\n      \"source_text\": \"I need one course that counts toward any of my open gen eds.\",\n      \"data_dependency\": \"reliable\"\n    }\n  ],\n  \"clarifications\": [],\n  \"out_of_scope\": []\n}",
+ "usage": {
+  "input_tokens": 6551,
+  "output_tokens": 275,
+  "reasoning_tokens": 0
+ }
+}

@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\n  \"intent\": \"schedule\",\n  \"question_topic\": null,\n  \"question_courses\": [],\n  \"question_requirements\": [],\n  \"question_subjects\": [],\n  \"spec_version\": \"0.1\",\n  \"mode\": \"term\",\n  \"target_term\": \"2027SP\",\n  \"restatement\": \"Schedule a lighter workload for Spring 2027.\",\n  \"constraints\": [\n    {\n      \"id\": \"c1\",\n      \"type\": \"difficulty_load\",\n      \"params_json\": \"{\\\"target\\\":\\\"light\\\"}\",\n      \"enforcement\": \"soft\",\n      \"weight\": 4,\n      \"weight_source\": \"inferred\",\n      \"confidence\": 0.8,\n      \"source_text\": \"I want a chill semester.\",\n      \"data_dependency\": \"estimated\"\n    }\n  ],\n  \"clarifications\": [],\n  \"out_of_scope\": []\n}",
+ "usage": {
+  "input_tokens": 6543,
+  "output_tokens": 224,
+  "reasoning_tokens": 0
+ }
+}

@@ -259,6 +259,10 @@ Running log. Resume from **Current status**. Newest log entries at the top.
   name/NetID/advisors to the LLM); rule depth 2; Gemini via its OpenAI-compatible endpoint.
 
 ## Open questions
+- Reply wording: replies stay templated (facts never generated). If the owner wants freer
+  phrasing, the option is an LLM rewrite of the templated facts with a check that every code,
+  time, number and name in it appears in the facts (fall back to the template otherwise).
+  That relaxes the "templated, never generated" rule, so it's the owner's call.
 - Exclusive vs shared course counting between requirements of the same major (see
   "counts toward" above).
 - Next.js 14 advisories (last 14.x is 14.2.35): decide before the M10 deploy.
@@ -272,6 +276,30 @@ Running log. Resume from **Current status**. Newest log entries at the top.
   (UVM publishes no caps).
 
 ## Log
+- **2026-11-24 (degree questions + conversational chat).** Owner feedback on the econ What-If
+  audit: a raw note ("economics_major…: cannot interpret 'ECON 2400 with resident= Y'"), a
+  follow-up it couldn't resolve ("for the ones where u say 1 course, how many credits?"),
+  "1 course" with no credits, and no answer to "can I take other econ classes while taking
+  micro, or is it a prereq for everything?". Built:
+  - `with resident= Y` = taken at UVM (every planned course is); unreadable rules are named in
+    the student's terms, and each note is said once per conversation.
+  - `planner_chat/answers.py` (no LLM): what's left (grouped, credits worked out from the
+    catalog: "ECON 1400 (3 credits)", "6 credits (about 2 courses)"); requirement details
+    ("together those come to 12 credits", what's offered, what you can take); course options
+    by subject/requirement, incl. "alongside X" (same-term only when the prereq is
+    concurrent-ok) and how many courses need X directly or transitively; concise course info
+    with prerequisites and what it unlocks.
+  - Translator: topics `requirement_details`, `course_options`; fields
+    `question_requirements`, `question_subjects`; RECENT CONVERSATION (last 6 messages) to
+    resolve "those"/"that class". Eval re-recorded: 49/50 (u16 credit_range as before);
+    50 live Flash calls, ~328k input + 11k output tokens (sampled 3 first).
+  - Conversational turns: tap-to-send follow-ups (`suggestions`), "/undo" for the last
+    change, the web hears what changed ("Got it: added “Fridays free”") instead of every
+    request, the full-time-load assumption is said once, clarifying questions read as plain
+    asks. CLI keeps the full restatement and prints follow-ups.
+  - Checked on real UVM 2027SP data with requirement rules copied from the owner's audit:
+    the "1 course" follow-up resolves to the four foundations (12 credits); the econ
+    question answers "11 of the 15 need ECON 1450; alongside it you can take 4".
 - **2026-11-24 (owner bug + edit flow).** Bug: asking for 15 credits, then closing that chip,
   gave a 31-credit plan. A stated load replaces the full-time band, and closing it removed
   the only credit cap (the solver then adds every course that counts toward a requirement).

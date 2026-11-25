@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"intent\":\"schedule\",\"question_topic\":null,\"question_courses\":[],\"question_requirements\":[],\"question_subjects\":[],\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"No classes in the evening (must finish by 17:00).\",\"constraints\":[{\"id\":\"c1\",\"type\":\"no_later_than\",\"params_json\":\"{\\\"time\\\":\\\"17:00\\\"}\",\"enforcement\":\"hard\",\"weight\":5,\"weight_source\":\"stated\",\"confidence\":1.0,\"source_text\":\"I can't take evening classes.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}",
+ "usage": {
+  "input_tokens": 6545,
+  "output_tokens": 150,
+  "reasoning_tokens": 0
+ }
+}

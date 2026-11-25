@@ -68,7 +68,10 @@ def cmd_chat(args: argparse.Namespace) -> int:
     audit, _ = _student(args)
     chat = open_chat(audit, args.term, args.standing, tuple(args.fail))
     messages = args.script.read_text(encoding="utf-8").splitlines() if args.script else None
-    print(f"Planning {args.term}. Tell me what you want; /spec shows your requests, /quit exits.")
+    print(
+        f"Planning {args.term}. Tell me what you want; /spec shows your requests, /undo takes "
+        "back the last change, /quit exits."
+    )
     while True:
         if messages is not None:
             if not messages:
@@ -84,6 +87,8 @@ def cmd_chat(args: argparse.Namespace) -> int:
             break
         if message.strip():
             print(chat.handle(message))
+            if chat.suggestions:  # follow-ups the web shows as chips
+                print("  try: " + " | ".join(x.message for x in chat.suggestions))
     print(chat.gateway.usage_summary(), file=sys.stderr)
     return 0
 

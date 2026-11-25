@@ -57,8 +57,11 @@ export const ViewSchema = z.object({
       title: z.string(),
       needed: z.number().nullable(),
       unit: z.enum(["credits", "courses"]).nullable(),
+      hint: z.string().nullable(), // "ECON 1400 · 3 cr", worked out from the catalog
     }),
   ),
+  // follow-ups the student can tap; `message` is sent as if typed ("/undo" undoes)
+  suggestions: z.array(z.object({ label: z.string(), message: z.string() })),
   facts: z.object({
     credits_earned: z.number().nullable(),
     credits_in_progress: z.number().nullable(),
