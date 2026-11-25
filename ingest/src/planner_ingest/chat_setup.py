@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import os
 import re
 from pathlib import Path
 
+from planner_chat.phrasing import PURPOSE as PHRASE
+from planner_chat.phrasing import Phraser, instructor_names
 from planner_chat.session import ChatSession, StudentFacts
 from planner_chat.translator import PURPOSE as TRANSLATE
 from planner_chat.translator import TranslatorContext
@@ -100,4 +103,13 @@ def open_chat(
         out_of_scope_log,
         facts=facts(audit),
         what_if=what_if,
+        phraser=phraser(term),
     )
+
+
+def phraser(term: TermData) -> Phraser | None:
+    """Natural wording for replies (its own LLM budget); PLANNER_REWORD=0 shows the templates."""
+    if os.environ.get("PLANNER_REWORD", "1") == "0":
+        return None
+    names = instructor_names([name for s in term.sections for name in s.instructors])
+    return Phraser(LLMGateway.from_env(PHRASE), names)

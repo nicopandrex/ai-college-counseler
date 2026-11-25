@@ -22,7 +22,9 @@ Test data: `fixtures/private/` (the owner's real audit; never committed).
   language → constraint spec (schema instance) → validation → CP-SAT solver → results → language.
   The LLM touches only the two ends.
 - Every fact shown to a user (times, instructors, requirement coverage) is templated from
-  solver/database output, never generated.
+  solver/database output, never generated. A reply may be reworded by the LLM only through
+  `planner_chat.phrasing` (owner decision, 2026-11-24): the rewrite is shown only if it keeps
+  the template's facts, otherwise the template is shown.
 - Audit ingestion is deterministic-first, **no vision models on the main path**:
   - pdfplumber `extract_tables()` for requirement blocks (`extract_text()` scrambles two-column layouts).
   - Status icons are vector curves in the left margin (x0 < 60): green fill (0.0, 0.502, 0.302) =

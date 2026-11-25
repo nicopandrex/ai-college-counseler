@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from planner_chat.answers import Advisor, Answer, Suggestion, requirement_hint, term_name
+from planner_chat.phrasing import Phraser
 from planner_chat.translator import Translation, TranslatorContext, translate
 from planner_llm import LLMError, LLMGateway
 from planner_solver.describe import DEFAULT_IDS, describe, summary
@@ -129,6 +130,7 @@ class ChatSession:
     )
     history: list[tuple[str, str]] = field(default_factory=list)  # ("student"|"planner", text)
     suggestions: list[Suggestion] = field(default_factory=list)  # follow-ups for this turn
+    phraser: Phraser | None = None  # natural wording of each reply, checked against the draft
     questions: list[dict[str, Any]] = field(default_factory=list)  # asked on the last turn
     list_schedules: bool = True  # False when the schedules are drawn elsewhere (web canvas)
     plan: int = 0  # the schedule the student is looking at (edits apply to it)
@@ -151,6 +153,8 @@ class ChatSession:
         earlier = list(self.history)
         self.suggestions = []
         reply = self._respond(message.strip(), plan, earlier)
+        if self.phraser is not None and not message.strip().startswith("/"):
+            reply = self.phraser.reword(reply, message.strip())
         self.history = [*earlier, ("student", message.strip()), ("planner", reply)][-HISTORY:]
         return reply
 

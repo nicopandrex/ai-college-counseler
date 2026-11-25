@@ -160,3 +160,13 @@ def test_missing_prerequisites_read_as_one_phrase() -> None:
 def test_a_hint_names_a_course_only_when_that_one_course_is_needed() -> None:
     two = RequirementTarget(title="Two from", selectors=("ECON 1400",), needed=2, unit="courses")
     assert requirement_hint(advisor(), "major.macro", two) == "3 cr each"
+
+
+def test_requirement_names_drop_the_audits_counting_text() -> None:
+    from planner_chat.answers import short
+
+    assert short("ELECTIVES › OPEN LEVEL. 1 additional course/3 credits from the following") == (
+        "Open Level"
+    )
+    assert short("HUMANITIES. 2 courses with an AH3 designation") == "Humanities"
+    assert short("Liberal Arts Categories › Social Sciences (S1)") == "Social Sciences (S1)"

@@ -259,10 +259,6 @@ Running log. Resume from **Current status**. Newest log entries at the top.
   name/NetID/advisors to the LLM); rule depth 2; Gemini via its OpenAI-compatible endpoint.
 
 ## Open questions
-- Reply wording: replies stay templated (facts never generated). If the owner wants freer
-  phrasing, the option is an LLM rewrite of the templated facts with a check that every code,
-  time, number and name in it appears in the facts (fall back to the template otherwise).
-  That relaxes the "templated, never generated" rule, so it's the owner's call.
 - Exclusive vs shared course counting between requirements of the same major (see
   "counts toward" above).
 - Next.js 14 advisories (last 14.x is 14.2.35): decide before the M10 deploy.
@@ -276,6 +272,19 @@ Running log. Resume from **Current status**. Newest log entries at the top.
   (UVM publishes no caps).
 
 ## Log
+- **2026-11-24 (reworded replies, owner decision).** Owner chose LLM wording over plain
+  templates, "making sure it's still in line with the actual data". Every reply is still
+  built from data first (the draft); `planner_chat/phrasing.py` asks the LLM (own budget,
+  purpose `phrase`, Flash) to say it naturally, and shows the rewrite only if `ungrounded()`
+  finds nothing: same course codes (none added or dropped), no time, number, number word or
+  instructor surname the draft lacks, no amount changed ("3 credits" stays 3; a bare "4" may
+  become "4 courses"), and every credit/course amount kept. Anything else, or an LLM error,
+  shows the draft. Slash commands aren't reworded. `PLANNER_REWORD=0` turns it off.
+  Known limit: the check can't see a flipped meaning that keeps the same codes and numbers
+  ("can" vs "can't"); the prompt forbids it, and the plan itself is always drawn from the
+  solver. Live check on real UVM data: 2 of 3 rewrites shown, 1 rejected (an added number)
+  and replaced by its draft. Requirement names now drop the audit's counting text
+  ("OPEN LEVEL. 1 additional course/3 credits…" -> "Open Level").
 - **2026-11-24 (degree questions + conversational chat).** Owner feedback on the econ What-If
   audit: a raw note ("economics_major…: cannot interpret 'ECON 2400 with resident= Y'"), a
   follow-up it couldn't resolve ("for the ones where u say 1 course, how many credits?"),

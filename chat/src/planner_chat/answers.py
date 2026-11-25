@@ -51,8 +51,13 @@ def term_name(term: str) -> str:
 
 
 def short(title: str) -> str:
-    """A requirement's own name, without the block path above it."""
-    return title.split(" › ")[-1]
+    """A requirement's own name: no block path, no "N courses from the following" text.
+    "ELECTIVES › OPEN LEVEL. 1 additional course/3 credits…" -> "Open Level"."""
+    name = title.split(" › ")[-1]
+    head, dot, _ = name.partition(". ")
+    if dot and head.isupper() and len(head) > 2:
+        return head.title().replace("&", "and")
+    return name
 
 
 def plural(n: float, noun: str) -> str:

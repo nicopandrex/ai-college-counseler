@@ -630,3 +630,20 @@ def test_a_long_first_request_is_counted_not_repeated(tmp_path: Path) -> None:
     chat.list_schedules = False
     reply = chat.handle("macro, networks, Fridays off, done by 5")
     assert reply.startswith("Got it: added 4 requests (listed above the calendar).")
+
+
+def test_replies_are_reworded_and_the_wording_is_what_the_chat_remembers(tmp_path: Path) -> None:
+    from planner_chat.phrasing import Phraser
+
+    class Friendly:
+        name = "friendly"
+
+        def complete_json(self, request: JsonRequest, model: str) -> str:
+            return json.dumps({"reply": "Hey! What would you like for Spring 2027?"})
+
+    chat = session(Script(answer(intent="greeting")), tmp_path)
+    friendly = "Hey! What would you like for Spring 2027?"
+    chat.phraser = Phraser(LLMGateway(Friendly(), "m", tmp_path / "p", CacheMode.LIVE))
+    assert chat.handle("hi") == friendly
+    assert chat.history[-1] == ("planner", friendly)
+    assert chat.handle("/undo") == "There's nothing to undo."  # commands aren't reworded
