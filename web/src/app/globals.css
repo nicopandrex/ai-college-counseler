@@ -90,6 +90,11 @@
     background-repeat: no-repeat;
   }
 
+  /* pencil shading over a highlighter fill */
+  .hatch {
+    background-image: repeating-linear-gradient(-45deg, rgba(39, 48, 74, 0.2) 0 1.5px, transparent 1.5px 7px);
+  }
+
   .thin-scroll {
     scrollbar-width: thin;
     scrollbar-color: theme("colors.pencil") transparent;

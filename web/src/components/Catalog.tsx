@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { searchCatalog, type Catalog as Results, type CatalogCourse } from "@/lib/api";
+import { splitTitle } from "@/lib/progress";
 import { Doodle } from "./palette";
 
 interface Props {
@@ -150,15 +151,16 @@ export function Catalog({ session, open, busy, scheduled, onClose, onAdd }: Prop
                 )}
               </div>
 
-              {(status || c.counts_toward.length > 0) && (
-                <div className="mt-1.5 flex flex-wrap gap-x-2 gap-y-1 text-sm">
-                  {status && <span className={status.tone}>{status.text}</span>}
+              {status && <div className={`mt-1 text-sm ${status.tone}`}>{status.text}</div>}
+              {c.counts_toward.length > 0 && (
+                <ul className="mt-1 text-sm">
                   {c.counts_toward.map((t) => (
-                    <span key={t} className="highlight px-1">
-                      ✓ {t}
-                    </span>
+                    <li key={t} className="flex items-start gap-1.5 text-pen-blue" title={t}>
+                      <Doodle kind="arrow" className="mt-0.5 h-3.5 w-3.5" strokeWidth={2.2} />
+                      {splitTitle(t).name}
+                    </li>
                   ))}
-                </div>
+                </ul>
               )}
               {c.notes.length > 0 && <p className="mt-1 text-sm text-pencil">{c.notes.join("; ")}</p>}
 

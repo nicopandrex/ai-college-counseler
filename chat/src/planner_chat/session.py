@@ -465,6 +465,7 @@ class ChatSession:
             "schedules": [self._schedule_view(s) for s in result.schedules[:SHOWN]]
             if result
             else [],
+            "conflict_ids": list(result.conflict) if result else [],
             "conflict": [describe(by_id[c], self.term, targets) for c in result.conflict]
             if result and spec
             else [],
@@ -520,4 +521,22 @@ class ChatSession:
                     "warnings": self._result.prereq_unchecked.get(s.course, []),
                 }
             )
-        return {"credits": schedule.credits, "sections": rows}
+        progress = []
+        for rid, target in targets.items():
+            codes = schedule.contributions.get(rid, [])
+            credits = sum(self.term.courses[c].credits for c in codes)
+            progress.append(
+                {
+                    "title": target.title,
+                    "needed": target.needed,
+                    "unit": target.unit,
+                    "planned": credits if target.unit == "credits" else len(codes),
+                    "courses": codes,
+                }
+            )
+        return {
+            "credits": schedule.credits,
+            "sections": rows,
+            "missed_rules": schedule.soft_missed,  # "if possible" requests this plan can't meet
+            "progress": progress,  # what this plan adds to each open requirement
+        }

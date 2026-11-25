@@ -132,6 +132,7 @@ def test_infeasible_offers_numbered_fixes_and_a_number_applies_one_without_the_l
     chat = session(provider, tmp_path)
     reply = chat.handle("macro, not Diaz, open seats only")
     assert "can't all hold at once" in reply and "Reply with a fix's number" in reply
+    assert set(chat.view()["conflict_ids"]) == {"c1", "c2", "c3"}
     reply = chat.handle("1")  # least important first: drop "only open seats"
     assert len(provider.requests) == 1  # no second LLM call
     assert reply.startswith("Dropped “only sections with open seats”.") and "Schedule 1" in reply
@@ -421,3 +422,24 @@ def test_catalog_marks_taken_and_blocked_courses_and_defaults_to_what_counts(
     default = [c["code"] for c in chat.catalog("")["courses"]]
     assert "ART 1100" not in default and "ECON 2020" in default  # counts for nothing: hidden
     assert chat.catalog("zzz") == {"courses": [], "total": 0}
+
+
+def test_each_plan_says_which_requests_it_meets_and_what_it_adds_per_requirement(
+    tmp_path: Path,
+) -> None:
+    late = con("c2", "no_earlier_than", "soft", 3, src="nothing before 1", time="13:00")
+    macro = con("c1", "include_course", src="macro", course="ECON 2020")
+    chat = session(Script(answer(macro, late)), tmp_path)
+    chat.handle("macro, and nothing before 1 if I can")
+    view = chat.view()
+    plan = view["schedules"][0]
+    assert "c2" in plan["missed_rules"] and "c1" not in plan["missed_rules"]  # macro is 11:30
+    assert view["conflict_ids"] == []
+    assert {
+        "title": "Macroeconomics",
+        "needed": None,
+        "unit": None,
+        "planned": 1,
+        "courses": ["ECON 2020"],
+    } in plan["progress"]
+    assert len(plan["progress"]) == len(view["requirements"])  # every open requirement

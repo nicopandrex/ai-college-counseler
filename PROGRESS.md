@@ -272,6 +272,14 @@ Running log. Resume from **Current status**. Newest log entries at the top.
   (UVM publishes no caps).
 
 ## Log
+- **2026-11-24 (plan feedback).** Owner: highlighted "counts toward" lines didn't show
+  requirement progress, and the wish list didn't say which requests were met. The view now
+  carries, per schedule, `missed_rules` (the solver's soft_missed) and `progress` (what the
+  plan adds to each open requirement: courses + planned amount), plus `conflict_ids`. The web
+  shows requests as a checklist (ticked / crossed out "Plan A couldn't fit this one" / "!"
+  clash) and a "Degree progress" section with hand-drawn bars filled per course; "covered!"
+  only when the audit states an amount needed. Double counting stays an open question, so the
+  page says the audit decides it.
 - **2026-11-24 (UI theme).** Owner asked for a hand-drawn school-planner look instead of Bauhaus:
   ruled paper, Caveat/Patrick Hand fonts, wobbly pen outlines (SVG displacement filter on a
   pseudo-element so text stays crisp), highlighter sticky notes per course, spiral binding,

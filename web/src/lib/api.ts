@@ -16,6 +16,14 @@ const Section = z.object({
   warnings: z.array(z.string()),
 });
 
+const Progress = z.object({
+  title: z.string(),
+  needed: z.number().nullable(),
+  unit: z.enum(["credits", "courses"]).nullable(),
+  planned: z.number(),
+  courses: z.array(z.string()),
+});
+
 export const ViewSchema = z.object({
   term: z.string(),
   rules: z.array(
@@ -28,7 +36,15 @@ export const ViewSchema = z.object({
     }),
   ),
   status: z.enum(["ok", "infeasible"]).nullable(),
-  schedules: z.array(z.object({ credits: z.number(), sections: z.array(Section) })),
+  schedules: z.array(
+    z.object({
+      credits: z.number(),
+      sections: z.array(Section),
+      missed_rules: z.array(z.string()), // "if possible" requests this plan doesn't meet
+      progress: z.array(Progress), // what this plan adds to each open requirement
+    }),
+  ),
+  conflict_ids: z.array(z.string()),
   conflict: z.array(z.string()),
   why: z.array(z.string()),
   fixes: z.array(z.object({ number: z.number(), text: z.string(), unlocks: z.number() })),
@@ -50,6 +66,7 @@ export const ViewSchema = z.object({
 
 export type View = z.infer<typeof ViewSchema>;
 export type ScheduleSection = z.infer<typeof Section>;
+export type RequirementProgress = z.infer<typeof Progress>;
 
 const CatalogSchema = z.object({
   total: z.number(),
