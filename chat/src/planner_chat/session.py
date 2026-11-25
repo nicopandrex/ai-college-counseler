@@ -14,7 +14,14 @@ from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
-from planner_chat.answers import Advisor, Answer, Suggestion, requirement_hint, term_name
+from planner_chat.answers import (
+    Advisor,
+    Answer,
+    Plan,
+    Suggestion,
+    requirement_hint,
+    term_name,
+)
 from planner_chat.phrasing import Phraser
 from planner_chat.translator import Translation, TranslatorContext, translate
 from planner_llm import LLMError, LLMGateway
@@ -172,7 +179,12 @@ class ChatSession:
             return self._apply_fix(int(text))
         try:
             translation = translate(
-                text, self.context, self.gateway, prior=self._prior(), history=earlier
+                text,
+                self.context,
+                self.gateway,
+                prior=self._prior(),
+                history=earlier,
+                plans=self._plan_lines(),
             )
         except LLMError as exc:
             return f"Sorry, I couldn't process that ({exc}). Your current request is unchanged."
@@ -458,6 +470,12 @@ class ChatSession:
             answer = a.course_info(asked.courses)
         elif topic == "course_options":
             answer = a.course_options(asked.subjects, asked.courses, asked.requirements)
+        elif topic == "plan_progress":
+            answer = a.plan_progress(
+                self._plans(asked.plans),
+                self.facts.credits_earned,
+                self.facts.credits_in_progress,
+            )
         elif topic == "credits_earned":
             answer = Answer(self._credits())
         elif topic == "what_if_fail":
@@ -470,6 +488,30 @@ class ChatSession:
         return answer.text
 
     # -- answers from the audit and the catalog -----------------------------------------------
+
+    def _shown_plans(self) -> list[Plan]:
+        schedules = self._result.schedules[:SHOWN] if self._result else []
+        return [
+            Plan(f"Plan {PLAN_NAMES[i]}", s.credits, s.courses, s.contributions)
+            for i, s in enumerate(schedules)
+        ]
+
+    def _plans(self, letters: list[str]) -> list[Plan]:
+        """The plans a question is about: the letters named, else the one on screen."""
+        shown = self._shown_plans()
+        picked = [p for p in shown if p.name[-1] in {x.strip().upper()[-1:] for x in letters}]
+        if picked:
+            return picked
+        return shown[min(self.plan, len(shown) - 1) : min(self.plan, len(shown) - 1) + 1]
+
+    def _plan_lines(self) -> list[str]:
+        """What the translator sees of the plans, to resolve "plan A" / "this plan"."""
+        index = min(self.plan, len(self._shown_plans()) - 1)
+        return [
+            f"{p.name}: {p.credits:g} credits, {', '.join(p.courses)}"
+            + (" (on screen)" if i == index else "")
+            for i, p in enumerate(self._shown_plans())
+        ]
 
     def _credits(self) -> str:
         f = self.facts
@@ -745,19 +787,17 @@ class ChatSession:
                     "warnings": self._result.prereq_unchecked.get(s.course, []),
                 }
             )
-        progress = []
-        for rid, target in targets.items():
-            codes = schedule.contributions.get(rid, [])
-            credits = sum(self.term.courses[c].credits for c in codes)
-            progress.append(
-                {
-                    "title": target.title,
-                    "needed": target.needed,
-                    "unit": target.unit,
-                    "planned": credits if target.unit == "credits" else len(codes),
-                    "courses": codes,
-                }
-            )
+        amounts = self.advisor.progress(schedule.contributions)
+        progress = [
+            {
+                "title": target.title,
+                "needed": target.needed,
+                "unit": target.unit,
+                "planned": amounts[rid][0],
+                "courses": schedule.contributions.get(rid, []),
+            }
+            for rid, target in targets.items()
+        ]
         return {
             "credits": schedule.credits,
             "sections": rows,

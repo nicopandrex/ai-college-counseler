@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"intent\":\"schedule\",\"question_topic\":null,\"question_courses\":[],\"question_requirements\":[],\"question_subjects\":[],\"question_plans\":[],\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Keep Fridays free from all classes.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"free_day\",\"params_json\":\"{\\\"day\\\":\\\"F\\\"}\",\"enforcement\":\"hard\",\"weight\":5,\"weight_source\":\"stated\",\"confidence\":1.0,\"source_text\":\"Keep Fridays free, I absolutely need that.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}",
+ "usage": {
+  "input_tokens": 6667,
+  "output_tokens": 141,
+  "reasoning_tokens": 0
+ }
+}

@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"intent\":\"schedule\",\"question_topic\":null,\"question_courses\":[],\"question_requirements\":[],\"question_subjects\":[],\"question_plans\":[],\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Looking for a lighter, chill workload for 2027SP.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"difficulty_load\",\"params_json\":\"{\\\"target\\\":\\\"light\\\"}\",\"enforcement\":\"soft\",\"weight\":4,\"weight_source\":\"inferred\",\"confidence\":0.8,\"source_text\":\"I want a chill semester\",\"data_dependency\":\"estimated\"},{\"id\":\"c2\",\"type\":\"credit_range\",\"params_json\":\"{\\\"min\\\":12,\\\"max\\\":14}\",\"enforcement\":\"hard\",\"weight\":3,\"weight_source\":\"inferred\",\"confidence\":0.8,\"source_text\":\"chill semester\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}",
+ "usage": {
+  "input_tokens": 6664,
+  "output_tokens": 208,
+  "reasoning_tokens": 0
+ }
+}

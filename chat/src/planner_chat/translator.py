@@ -26,6 +26,7 @@ TOPICS = (
     "requirement_details",
     "course_info",
     "course_options",
+    "plan_progress",
     "what_if_fail",
     "instructor_opinion",
     "other",
@@ -50,6 +51,7 @@ class Translation:
     courses: list[str] = field(default_factory=list)  # courses a question is about
     requirements: list[str] = field(default_factory=list)  # requirement ids it is about
     subjects: list[str] = field(default_factory=list)  # subject codes it is about ("ECON")
+    plans: list[str] = field(default_factory=list)  # plan letters it is about ("A")
 
 
 def _nullable(schema: dict[str, Any]) -> dict[str, Any]:
@@ -96,6 +98,7 @@ def output_schema() -> dict[str, Any]:
             "question_courses": {"type": "array", "items": string},
             "question_requirements": {"type": "array", "items": string},
             "question_subjects": {"type": "array", "items": string},
+            "question_plans": {"type": "array", "items": string},
             "spec_version": {"enum": ["0.1"]},
             "mode": {"enum": ["term", "plan"]},
             "target_term": _nullable(string),
@@ -126,6 +129,7 @@ def user_message(
     context: TranslatorContext,
     prior: dict[str, Any] | None,
     history: list[tuple[str, str]] | None = None,
+    plans: list[str] | None = None,
 ) -> str:
     lines = [f"TARGET TERM: {context.target_term}", "", "OPEN REQUIREMENTS:"]
     lines += [f"- {rid}: {title}" for rid, title in context.open_requirements]
@@ -137,6 +141,8 @@ def user_message(
     lines += ["", "CATALOG:"] + [f"{code} — {title}" for code, title in context.catalog]
     if prior is not None:
         lines += ["", "PRIOR SPEC:", json.dumps(prior, indent=1)]
+    if plans:
+        lines += ["", "CURRENT PLANS:"] + [f"- {plan}" for plan in plans]
     if history:
         lines += ["", "RECENT CONVERSATION:"]
         for who, text in history[-HISTORY_TURNS:]:
@@ -191,6 +197,7 @@ def to_contract(raw: dict[str, Any]) -> Translation:
         courses=list(raw.get("question_courses") or []),
         requirements=list(raw.get("question_requirements") or []),
         subjects=list(raw.get("question_subjects") or []),
+        plans=list(raw.get("question_plans") or []),
     )
 
 
@@ -201,11 +208,12 @@ def translate(
     prior: dict[str, Any] | None = None,
     effort: str = "medium",
     history: list[tuple[str, str]] | None = None,
+    plans: list[str] | None = None,
 ) -> Translation:
     request = JsonRequest(
         purpose=PURPOSE,
         system=system_prompt(),
-        user=user_message(message, context, prior, history),
+        user=user_message(message, context, prior, history, plans),
         schema=output_schema(),
         max_tokens=16000,
         effort=effort,

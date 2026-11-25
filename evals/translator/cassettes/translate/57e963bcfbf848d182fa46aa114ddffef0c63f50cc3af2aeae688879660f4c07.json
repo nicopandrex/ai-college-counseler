@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"intent\":\"schedule\",\"question_topic\":null,\"question_courses\":[],\"question_requirements\":[],\"question_subjects\":[],\"question_plans\":[],\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"No classes before 9:00 AM on Tuesdays and Thursdays.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"no_earlier_than\",\"params_json\":\"{\\\"time\\\": \\\"09:00\\\", \\\"days\\\": [\\\"T\\\", \\\"R\\\"]}\",\"enforcement\":\"hard\",\"weight\":5,\"weight_source\":\"stated\",\"confidence\":0.95,\"source_text\":\"I can't do anything before 9 on Tuesdays and Thursdays.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}",
+ "usage": {
+  "input_tokens": 6672,
+  "output_tokens": 172,
+  "reasoning_tokens": 0
+ }
+}

@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\n  \"intent\": \"schedule\",\n  \"question_topic\": null,\n  \"question_courses\": [],\n  \"question_requirements\": [],\n  \"question_subjects\": [],\n  \"question_plans\": [],\n  \"spec_version\": \"0.1\",\n  \"mode\": \"term\",\n  \"target_term\": \"2027SP\",\n  \"restatement\": \"Prefer class sections with maximum enrollment under 30 students.\",\n  \"constraints\": [\n    {\n      \"id\": \"c1\",\n      \"type\": \"section_size\",\n      \"params_json\": \"{\\\"max_enrollment\\\": 30}\",\n      \"enforcement\": \"soft\",\n      \"weight\": 3,\n      \"weight_source\": \"inferred\",\n      \"confidence\": 0.95,\n      \"source_text\": \"I prefer small classes, under 30 people.\",\n      \"data_dependency\": \"may_be_missing\"\n    }\n  ],\n  \"clarifications\": [],\n  \"out_of_scope\": []\n}",
+ "usage": {
+  "input_tokens": 6669,
+  "output_tokens": 246,
+  "reasoning_tokens": 0
+ }
+}

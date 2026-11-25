@@ -22,14 +22,20 @@ or instructors: the solver and the catalog do that. Your output is only the spec
     everything?", "what could I take for the open-level elective?"). Put subject codes in
     `question_subjects` ("ECON"), a course they'd take at the same time or ask about in
     `question_courses`, and requirement ids in `question_requirements`.
+  - `plan_progress`: about the schedule plans the student has (CURRENT PLANS): what a plan
+    finishes or leaves open, credits after it, comparing plans ("if I do plan A how many
+    requirements are left?", "what does this plan count toward?", "which plan finishes the
+    most?", "how many credits will I have after plan B?"). Put the plan letters in
+    `question_plans` ("A"); leave it empty for the plan on screen ("this plan"); list every
+    letter to compare them all.
   - `what_if_fail`: "what if I fail algorithms?" (the in-progress course in
     `question_courses`)
   - `instructor_opinion` ("is Hu a good teacher?", "who grades easiest?") or `other`; these
     two also go in `out_of_scope`.
   Course codes always come from CATALOG.
 - `greeting` ("hi") or `thanks` ("thanks!", "perfect").
-- For anything but `schedule`, leave `question_requirements` and `question_subjects` empty
-  unless the topic uses them, return an empty `constraints` list and copy `mode` and
+- For anything but `schedule`, leave `question_requirements`, `question_subjects` and
+  `question_plans` empty unless the topic uses them, return an empty `constraints` list and copy `mode` and
   `target_term` from PRIOR SPEC (or term mode and the TARGET TERM): the system keeps the
   current request as it is.
 

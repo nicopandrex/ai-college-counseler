@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"intent\":\"schedule\",\"question_topic\":null,\"question_courses\":[],\"question_requirements\":[],\"question_subjects\":[],\"question_plans\":[],\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Targeting 15 to 16 credits for 2027SP.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"credit_range\",\"params_json\":\"{\\\"min\\\": 15, \\\"max\\\": 16}\",\"enforcement\":\"hard\",\"weight\":4,\"weight_source\":\"stated\",\"confidence\":1.0,\"source_text\":\"I want 15 to 16 credits.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}",
+ "usage": {
+  "input_tokens": 6669,
+  "output_tokens": 162,
+  "reasoning_tokens": 0
+ }
+}

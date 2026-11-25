@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"intent\":\"schedule\",\"question_topic\":null,\"question_courses\":[],\"question_requirements\":[],\"question_subjects\":[],\"question_plans\":[],\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Include at least one course that fulfills the WIL2 requirement.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"satisfy_requirement\",\"params_json\":\"{\\\"req_ids\\\": [\\\"GENED_WIL2\\\"], \\\"count\\\": 1}\",\"enforcement\":\"hard\",\"weight\":4,\"weight_source\":\"stated\",\"confidence\":0.95,\"source_text\":\"Make sure one of my classes has the WIL2 attribute.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}",
+ "usage": {
+  "input_tokens": 6670,
+  "output_tokens": 165,
+  "reasoning_tokens": 0
+ }
+}

@@ -170,3 +170,64 @@ def test_requirement_names_drop_the_audits_counting_text() -> None:
     )
     assert short("HUMANITIES. 2 courses with an AH3 designation") == "Humanities"
     assert short("Liberal Arts Categories › Social Sciences (S1)") == "Social Sciences (S1)"
+
+
+def test_a_plan_says_what_it_finishes_what_it_helps_and_what_stays_open() -> None:
+    from planner_chat.answers import Plan
+
+    plan = Plan(
+        "Plan A",
+        9,
+        ["ECON 1400", "ECON 1450", "SOC 1100"],
+        {"major.macro": ["ECON 1400"], "major.open": ["ECON 1450"], "core.s1": ["SOC 1100"]},
+    )
+    answer = advisor().plan_progress([plan], earned=80, in_progress=15)
+    assert answer.text.splitlines() == [
+        "With Plan A (9 credits), you'd finish 2 of your 4 open requirements and make "
+        "progress on 1 more, so 2 would still be open.",
+        "Finished: Principles of Macroeconomics and OPEN LEVEL.",
+        "Partly done: Social Sciences (S1) (3 of 6 credits).",
+        "Not touched by Plan A: Macroeconomic Theory.",
+        "You'd be at 104 credits (80 earned, 15 in progress and 9 from Plan A).",
+    ]
+    assert [s.message for s in answer.suggestions] == [
+        "Compare my plans",
+        "What courses count for Macroeconomic Theory?",
+    ]
+
+
+def test_plans_are_compared_by_what_they_finish() -> None:
+    from planner_chat.answers import Plan
+
+    a = Plan(
+        "Plan A",
+        9,
+        ["ECON 1400", "SOC 1100"],
+        {"major.macro": ["ECON 1400"], "core.s1": ["SOC 1100"]},
+    )
+    b = Plan("Plan B", 3, ["SOC 1100"], {"core.s1": ["SOC 1100"]})
+    text = advisor().plan_progress([a, b]).text
+    assert text.splitlines() == [
+        "Plan A (9 credits) finishes 1 of your 4 open requirements, helps with 1 more and "
+        "leaves 3 open.",
+        "Plan B (3 credits) finishes 0 of your 4 open requirements, helps with 1 more and "
+        "leaves 4 open.",
+        "Plan A finishes the most.",
+    ]
+    assert advisor().plan_progress([]).text.startswith("There's no plan yet.")
+
+
+def test_tied_plans_say_they_tie() -> None:
+    from planner_chat.answers import Plan
+
+    a = Plan("Plan A", 3, ["ECON 1400"], {"major.macro": ["ECON 1400"]})
+    b = Plan("Plan B", 3, ["ECON 1400"], {"major.macro": ["ECON 1400"]})
+    c = Plan("Plan C", 3, ["SOC 1100"], {"core.s1": ["SOC 1100"]})
+    assert (
+        advisor()
+        .plan_progress([a, b])
+        .text.endswith("They all finish 1, so pick by the times that suit you.")
+    )
+    assert (
+        advisor().plan_progress([a, b, c]).text.endswith("Plan A and Plan B tie for the most (1).")
+    )

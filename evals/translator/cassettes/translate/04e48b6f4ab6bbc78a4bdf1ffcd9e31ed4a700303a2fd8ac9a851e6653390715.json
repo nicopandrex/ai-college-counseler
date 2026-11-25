@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\n  \"intent\": \"schedule\",\n  \"question_topic\": null,\n  \"question_courses\": [],\n  \"question_requirements\": [],\n  \"question_subjects\": [],\n  \"question_plans\": [],\n  \"spec_version\": \"0.1\",\n  \"mode\": \"plan\",\n  \"target_term\": null,\n  \"restatement\": \"Explore adding the Computer Science minor to your academic plan.\",\n  \"constraints\": [\n    {\n      \"id\": \"c1\",\n      \"type\": \"add_program\",\n      \"params_json\": \"{\\\"action\\\":\\\"explore\\\",\\\"program_id\\\":\\\"MINOR_CS\\\"}\",\n      \"enforcement\": \"hard\",\n      \"weight\": 5,\n      \"weight_source\": \"stated\",\n      \"confidence\": 1.0,\n      \"source_text\": \"added the CS minor\",\n      \"data_dependency\": \"reliable\"\n    }\n  ],\n  \"clarifications\": [],\n  \"out_of_scope\": []\n}",
+ "usage": {
+  "input_tokens": 6671,
+  "output_tokens": 232,
+  "reasoning_tokens": 0
+ }
+}

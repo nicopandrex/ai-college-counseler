@@ -453,6 +453,135 @@ class Advisor:
                 )
         return Answer("\n\n".join(parts), suggestions[:3])
 
+    # -- plans --------------------------------------------------------------------------------
+
+    def progress(self, contributions: dict[str, list[str]]) -> dict[str, tuple[float, str]]:
+        """Requirement id -> (amount a plan adds, done / partial / counts / none). The amount is
+        in the requirement's unit: credits, else courses."""
+        out: dict[str, tuple[float, str]] = {}
+        for rid, target in self.student.open_requirements.items():
+            codes = contributions.get(rid, [])
+            if target.unit == "credits":
+                planned = sum(self.term.courses[c].credits for c in codes if c in self.term.courses)
+            else:
+                planned = float(len(codes))
+            if not codes:
+                state = "none"
+            elif target.needed is None:
+                state = "counts"
+            else:
+                state = "done" if planned >= target.needed else "partial"
+            out[rid] = (planned, state)
+        return out
+
+    def plan_progress(
+        self,
+        plans: list[Plan],
+        earned: float | None = None,
+        in_progress: float | None = None,
+    ) -> Answer:
+        """What doing a plan leaves on the audit; several plans are compared line by line."""
+        targets = self.student.open_requirements
+        if not plans:
+            return Answer(
+                f"There's no plan yet. Tell me what you want for {self.term_label} and I'll "
+                "build some.",
+                [Suggestion("Plan next semester", "Plan my next semester")],
+            )
+        total = len(targets)
+        if len(plans) > 1:
+            lines, finished = [], {}
+            for plan in plans:
+                states = [s for _, s in self.progress(plan.contributions).values()]
+                done = states.count("done")
+                helped = states.count("partial") + states.count("counts")
+                finished[plan.name] = done
+                lines.append(
+                    f"{plan.name} ({plural(plan.credits, 'credit')}) finishes {done} of your "
+                    f"{total} open requirements"
+                    + (f", helps with {helped} more" if helped else "")
+                    + f" and leaves {total - done} open."
+                )
+            best = max(finished.values())
+            leaders = [name for name, n in finished.items() if n == best]
+            if len(leaders) == 1:
+                lines.append(f"{leaders[0]} finishes the most.")
+            elif len(leaders) == len(plans):
+                lines.append(f"They all finish {best}, so pick by the times that suit you.")
+            else:
+                lines.append(f"{listing(leaders)} tie for the most ({best}).")
+            suggestions = [
+                Suggestion(f"More on {p.name}", f"If I do {p.name}, what's left?")
+                for p in plans[:3]
+            ]
+            return Answer("\n".join(lines), suggestions)
+        plan = plans[0]
+        progress = self.progress(plan.contributions)
+        done = [r for r, (_, s) in progress.items() if s == "done"]
+        partial = [r for r, (_, s) in progress.items() if s == "partial"]
+        counts = [r for r, (_, s) in progress.items() if s == "counts"]
+        still = [r for r in targets if r not in done]
+
+        def name(rid: str) -> str:
+            return short(targets[rid].title)
+
+        opening = (
+            f"With {plan.name} ({plural(plan.credits, 'credit')}), you'd finish {len(done)} of "
+            f"your {total} open requirements"
+        )
+        if partial or counts:
+            opening += f" and make progress on {len(partial) + len(counts)} more"
+        lines = [opening + f", so {len(still)} would still be open."]
+        if done:
+            lines.append(f"Finished: {listing([name(r) for r in done])}.")
+        if partial:
+            parts = []
+            for r in partial:
+                t = targets[r]
+                planned = progress[r][0]
+                unit = t.unit if t.unit == "credits" else "courses"
+                parts.append(f"{name(r)} ({planned:g} of {t.needed:g} {unit})")
+            lines.append(f"Partly done: {listing(parts)}.")
+        if counts:
+            lines.append(f"Also counts toward: {listing([name(r) for r in counts])}.")
+        untouched = [r for r in still if r not in partial and r not in counts]
+        if untouched:
+            lines.append(f"Not touched by {plan.name}: {listing([name(r) for r in untouched])}.")
+        if earned is not None:
+            have = earned + (in_progress or 0)
+            source = f"{earned:g} earned" + (
+                f", {in_progress:g} in progress" if in_progress else ""
+            )
+            lines.append(
+                f"You'd be at {plural(have + plan.credits, 'credit')} ({source} and "
+                f"{plan.credits:g} from {plan.name})."
+            )
+        shared = [c for c in plan.courses if sum(c in cs for cs in plan.contributions.values()) > 1]
+        if shared:
+            lines.append(
+                f"{listing(shared, 3)} count toward more than one requirement here; your audit "
+                "decides whether a course may count twice."
+            )
+        suggestions = [Suggestion("Compare my plans", "Compare my plans")]
+        if untouched:
+            suggestions.append(
+                Suggestion(
+                    f"What counts for {name(untouched[0])}?",
+                    f"What courses count for {name(untouched[0])}?",
+                )
+            )
+        return Answer("\n".join(lines), suggestions)
+
+
+@dataclass(frozen=True)
+class Plan:
+    """One schedule option, as the answers need it."""
+
+    name: str  # "Plan A"
+    credits: float
+    courses: list[str]
+    contributions: dict[str, list[str]]  # requirement id -> this plan's courses that count
+
 
 def requirement_hint(advisor: Advisor, rid: str, target: RequirementTarget) -> str | None:
     """A short "ECON 1400 · 3 cr" / "3 cr each" note for the web's requirement lists."""

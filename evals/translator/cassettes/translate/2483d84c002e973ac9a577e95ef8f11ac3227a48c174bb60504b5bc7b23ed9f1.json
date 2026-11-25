@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"intent\":\"schedule\",\"question_topic\":null,\"question_courses\":[],\"question_requirements\":[],\"question_subjects\":[],\"question_plans\":[],\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Filter all classes to be held in Votey Hall.\",\"constraints\":[],\"clarifications\":[],\"out_of_scope\":[{\"request\":\"building_location_preference\",\"user_text\":\"Put all my classes in Votey Hall.\"}]}",
+ "usage": {
+  "input_tokens": 6668,
+  "output_tokens": 106,
+  "reasoning_tokens": 0
+ }
+}

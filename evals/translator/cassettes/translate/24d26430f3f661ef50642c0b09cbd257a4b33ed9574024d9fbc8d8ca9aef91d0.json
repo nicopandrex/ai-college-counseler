@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"intent\":\"schedule\",\"question_topic\":null,\"question_courses\":[],\"question_requirements\":[],\"question_subjects\":[],\"question_plans\":[],\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Prefer compact class schedule without long gaps between classes.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"compactness\",\"params_json\":\"{\\\"direction\\\":\\\"compact\\\"}\",\"enforcement\":\"soft\",\"weight\":3,\"weight_source\":\"inferred\",\"confidence\":0.95,\"source_text\":\"I'd prefer my classes clustered close together.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}",
+ "usage": {
+  "input_tokens": 6668,
+  "output_tokens": 146,
+  "reasoning_tokens": 0
+ }
+}

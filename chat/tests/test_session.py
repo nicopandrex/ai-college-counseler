@@ -647,3 +647,26 @@ def test_replies_are_reworded_and_the_wording_is_what_the_chat_remembers(tmp_pat
     assert chat.handle("hi") == friendly
     assert chat.history[-1] == ("planner", friendly)
     assert chat.handle("/undo") == "There's nothing to undo."  # commands aren't reworded
+
+
+def test_plan_questions_use_the_plan_on_screen_or_the_ones_named(tmp_path: Path) -> None:
+    macro = con("c1", "include_course", src="macro", course="ECON 2020")
+    provider = Script(
+        answer(macro),
+        answer(intent="question", question_topic="plan_progress", question_plans=[]),
+        answer(intent="question", question_topic="plan_progress", question_plans=["A", "b"]),
+    )
+    chat = session(provider, tmp_path)
+    chat.handle("macro")
+    assert len(chat.view()["schedules"]) >= 2
+    reply = chat.handle("if I do this plan how many requirements are left?", plan=1)
+    assert reply.startswith("With Plan B (") and "of your 6 open requirements" in reply
+    prompt = provider.requests[1].user
+    assert "CURRENT PLANS:\n- Plan A: " in prompt and "(on screen)" in prompt.split("- Plan B")[1]
+    compared = chat.handle("compare plan A and B").splitlines()
+    assert compared[0].startswith("Plan A (") and compared[1].startswith("Plan B (")
+
+
+def test_a_plan_question_before_any_plan_says_so(tmp_path: Path) -> None:
+    chat = session(Script(answer(intent="question", question_topic="plan_progress")), tmp_path)
+    assert chat.handle("what does plan A leave?").startswith("There's no plan yet.")

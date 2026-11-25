@@ -272,6 +272,16 @@ Running log. Resume from **Current status**. Newest log entries at the top.
   (UVM publishes no caps).
 
 ## Log
+- **2026-11-25 (plan questions).** Owner: "if I do plan A how many more requirements do I
+  have" couldn't be answered. New translator topic `plan_progress` with `question_plans`
+  (letters; empty = the plan on screen), and a CURRENT PLANS block (letter, credits, courses,
+  which is on screen) in the translator input. `Advisor.plan_progress` answers from the
+  solver's per-plan contributions: finished / partly done (with amounts) / also counts toward
+  / not touched, credits after the plan, a double-count caveat when one course counts twice;
+  several plans are compared (who finishes the most, or a tie). The web's progress bars and
+  the chat now share `Advisor.progress`. Eval re-recorded: 49/50 (u16 as before), 50 Flash
+  calls, ~334k input tokens. Live check on real UVM data: "if i do plan A…" → "you'd finish
+  5 of your 8 open requirements, leaving 3", reworded and accepted.
 - **2026-11-24 (reworded replies, owner decision).** Owner chose LLM wording over plain
   templates, "making sure it's still in line with the actual data". Every reply is still
   built from data first (the draft); `planner_chat/phrasing.py` asks the LLM (own budget,

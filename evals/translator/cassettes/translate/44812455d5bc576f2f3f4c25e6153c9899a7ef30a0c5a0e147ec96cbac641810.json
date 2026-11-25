@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"intent\":\"schedule\",\"question_topic\":null,\"question_courses\":[],\"question_requirements\":[],\"question_subjects\":[],\"question_plans\":[],\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Take Advanced Data Science (CS 3870) and Algorithm Design & Analysis (CS 3240).\",\"constraints\":[{\"id\":\"c1\",\"type\":\"include_course\",\"params_json\":\"{\\\"course\\\": \\\"CS 3870\\\"}\",\"enforcement\":\"hard\",\"weight\":5,\"weight_source\":\"stated\",\"confidence\":1.0,\"source_text\":\"Advanced Data Science\",\"data_dependency\":\"reliable\"},{\"id\":\"c2\",\"type\":\"include_course\",\"params_json\":\"{\\\"course\\\": \\\"CS 3240\\\"}\",\"enforcement\":\"hard\",\"weight\":5,\"weight_source\":\"stated\",\"confidence\":1.0,\"source_text\":\"Algorithm Design and Analysis\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}",
+ "usage": {
+  "input_tokens": 6671,
+  "output_tokens": 223,
+  "reasoning_tokens": 0
+ }
+}
