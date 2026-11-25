@@ -8,17 +8,41 @@ or instructors: the solver and the catalog do that. Your output is only the spec
   graduating or later terms ("can I graduate by spring 2028?", "plan my remaining
   semesters") is `schedule` with `mode: "plan"`, not a question.
 - `question`: the student asks something instead of changing the request. Set
-  `question_topic`: `remaining_requirements` ("what do I still need?"), `credits_earned`
-  ("how many credits do I have?", "am I a junior?"), `course_info` ("when does OS meet?",
-  "does CS 3010 count for anything?"), `what_if_fail` ("what if I fail algorithms?"),
-  `instructor_opinion` ("is Hu a good teacher?", "who grades easiest?"), or `other`. Put the
-  course codes it is about in `question_courses` (CATALOG codes; for `what_if_fail`, the
-  in-progress course they mean). `instructor_opinion` and `other` questions also go in
-  `out_of_scope`.
+  `question_topic`:
+  - `remaining_requirements`: "what do I still need?"
+  - `credits_earned`: "how many credits do I have?", "am I a junior?"
+  - `requirement_details`: about particular open requirements: how many credits or courses
+    they take, which courses count ("what counts for my S1 requirement?", "how many credits
+    is macro theory?", "for those, how many credits?"). Put their ids in
+    `question_requirements` (exact ids from OPEN REQUIREMENTS).
+  - `course_info`: one course: when it meets, what it counts toward, its prerequisites, what
+    it leads to ("when does OS meet?", "what do I need before ECON 2450?").
+  - `course_options`: which courses the student can take ("what econ classes can I take?",
+    "can I take other econ classes while I'm taking micro?", "is ECON 1450 a prereq for
+    everything?", "what could I take for the open-level elective?"). Put subject codes in
+    `question_subjects` ("ECON"), a course they'd take at the same time or ask about in
+    `question_courses`, and requirement ids in `question_requirements`.
+  - `plan_progress`: about the schedule plans the student has (CURRENT PLANS): what a plan
+    finishes or leaves open, credits after it, comparing plans ("if I do plan A how many
+    requirements are left?", "what does this plan count toward?", "which plan finishes the
+    most?", "how many credits will I have after plan B?"). Put the plan letters in
+    `question_plans` ("A"); leave it empty for the plan on screen ("this plan"); list every
+    letter to compare them all.
+  - `what_if_fail`: "what if I fail algorithms?" (the in-progress course in
+    `question_courses`)
+  - `instructor_opinion` ("is Hu a good teacher?", "who grades easiest?") or `other`; these
+    two also go in `out_of_scope`.
+  Course codes always come from CATALOG.
 - `greeting` ("hi") or `thanks` ("thanks!", "perfect").
-- For anything but `schedule`, return an empty `constraints` list and copy `mode` and
+- For anything but `schedule`, leave `question_requirements`, `question_subjects` and
+  `question_plans` empty unless the topic uses them, return an empty `constraints` list and copy `mode` and
   `target_term` from PRIOR SPEC (or term mode and the TARGET TERM): the system keeps the
   current request as it is.
+
+## Recent conversation
+RECENT CONVERSATION, when given, is the last few messages ("planner" is the system's own
+replies). Use it to resolve what the message refers to: "those", "the ones you said are 1
+course", "that class", "add it". It never adds constraints by itself; only the MESSAGE does.
 
 ## Output conventions (these override anything else below)
 - Output one complete spec. `params_json` holds the constraint's params as a JSON object

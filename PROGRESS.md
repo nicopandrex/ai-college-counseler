@@ -272,6 +272,53 @@ Running log. Resume from **Current status**. Newest log entries at the top.
   (UVM publishes no caps).
 
 ## Log
+- **2026-11-25 (plan questions).** Owner: "if I do plan A how many more requirements do I
+  have" couldn't be answered. New translator topic `plan_progress` with `question_plans`
+  (letters; empty = the plan on screen), and a CURRENT PLANS block (letter, credits, courses,
+  which is on screen) in the translator input. `Advisor.plan_progress` answers from the
+  solver's per-plan contributions: finished / partly done (with amounts) / also counts toward
+  / not touched, credits after the plan, a double-count caveat when one course counts twice;
+  several plans are compared (who finishes the most, or a tie). The web's progress bars and
+  the chat now share `Advisor.progress`. Eval re-recorded: 49/50 (u16 as before), 50 Flash
+  calls, ~334k input tokens. Live check on real UVM data: "if i do plan A…" → "you'd finish
+  5 of your 8 open requirements, leaving 3", reworded and accepted.
+- **2026-11-24 (reworded replies, owner decision).** Owner chose LLM wording over plain
+  templates, "making sure it's still in line with the actual data". Every reply is still
+  built from data first (the draft); `planner_chat/phrasing.py` asks the LLM (own budget,
+  purpose `phrase`, Flash) to say it naturally, and shows the rewrite only if `ungrounded()`
+  finds nothing: same course codes (none added or dropped), no time, number, number word or
+  instructor surname the draft lacks, no amount changed ("3 credits" stays 3; a bare "4" may
+  become "4 courses"), and every credit/course amount kept. Anything else, or an LLM error,
+  shows the draft. Slash commands aren't reworded. `PLANNER_REWORD=0` turns it off.
+  Known limit: the check can't see a flipped meaning that keeps the same codes and numbers
+  ("can" vs "can't"); the prompt forbids it, and the plan itself is always drawn from the
+  solver. Live check on real UVM data: 2 of 3 rewrites shown, 1 rejected (an added number)
+  and replaced by its draft. Requirement names now drop the audit's counting text
+  ("OPEN LEVEL. 1 additional course/3 credits…" -> "Open Level").
+- **2026-11-24 (degree questions + conversational chat).** Owner feedback on the econ What-If
+  audit: a raw note ("economics_major…: cannot interpret 'ECON 2400 with resident= Y'"), a
+  follow-up it couldn't resolve ("for the ones where u say 1 course, how many credits?"),
+  "1 course" with no credits, and no answer to "can I take other econ classes while taking
+  micro, or is it a prereq for everything?". Built:
+  - `with resident= Y` = taken at UVM (every planned course is); unreadable rules are named in
+    the student's terms, and each note is said once per conversation.
+  - `planner_chat/answers.py` (no LLM): what's left (grouped, credits worked out from the
+    catalog: "ECON 1400 (3 credits)", "6 credits (about 2 courses)"); requirement details
+    ("together those come to 12 credits", what's offered, what you can take); course options
+    by subject/requirement, incl. "alongside X" (same-term only when the prereq is
+    concurrent-ok) and how many courses need X directly or transitively; concise course info
+    with prerequisites and what it unlocks.
+  - Translator: topics `requirement_details`, `course_options`; fields
+    `question_requirements`, `question_subjects`; RECENT CONVERSATION (last 6 messages) to
+    resolve "those"/"that class". Eval re-recorded: 49/50 (u16 credit_range as before);
+    50 live Flash calls, ~328k input + 11k output tokens (sampled 3 first).
+  - Conversational turns: tap-to-send follow-ups (`suggestions`), "/undo" for the last
+    change, the web hears what changed ("Got it: added “Fridays free”") instead of every
+    request, the full-time-load assumption is said once, clarifying questions read as plain
+    asks. CLI keeps the full restatement and prints follow-ups.
+  - Checked on real UVM 2027SP data with requirement rules copied from the owner's audit:
+    the "1 course" follow-up resolves to the four foundations (12 credits); the econ
+    question answers "11 of the 15 need ECON 1450; alongside it you can take 4".
 - **2026-11-24 (owner bug + edit flow).** Bug: asking for 15 credits, then closing that chip,
   gave a 31-credit plan. A stated load replaces the full-time band, and closing it removed
   the only credit cap (the solver then adds every course that counts toward a requirement).

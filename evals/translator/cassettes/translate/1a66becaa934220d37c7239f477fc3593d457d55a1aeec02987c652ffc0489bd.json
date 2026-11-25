@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"intent\":\"schedule\",\"question_topic\":null,\"question_courses\":[],\"question_requirements\":[],\"question_subjects\":[],\"question_plans\":[],\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Schedule one course that satisfies any of your open general education requirements for Spring 2027.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"satisfy_requirement\",\"params_json\":\"{\\\"count\\\":1,\\\"req_ids\\\":[\\\"GENED_S1\\\",\\\"GENED_AH3\\\",\\\"GENED_D1\\\",\\\"GENED_WIL2\\\",\\\"GENED_N2\\\"]}\",\"enforcement\":\"hard\",\"weight\":5,\"weight_source\":\"stated\",\"confidence\":0.95,\"source_text\":\"I need one course that counts toward any of my open gen eds.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}",
+ "usage": {
+  "input_tokens": 6672,
+  "output_tokens": 197,
+  "reasoning_tokens": 0
+ }
+}

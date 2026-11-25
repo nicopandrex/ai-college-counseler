@@ -13,12 +13,13 @@ interface Props {
   lines: Line[];
   questions: View["questions"];
   choices: View["choices"];
+  suggestions: View["suggestions"];
   busy: boolean;
-  onSend: (text: string) => void;
+  onSend: (text: string, shown?: string) => void;
   onChoose: (number: number, text: string) => void;
 }
 
-export function Chat({ lines, questions, choices, busy, onSend, onChoose }: Props) {
+export function Chat({ lines, questions, choices, suggestions, busy, onSend, onChoose }: Props) {
   const [draft, setDraft] = useState("");
   const end = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -56,6 +57,23 @@ export function Chat({ lines, questions, choices, busy, onSend, onChoose }: Prop
               <pre className="whitespace-pre-wrap font-sans text-[15px] leading-7 text-pen-blue">{line.text}</pre>
             </div>
           ),
+        )}
+        {!busy && suggestions.length > 0 && (
+          <div className="flex flex-wrap gap-2" aria-label="Suggested follow-ups">
+            {suggestions.map((s, i) => (
+              <button
+                key={s.message}
+                type="button"
+                onClick={() => onSend(s.message, s.message.startsWith("/") ? s.label : s.message)}
+                className={`sketch sketch-thin flex items-center gap-1 bg-paper px-2.5 py-0.5 text-sm text-pen-blue hover:bg-hl-blue ${
+                  i % 2 ? "sketch-alt" : ""
+                }`}
+              >
+                <Doodle kind={s.message === "/undo" ? "spiral" : "arrow"} className="h-3.5 w-3.5" strokeWidth={2.2} />
+                {s.label}
+              </button>
+            ))}
+          </div>
         )}
         {busy && (
           <div className="flex items-center gap-2 text-pencil" aria-label="Working on it">

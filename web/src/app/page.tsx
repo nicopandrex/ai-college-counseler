@@ -152,6 +152,7 @@ export default function Home() {
             lines={lines}
             questions={busy ? [] : view.questions}
             choices={busy ? [] : view.choices}
+            suggestions={view.suggestions}
             busy={busy}
             onSend={send}
             onChoose={(n, text) => send(String(n), text)}

@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\n  \"intent\": \"schedule\",\n  \"question_topic\": null,\n  \"question_courses\": [],\n  \"question_requirements\": [],\n  \"question_subjects\": [],\n  \"question_plans\": [],\n  \"spec_version\": \"0.1\",\n  \"mode\": \"term\",\n  \"target_term\": \"2027SP\",\n  \"restatement\": \"Preferably include HST 1440 (History of China and Japan) in the Spring 2027 schedule.\",\n  \"constraints\": [\n    {\n      \"id\": \"c1\",\n      \"type\": \"include_course\",\n      \"params_json\": \"{\\\"course\\\": \\\"HST 1440\\\"}\",\n      \"enforcement\": \"soft\",\n      \"weight\": 3,\n      \"weight_source\": \"inferred\",\n      \"confidence\": 0.95,\n      \"source_text\": \"Ideally I'd take History of China and Japan.\",\n      \"data_dependency\": \"reliable\"\n    }\n  ],\n  \"clarifications\": [],\n  \"out_of_scope\": []\n}",
+ "usage": {
+  "input_tokens": 6669,
+  "output_tokens": 258,
+  "reasoning_tokens": 0
+ }
+}

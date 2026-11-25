@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"intent\":\"schedule\",\"question_topic\":null,\"question_courses\":[],\"question_requirements\":[],\"question_subjects\":[],\"question_plans\":[],\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Matching schedule to roommate\",\"constraints\":[],\"clarifications\":[],\"out_of_scope\":[{\"request\":\"same schedule as roommate\",\"user_text\":\"Give me the same schedule as my roommate.\"}]}",
+ "usage": {
+  "input_tokens": 6667,
+  "output_tokens": 95,
+  "reasoning_tokens": 0
+ }
+}

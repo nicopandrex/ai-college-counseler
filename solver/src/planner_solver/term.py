@@ -519,7 +519,10 @@ def _eligible_sections(
         for selector in target.selectors:
             resolved = resolve_selector(selector, data.courses)
             if resolved is None:
-                warnings.append(f"{req_id}: cannot interpret {selector!r}")
+                warnings.append(
+                    f"I couldn't read part of the “{target.title}” rule on your audit, so I "
+                    "may not suggest every course that counts for it"
+                )
             else:
                 courses |= resolved
         requirement_courses[req_id] = courses - set(target.excluded)

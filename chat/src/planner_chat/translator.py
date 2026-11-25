@@ -23,7 +23,10 @@ INTENTS = ("schedule", "question", "greeting", "thanks")
 TOPICS = (
     "remaining_requirements",
     "credits_earned",
+    "requirement_details",
     "course_info",
+    "course_options",
+    "plan_progress",
     "what_if_fail",
     "instructor_opinion",
     "other",
@@ -46,6 +49,9 @@ class Translation:
     intent: str = "schedule"
     topic: str | None = None  # for questions
     courses: list[str] = field(default_factory=list)  # courses a question is about
+    requirements: list[str] = field(default_factory=list)  # requirement ids it is about
+    subjects: list[str] = field(default_factory=list)  # subject codes it is about ("ECON")
+    plans: list[str] = field(default_factory=list)  # plan letters it is about ("A")
 
 
 def _nullable(schema: dict[str, Any]) -> dict[str, Any]:
@@ -90,6 +96,9 @@ def output_schema() -> dict[str, Any]:
             "intent": {"enum": list(INTENTS)},
             "question_topic": _nullable({"enum": list(TOPICS)}),
             "question_courses": {"type": "array", "items": string},
+            "question_requirements": {"type": "array", "items": string},
+            "question_subjects": {"type": "array", "items": string},
+            "question_plans": {"type": "array", "items": string},
             "spec_version": {"enum": ["0.1"]},
             "mode": {"enum": ["term", "plan"]},
             "target_term": _nullable(string),
@@ -111,7 +120,17 @@ def system_prompt() -> str:
     ).read_text(encoding="utf-8")
 
 
-def user_message(message: str, context: TranslatorContext, prior: dict[str, Any] | None) -> str:
+HISTORY_TURNS = 6  # recent messages the model sees, to resolve "those", "that class"
+HISTORY_CHARS = 700  # per message
+
+
+def user_message(
+    message: str,
+    context: TranslatorContext,
+    prior: dict[str, Any] | None,
+    history: list[tuple[str, str]] | None = None,
+    plans: list[str] | None = None,
+) -> str:
     lines = [f"TARGET TERM: {context.target_term}", "", "OPEN REQUIREMENTS:"]
     lines += [f"- {rid}: {title}" for rid, title in context.open_requirements]
     if context.programs:
@@ -122,6 +141,13 @@ def user_message(message: str, context: TranslatorContext, prior: dict[str, Any]
     lines += ["", "CATALOG:"] + [f"{code} — {title}" for code, title in context.catalog]
     if prior is not None:
         lines += ["", "PRIOR SPEC:", json.dumps(prior, indent=1)]
+    if plans:
+        lines += ["", "CURRENT PLANS:"] + [f"- {plan}" for plan in plans]
+    if history:
+        lines += ["", "RECENT CONVERSATION:"]
+        for who, text in history[-HISTORY_TURNS:]:
+            clipped = text if len(text) <= HISTORY_CHARS else text[:HISTORY_CHARS] + " …"
+            lines.append(f"{who}: {clipped}")
     lines += ["", "MESSAGE:", message]
     return "\n".join(lines) + "\n"
 
@@ -169,6 +195,9 @@ def to_contract(raw: dict[str, Any]) -> Translation:
         intent=raw.get("intent") or "schedule",
         topic=raw.get("question_topic"),
         courses=list(raw.get("question_courses") or []),
+        requirements=list(raw.get("question_requirements") or []),
+        subjects=list(raw.get("question_subjects") or []),
+        plans=list(raw.get("question_plans") or []),
     )
 
 
@@ -178,11 +207,13 @@ def translate(
     gateway: LLMGateway,
     prior: dict[str, Any] | None = None,
     effort: str = "medium",
+    history: list[tuple[str, str]] | None = None,
+    plans: list[str] | None = None,
 ) -> Translation:
     request = JsonRequest(
         purpose=PURPOSE,
         system=system_prompt(),
-        user=user_message(message, context, prior),
+        user=user_message(message, context, prior, history, plans),
         schema=output_schema(),
         max_tokens=16000,
         effort=effort,

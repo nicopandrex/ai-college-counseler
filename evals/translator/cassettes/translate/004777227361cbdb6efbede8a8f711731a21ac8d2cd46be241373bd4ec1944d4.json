@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"intent\":\"schedule\",\"question_topic\":null,\"question_courses\":[],\"question_requirements\":[],\"question_subjects\":[],\"question_plans\":[],\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Fulfill your statistics requirement this semester.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"satisfy_requirement\",\"params_json\":\"{\\\"req_ids\\\":[\\\"STATS\\\"],\\\"count\\\":1}\",\"enforcement\":\"hard\",\"weight\":5,\"weight_source\":\"stated\",\"confidence\":0.95,\"source_text\":\"I need my stats requirement done this semester.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}",
+ "usage": {
+  "input_tokens": 6667,
+  "output_tokens": 153,
+  "reasoning_tokens": 0
+ }
+}

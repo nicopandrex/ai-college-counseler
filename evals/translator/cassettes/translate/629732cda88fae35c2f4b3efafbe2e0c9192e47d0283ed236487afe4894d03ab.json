@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"intent\":\"schedule\",\"question_topic\":null,\"question_courses\":[],\"question_requirements\":[],\"question_subjects\":[],\"question_plans\":[],\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Ensure at least 15 minutes between consecutive classes.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"gap_between_classes\",\"params_json\":\"{\\\"min_minutes\\\":15}\",\"enforcement\":\"hard\",\"weight\":4,\"weight_source\":\"stated\",\"confidence\":0.95,\"source_text\":\"Make sure I have at least 15 minutes between classes.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}",
+ "usage": {
+  "input_tokens": 6671,
+  "output_tokens": 154,
+  "reasoning_tokens": 0
+ }
+}

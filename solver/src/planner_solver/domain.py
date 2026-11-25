@@ -125,6 +125,7 @@ class StudentTerm(_Model):
     standing: Literal["freshman", "sophomore", "junior", "senior", "graduate"] | None = None
 
 
+_RESIDENT = re.compile(r"^(.+?) with resident\s*=\s*Y$")
 _ATTRIBUTE = re.compile(r"^@ @ with attribute = ([A-Z0-9]+)$")
 _RANGE = re.compile(r"^([A-Z]{2,5}) (\d{4}):(\d{4})$")
 _WILD = re.compile(r"^(@|[A-Z]{2,5}) (@|\d{1,3}@)$")
@@ -132,6 +133,8 @@ _WILD = re.compile(r"^(@|[A-Z]{2,5}) (@|\d{1,3}@)$")
 
 def resolve_selector(selector: str, courses: dict[str, Course]) -> set[str] | None:
     """Course codes a rule selector stands for; None if the selector isn't understood."""
+    if m := _RESIDENT.match(selector):  # "taken at UVM": every course we plan is
+        selector = m.group(1)
     if selector in courses:
         return {selector}
     if m := _ATTRIBUTE.match(selector):

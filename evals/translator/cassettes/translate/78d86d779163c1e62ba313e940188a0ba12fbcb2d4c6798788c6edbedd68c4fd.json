@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"intent\":\"schedule\",\"question_topic\":null,\"question_courses\":[],\"question_requirements\":[],\"question_subjects\":[],\"question_plans\":[],\"spec_version\":\"0.1\",\"mode\":\"plan\",\"target_term\":null,\"restatement\":\"Reserved Fall 2027 for study abroad (0 credits).\",\"constraints\":[{\"id\":\"c1\",\"type\":\"reserved_term\",\"params_json\":\"{\\\"max_credits\\\": 0, \\\"reason\\\": \\\"study abroad\\\", \\\"term\\\": \\\"2027FA\\\"}\",\"enforcement\":\"hard\",\"weight\":5,\"weight_source\":\"stated\",\"confidence\":0.95,\"source_text\":\"I'm studying abroad in Fall 2027, so no classes that term.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}",
+ "usage": {
+  "input_tokens": 6677,
+  "output_tokens": 175,
+  "reasoning_tokens": 0
+ }
+}

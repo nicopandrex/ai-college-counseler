@@ -1,0 +1,10 @@
+{
+ "provider": "gemini",
+ "model": "gemini-3.5-flash",
+ "response": "{\"intent\":\"schedule\",\"question_topic\":null,\"question_courses\":[],\"question_requirements\":[],\"question_subjects\":[],\"question_plans\":[],\"spec_version\":\"0.1\",\"mode\":\"term\",\"target_term\":\"2027SP\",\"restatement\":\"Ideally no more than 3 days on campus per week.\",\"constraints\":[{\"id\":\"c1\",\"type\":\"max_days_on_campus\",\"params_json\":\"{\\\"count\\\": 3}\",\"enforcement\":\"soft\",\"weight\":3,\"weight_source\":\"inferred\",\"confidence\":0.95,\"source_text\":\"Ideally no more than 3 days on campus.\",\"data_dependency\":\"reliable\"}],\"clarifications\":[],\"out_of_scope\":[]}",
+ "usage": {
+  "input_tokens": 6668,
+  "output_tokens": 153,
+  "reasoning_tokens": 0
+ }
+}
