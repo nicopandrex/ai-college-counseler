@@ -2,7 +2,7 @@
 
 import type { View } from "@/lib/api";
 import { layout } from "@/lib/grid";
-import { courseShape, courseStyle, Shape } from "./palette";
+import { courseDoodle, courseStyle, courseTilt, Doodle } from "./palette";
 import { WeekGrid } from "./WeekGrid";
 
 interface Props {
@@ -14,6 +14,12 @@ interface Props {
   onSend: (text: string) => void;
 }
 
+const PLAN_NAMES = "ABCDEFGHIJ";
+
+function Heading({ children }: { children: React.ReactNode }) {
+  return <h2 className="mb-2 font-marker text-2xl font-bold leading-none">{children}</h2>;
+}
+
 /** Everything here comes from the solver/audit view; no text is generated in the browser. */
 export function Canvas({ view, index, busy, onPick, onDrop, onSend }: Props) {
   const schedule = view.schedules[index];
@@ -21,34 +27,37 @@ export function Canvas({ view, index, busy, onPick, onDrop, onSend }: Props) {
   const colorOf = layout(sections).colorOf;
 
   return (
-    <div className="space-y-6 p-6">
-      <section className="flex flex-wrap items-start gap-x-8 gap-y-4">
+    <div className="space-y-7 px-8 py-6">
+      <section className="flex flex-wrap items-start gap-x-10 gap-y-4">
         <div className="min-w-0 flex-1">
-          <h2 className="label mb-2">Working with</h2>
+          <Heading>
+            <span className="scribble-underline">Wish list</span>
+          </Heading>
           {view.rules.length === 0 ? (
-            <p className="text-sm text-ink/60">Nothing yet. Tell the assistant what you want, or open the catalog.</p>
+            <p className="text-pencil">Nothing yet. Tell the assistant what you want, or flip open the catalog.</p>
           ) : (
-            <div className="flex flex-wrap gap-2">
-              {view.rules.map((r) => (
+            <div className="flex flex-wrap gap-2.5">
+              {view.rules.map((r, i) => (
                 <span
                   key={r.id}
                   title={r.said ? `You said: “${r.said}”` : "System default"}
-                  className={`group inline-flex items-center border-2 border-ink text-xs ${
-                    r.must ? "bg-white" : "border-dashed bg-transparent"
-                  }`}
+                  className={`sketch sketch-thin inline-flex items-center gap-1 bg-paper py-0.5 pl-3 pr-1.5 ${
+                    r.must ? "" : "sketch-dashed"
+                  } ${i % 2 ? "sketch-alt" : ""}`}
                 >
-                  <span className="px-2.5 py-1">
+                  <Doodle kind={r.must ? "check" : "squiggle"} className="h-3.5 w-3.5 text-pen-blue" strokeWidth={2.4} />
+                  <span>
                     {r.text}
-                    {!r.must && <span className="ml-1 text-ink/50">if possible</span>}
+                    {!r.must && <span className="ml-1 text-pencil">(if possible)</span>}
                   </span>
                   <button
                     type="button"
                     disabled={busy}
                     onClick={() => onDrop(r.id)}
-                    className="self-stretch border-l-2 border-ink px-2 font-bold hover:bg-red hover:text-white disabled:opacity-40"
+                    className="ml-1 px-1 font-marker text-xl leading-none text-pencil hover:text-pen-red disabled:opacity-40"
                     aria-label={`Remove ${r.text}`}
                   >
-                    ×
+                    ✕
                   </button>
                 </span>
               ))}
@@ -58,19 +67,19 @@ export function Canvas({ view, index, busy, onPick, onDrop, onSend }: Props) {
 
         {view.schedules.length > 0 && (
           <div>
-            <h2 className="label mb-2">Options</h2>
-            <div className="flex border-2 border-ink">
+            <Heading>Pick a plan</Heading>
+            <div className="flex gap-3">
               {view.schedules.map((s, i) => (
                 <button
                   key={i}
                   type="button"
                   onClick={() => onPick(i)}
-                  className={`flex flex-col items-start px-3 py-1 text-left ${i ? "border-l-2 border-ink" : ""} ${
-                    i === index ? "bg-ink text-paper" : "bg-white hover:bg-yellow"
-                  }`}
+                  className={`sketch flex flex-col items-center px-3.5 pb-1 pt-0.5 transition-transform hover:-rotate-2 ${
+                    i % 2 ? "sketch-alt" : ""
+                  } ${i === index ? "bg-hl-yellow" : "bg-paper"}`}
                 >
-                  <span className="text-lg font-bold leading-none tabular-nums">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="text-[10px] uppercase tracking-widest">{s.credits} cr</span>
+                  <span className="font-marker text-2xl font-bold leading-none">Plan {PLAN_NAMES[i] ?? i + 1}</span>
+                  <span className="text-xs text-pencil">{s.credits} credits</span>
                 </button>
               ))}
             </div>
@@ -79,31 +88,31 @@ export function Canvas({ view, index, busy, onPick, onDrop, onSend }: Props) {
       </section>
 
       {view.status === "infeasible" && (
-        <section className="flex border-2 border-ink bg-white">
-          <div className="w-3 shrink-0 bg-red" />
-          <div className="p-4 text-sm">
-            <p className="label text-red">These can&apos;t all hold at once</p>
-            <ul className="mt-2 space-y-1">
-              {view.conflict.map((c) => (
-                <li key={c} className="flex items-center gap-2">
-                  <Shape kind="square" className="h-1.5 w-1.5" /> {c}
-                </li>
-              ))}
-            </ul>
-            {view.why.length > 0 && <p className="mt-2 text-ink/70">Why: {view.why.join("; ")}.</p>}
-            <div className="mt-3 flex flex-wrap gap-2">
-              {view.fixes.map((f) => (
-                <button
-                  key={f.number}
-                  type="button"
-                  disabled={busy}
-                  onClick={() => onSend(String(f.number))}
-                  className="border-2 border-ink px-3 py-1 text-xs font-medium hover:bg-ink hover:text-paper disabled:opacity-40"
-                >
-                  Drop “{f.text}” → {f.unlocks >= 5 ? "5+" : f.unlocks} schedules
-                </button>
-              ))}
-            </div>
+        <section
+          className="sketch tape relative max-w-3xl bg-hl-pink px-6 pb-4 pt-5 shadow-[3px_4px_0_rgba(39,48,74,0.12)]"
+          style={{ transform: "rotate(-0.6deg)" }}
+        >
+          <p className="font-marker text-2xl font-bold leading-none text-pen-red">Uh oh, these can&apos;t all fit!</p>
+          <ul className="mt-2 space-y-0.5">
+            {view.conflict.map((c) => (
+              <li key={c} className="flex items-center gap-2">
+                <Doodle kind="bolt" className="h-4 w-4 text-pen-red" /> {c}
+              </li>
+            ))}
+          </ul>
+          {view.why.length > 0 && <p className="mt-2 text-pencil">Why: {view.why.join("; ")}.</p>}
+          <div className="mt-3 flex flex-wrap gap-2.5">
+            {view.fixes.map((f) => (
+              <button
+                key={f.number}
+                type="button"
+                disabled={busy}
+                onClick={() => onSend(String(f.number))}
+                className="sketch sketch-thin bg-paper px-3 py-0.5 hover:bg-hl-yellow disabled:opacity-40"
+              >
+                drop “{f.text}” → {f.unlocks >= 5 ? "5+" : f.unlocks} schedules
+              </button>
+            ))}
           </div>
         </section>
       )}
@@ -112,10 +121,13 @@ export function Canvas({ view, index, busy, onPick, onDrop, onSend }: Props) {
         <WeekGrid sections={sections} />
         {!schedule && (
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            <div className="border-2 border-ink bg-paper px-6 py-4 text-center">
-              <p className="label">No schedule yet</p>
-              <p className="mt-1 text-sm text-ink/70">
-                {view.status === "infeasible" ? "Pick a fix above to see options." : "Ask the assistant to build one →"}
+            <div
+              className="sketch tape relative bg-hl-yellow px-7 py-4 text-center shadow-[3px_4px_0_rgba(39,48,74,0.12)]"
+              style={{ transform: "rotate(2deg)" }}
+            >
+              <p className="font-marker text-3xl font-bold leading-none">Nothing planned yet!</p>
+              <p className="mt-1 text-pencil">
+                {view.status === "infeasible" ? "Pick a fix on the pink note ↑" : "Ask the assistant to build one →"}
               </p>
             </div>
           </div>
@@ -124,40 +136,42 @@ export function Canvas({ view, index, busy, onPick, onDrop, onSend }: Props) {
 
       {schedule && (
         <section>
-          <h2 className="label mb-2">
-            Schedule {String(index + 1).padStart(2, "0")} · {schedule.credits} credits
-          </h2>
-          <div className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-3">
+          <Heading>
+            Plan {PLAN_NAMES[index] ?? index + 1} · <span className="highlight">{schedule.credits} credits</span>
+          </Heading>
+          <div className="mt-4 grid gap-6 sm:grid-cols-2 2xl:grid-cols-3">
             {sections.map((s) => {
               const c = colorOf(s.course);
               return (
-                <article key={s.id} className="flex border-2 border-ink bg-white">
-                  <div className={`flex w-10 shrink-0 items-start justify-center pt-3 ${courseStyle(c)}`}>
-                    <Shape kind={courseShape(c)} />
+                <article
+                  key={s.id}
+                  className="sketch tape relative bg-paper px-4 pb-3 pt-4 shadow-[3px_4px_0_rgba(39,48,74,0.10)]"
+                  style={{ transform: courseTilt(c + 3) }}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={`flex h-7 w-7 items-center justify-center rounded-full ${courseStyle(c)}`}>
+                      <Doodle kind={courseDoodle(c)} className="h-4 w-4" />
+                    </span>
+                    <span className="font-marker text-xl font-bold leading-none">{s.id}</span>
+                    <span className="ml-auto text-sm text-pencil">{s.credits} cr</span>
                   </div>
-                  <div className="min-w-0 p-3 text-xs">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-sm font-bold">{s.id}</span>
-                      <span className="text-ink/50">{s.credits} cr</span>
+                  <div className="mt-1">{s.title}</div>
+                  <div className="text-sm text-pencil">{s.when}</div>
+                  <div className="text-sm text-pencil">{s.instructors.join(", ") || "Instructor TBA"}</div>
+                  {s.counts_toward.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-1.5 text-sm">
+                      {s.counts_toward.map((t) => (
+                        <span key={t} className="highlight px-1">
+                          ✓ {t}
+                        </span>
+                      ))}
                     </div>
-                    <div className="font-medium">{s.title}</div>
-                    <div className="mt-1 text-ink/70">{s.when}</div>
-                    <div className="text-ink/70">{s.instructors.join(", ") || "Instructor TBA"}</div>
-                    {s.counts_toward.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-1">
-                        {s.counts_toward.map((t) => (
-                          <span key={t} className="bg-yellow px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
-                            {t}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    {s.warnings.map((w) => (
-                      <div key={w} className="mt-1 text-red">
-                        ▲ {w}
-                      </div>
-                    ))}
-                  </div>
+                  )}
+                  {s.warnings.map((w) => (
+                    <div key={w} className="mt-1 text-sm text-pen-red">
+                      ! {w}
+                    </div>
+                  ))}
                 </article>
               );
             })}
@@ -165,14 +179,15 @@ export function Canvas({ view, index, busy, onPick, onDrop, onSend }: Props) {
         </section>
       )}
 
-      <section>
-        <h2 className="label mb-2">Still needed · from your audit</h2>
-        <ul className="grid gap-x-6 border-t-2 border-ink sm:grid-cols-2">
+      <section className="sketch sketch-alt ruled max-w-4xl px-5 pb-3 pl-14 pt-3">
+        <Heading>To do before graduation</Heading>
+        <ul className="grid gap-x-8 sm:grid-cols-2">
           {view.requirements.map((r) => (
-            <li key={r.title} className="flex items-baseline justify-between gap-3 border-b border-rule py-1.5 text-xs">
-              <span>{r.title}</span>
+            <li key={r.title} className="flex h-7 items-center gap-2">
+              <span className="sketch sketch-thin h-4 w-4 shrink-0" aria-hidden />
+              <span className="truncate">{r.title}</span>
               {r.needed && r.unit ? (
-                <span className="shrink-0 font-bold tabular-nums">
+                <span className="ml-auto shrink-0 font-marker text-lg font-bold text-pen-red">
                   {r.needed} {r.needed === 1 ? r.unit.slice(0, -1) : r.unit}
                 </span>
               ) : null}

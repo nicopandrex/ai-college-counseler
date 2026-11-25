@@ -5,22 +5,93 @@
 @layer base {
   html,
   body {
-    @apply h-full bg-paper text-ink antialiased;
+    @apply h-full bg-desk text-ink antialiased;
   }
   ::selection {
-    @apply bg-yellow text-ink;
+    @apply bg-hl-yellow text-ink;
   }
   :focus-visible {
-    @apply outline outline-2 outline-offset-2 outline-blue;
+    @apply outline-dashed outline-2 outline-offset-2 outline-pen-blue;
   }
 }
 
 @layer components {
-  .label {
-    @apply text-[11px] font-semibold uppercase tracking-[0.18em];
+  /* lined notebook paper with a red margin line */
+  .ruled {
+    background-color: theme("colors.paper");
+    background-image:
+      linear-gradient(90deg, transparent 2.6rem, theme("colors.margin") 2.6rem, theme("colors.margin") calc(2.6rem + 2px), transparent calc(2.6rem + 2px)),
+      linear-gradient(transparent calc(1.75rem - 1px), theme("colors.ruled") calc(1.75rem - 1px));
+    background-size: 100% 1.75rem;
   }
+  /* graph paper */
+  .graph {
+    background-color: theme("colors.paper");
+    background-image:
+      linear-gradient(theme("colors.ruled") 1px, transparent 1px),
+      linear-gradient(90deg, theme("colors.ruled") 1px, transparent 1px);
+    background-size: 18px 18px;
+    background-position: -1px -1px;
+  }
+
+  /* a box outlined in wobbly pen: the outline is a pseudo-element run through an SVG
+     displacement filter (defined once in layout.tsx), so the text inside stays crisp */
+  .sketch {
+    position: relative;
+    border-radius: 255px 14px 225px 14px / 14px 225px 14px 255px;
+  }
+  .sketch::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 2px solid currentColor;
+    border-color: theme("colors.ink");
+    border-radius: inherit;
+    filter: url(#wobble);
+    pointer-events: none;
+  }
+  .sketch-alt {
+    border-radius: 14px 225px 14px 255px / 255px 14px 225px 14px;
+  }
+  .sketch-dashed::before {
+    border-style: dashed;
+  }
+  .sketch-thin::before {
+    border-width: 1.5px;
+  }
+
+  /* a strip of washi tape across the top edge */
+  .tape::after {
+    content: "";
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    width: 64px;
+    height: 18px;
+    transform: translateX(-50%) rotate(-3deg);
+    background: rgba(255, 255, 255, 0.55);
+    border-left: 1px dashed rgba(39, 48, 74, 0.15);
+    border-right: 1px dashed rgba(39, 48, 74, 0.15);
+    box-shadow: 0 1px 2px rgba(39, 48, 74, 0.12);
+  }
+
+  .scribble-underline {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 8' preserveAspectRatio='none'><path d='M1 5 C 20 1, 30 8, 50 4 S 85 1, 119 5' fill='none' stroke='%23D9453B' stroke-width='2.2' stroke-linecap='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 100% 0.45em;
+    padding-bottom: 0.2em;
+  }
+
+  .highlight {
+    background: linear-gradient(100deg, transparent 2%, theme("colors.hl.yellow") 4%, theme("colors.hl.yellow") 96%, transparent 98%);
+    background-size: 100% 70%;
+    background-position: 0 70%;
+    background-repeat: no-repeat;
+  }
+
   .thin-scroll {
     scrollbar-width: thin;
-    scrollbar-color: #141414 transparent;
+    scrollbar-color: theme("colors.pencil") transparent;
   }
 }

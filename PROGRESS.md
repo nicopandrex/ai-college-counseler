@@ -272,6 +272,10 @@ Running log. Resume from **Current status**. Newest log entries at the top.
   (UVM publishes no caps).
 
 ## Log
+- **2026-11-24 (UI theme).** Owner asked for a hand-drawn school-planner look instead of Bauhaus:
+  ruled paper, Caveat/Patrick Hand fonts, wobbly pen outlines (SVG displacement filter on a
+  pseudo-element so text stays crisp), highlighter sticky notes per course, spiral binding,
+  divider-tab catalog. Styling only; behavior unchanged.
 - **2026-11-24 (UI redesign).** Owner asked for a calendar-first layout in a Bauhaus style:
   pull-out course catalog (left), weekly calendar (center), assistant chat (right). Added a
   deterministic catalog search (`ChatSession.catalog`, `GET /api/sessions/{id}/catalog?q=`):

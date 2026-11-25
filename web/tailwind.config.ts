@@ -1,25 +1,36 @@
 import type { Config } from "tailwindcss";
 
-/** Bauhaus palette: three primaries on warm paper, black for structure. */
+/** School-planner sketch: cream paper, pen ink, highlighters. */
 const config: Config = {
   content: ["./src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        paper: "#F3EFE6",
-        ink: "#141414",
-        rule: "#D8D1C2",
-        red: { DEFAULT: "#D7322A" },
-        blue: { DEFAULT: "#1D4FA0" },
-        yellow: { DEFAULT: "#F2B705" },
+        paper: "#FBF7EC",
+        desk: "#EFE6D2",
+        ink: "#27304A", // ballpoint blue-black
+        pencil: "#6E6A75",
+        ruled: "#CFDDEB",
+        margin: "#EE9A95",
+        hl: {
+          yellow: "#FFF07A",
+          pink: "#FFC2DC",
+          green: "#C8EDB4",
+          blue: "#B8DEF5",
+          orange: "#FFD2A1",
+          purple: "#DCCBF5",
+          mint: "#BDEBDD",
+        },
+        pen: { red: "#D9453B", blue: "#2C5BB8" },
       },
       fontFamily: {
-        sans: ["var(--font-jost)", "Futura", "Century Gothic", "Avenir Next", "sans-serif"],
+        sans: ["var(--font-hand)", "Comic Sans MS", "cursive"],
+        marker: ["var(--font-marker)", "var(--font-hand)", "cursive"],
       },
       keyframes: {
-        pulsebar: { "0%, 100%": { opacity: "0.25" }, "50%": { opacity: "1" } },
+        wiggle: { "0%, 100%": { transform: "rotate(-6deg)" }, "50%": { transform: "rotate(6deg)" } },
       },
-      animation: { pulsebar: "pulsebar 1s ease-in-out infinite" },
+      animation: { wiggle: "wiggle 0.6s ease-in-out infinite" },
     },
   },
   plugins: [],
