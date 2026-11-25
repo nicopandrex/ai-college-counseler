@@ -1,6 +1,7 @@
 """The chat loop, with a stub translator (no LLM) on the synthetic term."""
 
 import json
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
@@ -132,6 +133,7 @@ def test_infeasible_offers_numbered_fixes_and_a_number_applies_one_without_the_l
     chat = session(provider, tmp_path)
     reply = chat.handle("macro, not Diaz, open seats only")
     assert "can't all hold at once" in reply and "Reply with a fix's number" in reply
+    assert set(chat.view()["conflict_ids"]) == {"c1", "c2", "c3"}
     reply = chat.handle("1")  # least important first: drop "only open seats"
     assert len(provider.requests) == 1  # no second LLM call
     assert reply.startswith("Dropped “only sections with open seats”.") and "Schedule 1" in reply
@@ -331,6 +333,7 @@ def test_view_carries_the_rules_and_schedules_the_text_describes(tmp_path: Path)
         "must": True,
         "said": "macro",
         "default": False,
+        "removable": True,
     }
     assert view["status"] == "ok" and 1 <= len(view["schedules"]) <= 3
     econ = next(s for s in view["schedules"][0]["sections"] if s["course"] == "ECON 2020")
@@ -363,10 +366,32 @@ def test_a_closed_default_stays_closed_on_the_next_turn(tmp_path: Path) -> None:
         ),
     )
     chat = session(provider, tmp_path)
+    chat.validation = replace(chat.validation, preferred_credit_range=(3, 4))
     chat.handle("macro")
-    chat.drop("default_credits")
+    chat.drop("default_load_preference")
     chat.handle("and Fridays off")
+    assert "default_load_preference" not in {r["id"] for r in chat.view()["rules"]}
+
+
+def test_the_full_time_band_can_be_changed_but_not_closed(tmp_path: Path) -> None:
+    chat = session(
+        Script(answer(con("c1", "include_course", src="macro", course="ECON 2020"))), tmp_path
+    )
+    chat.handle("macro")
+    assert "can't be removed" in chat.drop("default_credits")
+    rules = {r["id"]: r for r in chat.view()["rules"]}
+    assert not rules["default_credits"]["removable"] and rules["c1"]["removable"]
+
+
+def test_closing_your_own_credit_load_brings_back_the_full_time_band(tmp_path: Path) -> None:
+    load = con("c1", "credit_range", src="just 3 credits", min=3, max=3)
+    chat = session(Script(answer(load)), tmp_path)
+    chat.handle("just 3 credits")
     assert "default_credits" not in {r["id"] for r in chat.view()["rules"]}
+    chat.drop("c1")
+    view = chat.view()
+    assert "default_credits" in {r["id"] for r in view["rules"]}
+    assert view["schedules"] and all(s["credits"] <= 7 for s in view["schedules"])  # not unbounded
 
 
 def test_questions_are_in_the_view_for_tap_to_answer(tmp_path: Path) -> None:
@@ -383,3 +408,137 @@ def test_questions_are_in_the_view_for_tap_to_answer(tmp_path: Path) -> None:
     assert chat.view()["questions"] == [
         {"question": "How early is too early?", "options": ["9:00", "10:00"]}
     ]
+
+
+def test_catalog_search_matches_code_title_or_instructor_from_the_term_data(
+    tmp_path: Path,
+) -> None:
+    chat = session(Script(), tmp_path)
+    found = chat.catalog("econ2020")
+    assert found["total"] == 1
+    macro = found["courses"][0]
+    assert (macro["code"], macro["title"], macro["status"]) == (
+        "ECON 2020",
+        "Macroeconomics",
+        "open",
+    )
+    assert macro["counts_toward"] == ["Macroeconomics"]
+    assert macro["sections"][1] == {
+        "id": "ECON 2020 B",
+        "component": "LEC",
+        "when": "TR 11:30am–12:45pm",
+        "instructors": ["Ana Diaz"],
+        "online": False,
+        "seats_open": 4,
+    }
+    assert [c["code"] for c in chat.catalog("kim lee")["courses"]] == ["CS 3200", "CS 3410"]
+    assert [c["code"] for c in chat.catalog("software")["courses"]] == ["CS 3200"]
+
+
+def test_catalog_marks_taken_and_blocked_courses_and_defaults_to_what_counts(
+    tmp_path: Path,
+) -> None:
+    chat = session(Script(), tmp_path)
+    taken = chat.catalog("CS 1210")["courses"][0]
+    assert taken["status"] == "taken" and taken["notes"] == []
+    blocked = chat.catalog("capstone")["courses"][0]
+    assert blocked["status"] == "blocked" and blocked["notes"] == ["requires CS 3999"]
+    default = [c["code"] for c in chat.catalog("")["courses"]]
+    assert "ART 1100" not in default and "ECON 2020" in default  # counts for nothing: hidden
+    assert chat.catalog("zzz") == {"courses": [], "total": 0}
+
+
+def test_each_plan_says_which_requests_it_meets_and_what_it_adds_per_requirement(
+    tmp_path: Path,
+) -> None:
+    late = con("c2", "no_earlier_than", "soft", 3, src="nothing before 1", time="13:00")
+    macro = con("c1", "include_course", src="macro", course="ECON 2020")
+    chat = session(Script(answer(macro, late)), tmp_path)
+    chat.handle("macro, and nothing before 1 if I can")
+    view = chat.view()
+    plan = view["schedules"][0]
+    assert "c2" in plan["missed_rules"] and "c1" not in plan["missed_rules"]  # macro is 11:30
+    assert view["conflict_ids"] == []
+    assert {
+        "title": "Macroeconomics",
+        "needed": None,
+        "unit": None,
+        "planned": 1,
+        "courses": ["ECON 2020"],
+    } in plan["progress"]
+    assert len(plan["progress"]) == len(view["requirements"])  # every open requirement
+
+
+def test_adding_a_course_to_a_plan_offers_to_add_it_or_rebuild(tmp_path: Path) -> None:
+    macro = con("c1", "include_course", src="macro", course="ECON 2020")
+    light = con("c2", "credit_range", "soft", 5, src="ideally 3 credits", min=3, max=3)
+    nets = con("c3", "include_course", src="add networks", course="CS 3410")
+    provider = Script(answer(macro, light), answer(macro, light, nets))
+    chat = session(provider, tmp_path)
+    chat.handle("macro, ideally 3 credits")
+    before = chat.view()["schedules"][0]
+    assert [s["course"] for s in before["sections"]] == ["ECON 2020"]
+
+    reply = chat.handle("add networks")
+    choices = [c["text"] for c in chat.view()["choices"]]
+    assert choices[0].startswith("Add CS 3410 (Networks) to Plan A → 6 credits")
+    assert "misses" in choices[0]  # the "ideally 3 credits" preference
+    assert choices[-1] == "Rebuild every plan around it"
+    assert "1. " + choices[0] in reply
+    assert chat.view()["schedules"][0] == before  # nothing changes until they pick
+
+    reply = chat.handle("1")
+    assert len(provider.requests) == 2  # picking is deterministic, no LLM
+    plan = chat.view()["schedules"][0]
+    econ = next(s for s in plan["sections"] if s["course"] == "ECON 2020")
+    assert econ in before["sections"]  # the class already planned keeps its section
+    assert {s["course"] for s in plan["sections"]} == {"ECON 2020", "CS 3410"}
+    assert chat.view()["choices"] == [] and "c3" in {r["id"] for r in chat.view()["rules"]}
+
+
+def test_a_full_plan_offers_swaps_that_keep_the_requested_courses(tmp_path: Path) -> None:
+    macro = con("c1", "include_course", src="macro", course="ECON 2020")
+    load = con("c2", "credit_range", src="6 credits", min=6, max=6)
+    provider = Script(answer(macro, load))
+    chat = session(provider, tmp_path)
+    chat.handle("macro, 6 credits")
+    planned = {s["course"] for s in chat.view()["schedules"][0]["sections"]}
+    other = next(iter(planned - {"ECON 2020"}))
+    adding = next(c for c in ("CS 3410", "HIST 1010", "SOC 1000") if c not in planned)
+    provider.answers.append(answer(macro, load, con("c3", "include_course", course=adding)))
+    chat.handle(f"add {adding}")
+    choices = [c["text"] for c in chat.view()["choices"]]
+    assert not any(c.startswith("Add ") for c in choices)  # no room: 6 credits is a must
+    assert any(c.startswith(f"Swap out {other}") for c in choices)
+    assert not any("Swap out ECON 2020" in c for c in choices)  # they asked for macro
+    swap = 1 + next(i for i, c in enumerate(choices) if c.startswith(f"Swap out {other}"))
+    chat.handle(str(swap))
+    courses = {s["course"] for s in chat.view()["schedules"][0]["sections"]}
+    assert courses == {"ECON 2020", adding}
+
+
+def test_asking_for_a_course_already_planned_keeps_the_plan(tmp_path: Path) -> None:
+    macro = con("c1", "include_course", src="macro", course="ECON 2020")
+    provider = Script(answer(macro))
+    chat = session(provider, tmp_path)
+    chat.handle("macro")
+    plan = chat.view()["schedules"][0]
+    there = next(s["course"] for s in plan["sections"] if s["course"] != "ECON 2020")
+    provider.answers.append(answer(macro, con("c2", "include_course", course=there)))
+    assert chat.handle(f"I want {there}").endswith(
+        f"{there} is already in Plan A, so I kept it as it is."
+    )
+    assert chat.view()["schedules"][0]["sections"] == plan["sections"]
+
+
+def test_rebuild_solves_from_scratch_with_the_new_course(tmp_path: Path) -> None:
+    macro = con("c1", "include_course", src="macro", course="ECON 2020")
+    nets = con("c3", "include_course", src="add networks", course="CS 3410")
+    chat = session(Script(answer(macro), answer(macro, nets)), tmp_path)
+    chat.handle("macro")
+    chat.handle("add networks")
+    rebuild = len(chat.view()["choices"])
+    reply = chat.handle(str(rebuild))
+    assert "Found" in reply or "Schedule 1" in reply
+    for plan in chat.view()["schedules"]:
+        assert {"ECON 2020", "CS 3410"} <= {s["course"] for s in plan["sections"]}

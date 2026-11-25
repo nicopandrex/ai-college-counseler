@@ -91,7 +91,7 @@ def test_plan_mode_has_no_target_term() -> None:
 
 
 def test_prompt_contains_the_whole_reference_and_context() -> None:
-    assert DOCS.read_text() in system_prompt()
+    assert DOCS.read_text(encoding="utf-8") in system_prompt()
     user = user_message("macro please", CONTEXT, prior={"constraints": []})
     assert (
         "GENED_S1: Social Sciences (S1)" in user

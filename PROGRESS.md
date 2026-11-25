@@ -272,6 +272,38 @@ Running log. Resume from **Current status**. Newest log entries at the top.
   (UVM publishes no caps).
 
 ## Log
+- **2026-11-24 (owner bug + edit flow).** Bug: asking for 15 credits, then closing that chip,
+  gave a 31-credit plan. A stated load replaces the full-time band, and closing it removed
+  the only credit cap (the solver then adds every course that counts toward a requirement).
+  Fix: closing a chip re-validates what's left, so the band comes back; the band itself
+  (`default_credits`) can be changed but not closed (the web shows ✎, not ✕). The old test
+  that closed the band now closes the soft preferred load instead (owner reported the old
+  behavior as the bug).
+  Owner: asking for one more class shouldn't rebuild everything. When a turn only adds
+  courses and a plan is on screen, the chat now offers numbered choices (no LLM to pick):
+  add it to that plan, swap out one class they didn't ask for, or rebuild. Each option is
+  pre-solved with the plan's other sections pinned (term data restricted + internal
+  include_course pins; no schema change) under every request, and says what it gives up
+  (missed preferences, requirements it stops helping). The web sends the plan on screen.
+- **2026-11-24 (plan feedback).** Owner: highlighted "counts toward" lines didn't show
+  requirement progress, and the wish list didn't say which requests were met. The view now
+  carries, per schedule, `missed_rules` (the solver's soft_missed) and `progress` (what the
+  plan adds to each open requirement: courses + planned amount), plus `conflict_ids`. The web
+  shows requests as a checklist (ticked / crossed out "Plan A couldn't fit this one" / "!"
+  clash) and a "Degree progress" section with hand-drawn bars filled per course; "covered!"
+  only when the audit states an amount needed. Double counting stays an open question, so the
+  page says the audit decides it.
+- **2026-11-24 (UI theme).** Owner asked for a hand-drawn school-planner look instead of Bauhaus:
+  ruled paper, Caveat/Patrick Hand fonts, wobbly pen outlines (SVG displacement filter on a
+  pseudo-element so text stays crisp), highlighter sticky notes per course, spiral binding,
+  divider-tab catalog. Styling only; behavior unchanged.
+- **2026-11-24 (UI redesign).** Owner asked for a calendar-first layout in a Bauhaus style:
+  pull-out course catalog (left), weekly calendar (center), assistant chat (right). Added a
+  deterministic catalog search (`ChatSession.catalog`, `GET /api/sessions/{id}/catalog?q=`):
+  matches every word against code/title/instructor; no query lists what counts toward open
+  requirements; status taken/blocked/check from the prereq tree. No LLM; "+ Add" sends
+  "Add <code> to my schedule" through the normal chat pipeline. Fixed two tests that read docs
+  without UTF-8 (failed on Windows). 239 Python + 6 web tests green.
 - **2026-11-24 (Windows).** Owner is on Windows; `make`/`export` don't exist there. Added `.env`
   loading (`planner_llm/envfile.py`, real env vars win), `.env.example`, root `npm run
   setup|dev|test` (concurrently runs API + web). Fixed Windows bugs: every file read/write

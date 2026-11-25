@@ -27,7 +27,7 @@ class StubProvider:
 
 
 def test_packaged_prompt_matches_docs_verbatim() -> None:
-    doc = DOCS.read_text()
+    doc = DOCS.read_text(encoding="utf-8")
     body = doc[doc.index("\n---\n") + 5 : doc.index("\n---\n\n# Downstream")].strip()
     assert extraction_system_prompt().startswith(body + "\n")
 

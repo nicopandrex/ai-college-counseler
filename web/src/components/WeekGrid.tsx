@@ -1,85 +1,96 @@
 import type { ScheduleSection } from "@/lib/api";
 import { layout, WEEKDAYS } from "@/lib/grid";
+import { courseDoodle, courseStyle, courseTilt, Doodle } from "./palette";
 
 const DAY_NAMES: Record<(typeof WEEKDAYS)[number], string> = {
-  M: "Mon",
-  T: "Tue",
-  W: "Wed",
-  R: "Thu",
-  F: "Fri",
+  M: "Monday",
+  T: "Tuesday",
+  W: "Wednesday",
+  R: "Thursday",
+  F: "Friday",
 };
-const COLORS = [
-  "bg-sky-100 border-sky-400",
-  "bg-amber-100 border-amber-400",
-  "bg-emerald-100 border-emerald-400",
-  "bg-rose-100 border-rose-400",
-  "bg-violet-100 border-violet-400",
-  "bg-lime-100 border-lime-400",
-  "bg-orange-100 border-orange-400",
-];
-const HOUR_PX = 44;
+const HOUR_PX = 64;
 
+function hourLabel(h: number): string {
+  return `${((h + 11) % 12) + 1}${h < 12 ? "am" : "pm"}`;
+}
+
+/** The week as a hand-ruled planner page; classes are highlighter sticky notes. */
 export function WeekGrid({ sections }: { sections: ScheduleSection[] }) {
   const grid = layout(sections);
   const hours = Array.from({ length: grid.lastHour - grid.firstHour }, (_, i) => grid.firstHour + i);
-  const height = hours.length * HOUR_PX;
   return (
-    <div>
-      <div className="flex text-xs">
-        <div className="w-12 shrink-0" />
+    <div className="sketch bg-paper px-2 pb-3 pt-1 shadow-[3px_4px_0_rgba(39,48,74,0.12)]">
+      <div className="flex">
+        <div className="w-14 shrink-0" />
         {WEEKDAYS.map((d) => (
-          <div key={d} className="flex-1 text-center font-medium text-slate-600">
-            {DAY_NAMES[d]}
+          <div key={d} className="flex-1 px-2 pb-1 pt-2 text-center">
+            <span className="font-marker text-2xl font-bold leading-none">{DAY_NAMES[d]}</span>
           </div>
         ))}
       </div>
+      <svg viewBox="0 0 400 6" preserveAspectRatio="none" className="h-1.5 w-full text-ink" aria-hidden>
+        <path d="M2 3 C 80 1, 160 5, 240 3 S 360 1, 398 3.5" fill="none" stroke="currentColor" strokeWidth="1.6" />
+      </svg>
+
       {grid.unplaced.length > 0 && (
-        <div className="mb-2 flex items-start gap-2 border-y border-slate-200 py-2">
-          <div className="w-12 shrink-0 pt-1 text-right text-[10px] leading-tight text-slate-500">
-            online / no set time
-          </div>
-          <div className="flex flex-1 flex-wrap gap-2">
-            {grid.unplaced.map((s) => (
-              <div
-                key={s.id}
-                className={`rounded border-l-4 px-2 py-1 text-[11px] leading-tight ${COLORS[grid.colorOf(s.course) % COLORS.length]}`}
-              >
-                <div className="font-semibold">{s.id}</div>
-                <div>{s.online ? "online, any time" : s.when}</div>
-              </div>
-            ))}
+        <div className="flex items-center gap-3 border-b-2 border-dashed border-ruled py-3">
+          <div className="w-14 shrink-0 text-right font-marker text-base leading-tight text-pencil">anytime</div>
+          <div className="flex flex-1 flex-wrap gap-3">
+            {grid.unplaced.map((s) => {
+              const c = grid.colorOf(s.course);
+              return (
+                <div
+                  key={s.id}
+                  className={`sketch sketch-thin flex items-center gap-2 px-3 py-1 text-sm ${courseStyle(c)}`}
+                  style={{ transform: courseTilt(c) }}
+                >
+                  <Doodle kind={courseDoodle(c)} className="h-4 w-4" />
+                  <span className="font-marker text-lg font-bold leading-none">{s.id}</span>
+                  <span className="text-pencil">{s.online ? "online, no set time" : s.when}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
-      <div className="flex" style={{ height }}>
-        <div className="relative w-12 shrink-0 text-[10px] text-slate-400">
+
+      <div className="flex" style={{ height: hours.length * HOUR_PX }}>
+        <div className="relative w-14 shrink-0">
           {hours.map((h, i) => (
-            <div key={h} className="absolute right-1" style={{ top: i * HOUR_PX - 6 }}>
-              {((h + 11) % 12) + 1}
-              {h < 12 ? "am" : "pm"}
+            <div
+              key={h}
+              className="absolute right-2 font-marker text-base font-semibold leading-none text-pencil"
+              style={{ top: i * HOUR_PX + 2 }}
+            >
+              {hourLabel(h)}
             </div>
           ))}
         </div>
         {WEEKDAYS.map((d, day) => (
-          <div key={d} className="relative flex-1 border-l border-slate-200">
+          <div key={d} className={`relative flex-1 ${day ? "border-l-2 border-dashed border-ruled" : ""}`}>
             {hours.map((h, i) => (
-              <div
-                key={h}
-                className="absolute inset-x-0 border-t border-slate-100"
-                style={{ top: i * HOUR_PX }}
-              />
+              <div key={h}>
+                <div className="absolute inset-x-0 border-t border-ruled" style={{ top: i * HOUR_PX }} />
+                <div
+                  className="absolute inset-x-0 border-t border-dotted border-ruled/70"
+                  style={{ top: i * HOUR_PX + HOUR_PX / 2 }}
+                />
+              </div>
             ))}
             {grid.blocks
               .filter((b) => b.day === day)
               .map((b) => (
                 <div
                   key={`${b.section}-${b.top}`}
-                  className={`absolute inset-x-0.5 overflow-hidden rounded border-l-4 px-1 text-[11px] leading-tight ${COLORS[b.color % COLORS.length]}`}
-                  style={{ top: `${b.top}%`, height: `${b.height}%` }}
-                  title={`${b.section} ${b.title} ${b.label}`}
+                  className={`sketch sketch-thin absolute inset-x-1.5 overflow-hidden px-2 py-1 shadow-[2px_3px_0_rgba(39,48,74,0.10)] ${courseStyle(b.color)}`}
+                  style={{ top: `${b.top}%`, height: `${b.height}%`, transform: courseTilt(b.color) }}
+                  title={`${b.section} · ${b.title} · ${b.label}`}
                 >
-                  <div className="font-semibold">{b.section}</div>
-                  <div className="truncate">{b.label}</div>
+                  <Doodle kind={courseDoodle(b.color)} className="absolute right-1.5 top-1.5 h-4 w-4" />
+                  <div className="pr-5 font-marker text-lg font-bold leading-[1.05]">{b.section}</div>
+                  <div className="truncate text-[13px] leading-tight">{b.title}</div>
+                  <div className="text-[13px] leading-tight text-pencil">{b.label}</div>
                 </div>
               ))}
           </div>
